@@ -1,11 +1,12 @@
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import Router from 'next/router';
 
 const Index = () => (
   <MuiThemeProvider>
     <div id='content'>
       <p id='title'>Healthios</p>
       <p id='description'>The future of self-care</p>
-      <button id='start'>Let's start</button>
+      <button id='start' onClick={() => Router.push('/login')}>Let's start</button>
       <style jsx>{`
         #content {
           position: fixed;
