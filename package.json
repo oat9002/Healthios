@@ -1,0 +1,27 @@
+{
+  "name": "Healthios",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oat9002/Healthios.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oat9002/Healthios/issues"
+  },
+  "homepage": "https://github.com/oat9002/Healthios#readme",
+  "dependencies": {
+    "material-ui": "^0.18.2",
+    "next": "^2.4.3",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-tap-event-plugin": "^2.0.1"
+  }
+}
