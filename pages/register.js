@@ -1,5 +1,5 @@
-import TextField from 'material-ui/TextField';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import TextField from 'material-ui/TextField';
 
 const Register = () => (
   <MuiThemeProvider>
@@ -9,6 +9,8 @@ const Register = () => (
       <TextField floatingLabelText="Firstname" name='firstname'/>
       <br/>
       <TextField floatingLabelText="Lastname" name='lastname'/>
+      <br/>
+      <TextField multiLine={true} name='address' floatingLabelText='Address' style={{textAlign: 'left'}}></TextField>
       <br/>
       <TextField floatingLabelText="Email" type='email' name='email'/>
       <br/>
