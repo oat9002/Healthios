@@ -117,7 +117,7 @@ export default class extends React.Component {
                           ที่อยู่
                         </td>
                         <td className='value'>
-                          493 ซ.นาคบำรุง แขวงคลองมหานาค เขตป้อปราบฯ
+                          493 ซ.นาคบำรุง แขวงคลองมหานาค เขตป้อมปราบฯ
                         </td>
                       </tr>
                     </tbody>
