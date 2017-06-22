@@ -15,8 +15,9 @@ export default class extends React.Component {
           <Head>
             <title>Result</title>
             <link href="/static/css/animate.css" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
           </Head>
-          <h1 className="bounce animated center">Your information</h1>
+          <h1 className="bounce animated title">ข้อมูลส่วนตัว</h1>
           <div className="content">
             <Paper className='profile' zDepth={2} style={{marginRight: '50px', height:'300px', width:'auto'}}>
               <img className='pic' src="/static/pics/1.jpg"/>
@@ -28,7 +29,7 @@ export default class extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          Name(Thai)
+                          ชื่อ(ไทย)
                         </td>
                         <td className='value'>
                           สรัล รักวิจิตรศิลป์
@@ -45,7 +46,7 @@ export default class extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          Name(English)
+                          ชื่อ(อังกฤษ)
                         </td>
                         <td className='value'>
                           Sarun Rakwijitsil
@@ -62,7 +63,7 @@ export default class extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          Age
+                          อายุ(ปี)
                         </td>
                         <td className='value'>
                           22
@@ -79,7 +80,24 @@ export default class extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          Date of Birth
+                          วันเกิด(ไทย)
+                        </td>
+                        <td className='value'>
+                          1 ธ.ค. 2537
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <Divider></Divider>
+              </div>
+              <div className='info'>
+                <div className='text'>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className='key'>
+                          วันเกิด(อังกฤษ)
                         </td>
                         <td className='value'>
                           1 Dec 1994
@@ -96,10 +114,10 @@ export default class extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          Address
+                          ที่อยู่
                         </td>
                         <td className='value'>
-                          493 Narkbunrung Soi BumrungMueng Road Klongmahanark Sub-district
+                          493 ซ.นาคบำรุง แขวงคลองมหานาค เขตป้อปราบฯ
                         </td>
                       </tr>
                     </tbody>
@@ -113,14 +131,9 @@ export default class extends React.Component {
               display: flex;
               justify-content: center;
             }
-            div {
-              font-family: Roboto Light;
-            }
-            .profile {
-
-            }
-            .center {
+            .title {
               text-align: center;
+              font-size: 50px;
             }
             .pic {
               width: auto;
@@ -133,7 +146,6 @@ export default class extends React.Component {
               padding-bottom: 5px
             }
             .longText {
-              display: block;
               width: 100px;
               overflow: hidden;
               white-space: nowrap;
@@ -146,6 +158,13 @@ export default class extends React.Component {
             .value {
               max-width:200px;
               word-wrap:break-word;
+            }
+          `}</style>
+          <style jsx global>{`
+            body {
+              font-family: Kanit Light;
+              color: #393939;
+              background-color: #f7f7f7;
             }
           `}</style>
         </div>
