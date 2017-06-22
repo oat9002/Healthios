@@ -165,6 +165,11 @@ export default class extends React.Component {
               font-family: Kanit Light;
               color: #393939;
               background-color: #f7f7f7;
+              animation: fadein 1s;
+            }
+            @keyframes fadein {
+                from { opacity: 0; };
+                to   { opacity: 1; };
             }
           `}</style>
         </div>
