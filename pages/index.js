@@ -1,28 +1,31 @@
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router from 'next/router';
+import Head from 'next/head';
 
 const Index = () => (
   <MuiThemeProvider>
     <div id='content'>
-      <p id='title'>Healthios</p>
-      <p id='description'>The future of self-care</p>
-      <button id='start' onClick={() => Router.push('/login')}>Let's start</button>
+      <Head>
+        <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
+      </Head>
+      <span id='title'>Healthios</span>
+      <span id='description'>by KMITL</span>
+      {/* <button id='start' onClick={() => Router.push('/login')}>Let's start</button> */}
       <style jsx>{`
         #content {
           position: fixed;
           text-align: center;
-          font-family: Roboto Light;
-          top: 35%;
+          font-family: Kanit Light;
+          top: 45%;
           left: 45%;
           transform: translate(-35%, -45%);
         }
         #title {
           font-size: 96px;
-          color: #999999;
-          margin-bottom: 2%;
+          color: #393939;
         }
         #description {
-          margin-bottom: 10%
+          text-align: right;
         }
         #start {
           width: 100%;
@@ -50,6 +53,11 @@ const Index = () => (
         }
         `}
       </style>
+      <style jsx global>{`
+        body {
+          background-color: #f7f7f7;
+        }
+      `}</style>
     </div>
   </MuiThemeProvider>
 )
