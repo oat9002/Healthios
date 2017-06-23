@@ -19,15 +19,6 @@ export default class Register extends React.Component {
             <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
           </div>
           <style jsx>{`
-            div {
-              font-family: Kanit Light;
-              color: #393939;
-              animation: fadein 1s;
-            }
-            @keyframes fadein {
-                from { opacity: 0; };
-                to   { opacity: 1; };
-            }
             img {
               heigh: 20%;
               width: 20%;
@@ -46,7 +37,14 @@ export default class Register extends React.Component {
                 margin-top: 13%;
               }
               body {
+                font-family: Kanit Light;
+                color: #393939;
+                animation: fadein 1s;
                 background-color: #f7f7f7;
+              }
+              @keyframes fadein {
+                  from { opacity: 0; };
+                  to   { opacity: 1; };
               }
             `}</style>
         </div>
