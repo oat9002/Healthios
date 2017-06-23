@@ -8,13 +8,13 @@ export default class Register extends React.Component {
       <MuiThemeProvider>
         <div className='content'>
           <Head>
-            <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
           <div>
             <span className='emph'>ไม่พบข้อมูลผู้ใช้</span>
             <br/>
-            <span>กรุณาเสียบบัตรประชาชนเพื่อลงทะเบียน</span>
+            <span>กรุณา<span className='emph2'>เสียบ</span>บัตรประชาชนเพื่อลงทะเบียน</span>
             <br/>
             <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
           </div>
@@ -30,6 +30,10 @@ export default class Register extends React.Component {
               font-size: 74px;
               font-weight: bold;
             }
+            .emph2 {
+              font-weight: bold;
+              color: blue;
+            }
             `}</style>
             <style jsx global>{`
               .content {
@@ -37,7 +41,8 @@ export default class Register extends React.Component {
                 margin-top: 13%;
               }
               body {
-                font-family: Kanit Light;
+                font-family: Kanit;
+                font-weight: 200;
                 color: #393939;
                 animation: fadein 1s;
                 background-color: #f7f7f7;

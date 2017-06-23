@@ -9,7 +9,7 @@ export default class Loading extends React.Component {
       <MuiThemeProvider>
         <div>
           <Head>
-            <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
           <div>
@@ -30,7 +30,7 @@ export default class Loading extends React.Component {
           `}</style>
           <style jsx global>{`
             body {
-              font-family: Kanit Light;
+              font-family: Kanit;
               color: #393939;
               animation: fadein 1s;
               background-color: #f7f7f7;

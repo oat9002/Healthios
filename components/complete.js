@@ -1,9 +1,14 @@
 import React from 'react';
+import Head from 'next/head';
 
 export default class Complete extends React.Component {
   render() {
     return (
       <div className='content'>
+        <Head>
+          <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
+          <link href="/static/css/animate.css" rel="stylesheet" />
+        </Head>
         <span>{this.props.text}!<img src="/static/pics/correct.svg" /></span>
         <style jsx>{`
           .content {
@@ -17,7 +22,7 @@ export default class Complete extends React.Component {
         `}</style>
         <style jsx global>{`
           body {
-            font-family: Kanit Light;
+            font-family: Kanit;
             color: #393939;
             background-color: #f7f7f7;
             animation: fadein 1s;

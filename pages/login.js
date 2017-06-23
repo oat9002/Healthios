@@ -6,7 +6,7 @@ const Login = () => (
   <MuiThemeProvider>
     <div className='content'>
       <Head>
-        <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
+        <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
         <link href="/static/css/animate.css" rel="stylesheet" />
       </Head>
       <div>
@@ -51,15 +51,6 @@ const Login = () => (
                       box-shadow: none;
         }
         div {
-          font-family: Kanit Light;
-          color: #393939;
-          animation: fadein 1s;
-        }
-        @keyframes fadein {
-            from { opacity: 0; };
-            to   { opacity: 1; };
-        }
-        div {
           text-align: center;
           width: 50%;
         }
@@ -81,6 +72,13 @@ const Login = () => (
           }
           body {
             background-color: #f7f7f7;
+            font-family: Kanit;
+            color: #393939;
+            animation: fadein 1s;
+          }
+          @keyframes fadein {
+              from { opacity: 0; };
+              to   { opacity: 1; };
           }
         `}</style>
     </div>

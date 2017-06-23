@@ -15,7 +15,7 @@ export default class extends React.Component {
           <Head>
             <title>Result</title>
             <link href="/static/css/animate.css" rel="stylesheet" />
-            <link href="https://fonts.googleapis.com/css?family=Kanit:300,400" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
           </Head>
           <h1 className="bounce animated title">ข้อมูลส่วนตัว</h1>
           <div className="content">
@@ -152,17 +152,20 @@ export default class extends React.Component {
               text-overflow: ellipsis;
             }
             .key {
+              font-family: Kanit;
               width: 200px
               font-weight: bold;
             }
             .value {
+              font-family: Kanit;
               max-width:200px;
               word-wrap:break-word;
             }
           `}</style>
           <style jsx global>{`
             body {
-              font-family: Kanit Light;
+              font-family: Kanit;
+              font-weight: 200;
               color: #393939;
               background-color: #f7f7f7;
               animation: fadein 1s;
