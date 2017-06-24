@@ -24,7 +24,7 @@ export default class Loading extends React.Component {
               margin-right: 20%;
             }
             p {
-              font-size: 36px;
+              font-size: 64px;
               margin-bottom: 0;
             }
           `}</style>

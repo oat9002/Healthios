@@ -10,7 +10,7 @@ const Login = () => (
         <link href="/static/css/animate.css" rel="stylesheet" />
       </Head>
       <div>
-        <span>แตะนิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+        <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
         <br/>
         <img src='/static/pics/fingerprints.svg'/>
       </div>
@@ -18,48 +18,52 @@ const Login = () => (
         <span>หรือ</span>
       </div>
       <div>
-        <span>เสียบบัตรประชาชน</span>
+        <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
         <br/>
         <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
       </div>
       <br/>
       {/* <button id='submit' onClick={() => Router.push('/register')}>Register</button> */}
       <style jsx>{`
-        #submit {
-          margin-top: 50px;
-          width: 100%;
-          height: 50px;
-          max-width: 200px;
-          max-high: 50px;
-          border-radius: 50px;
-          border: 2px solid;
-          background-color: white;
-          color: black;
-          font-size: 20px;
-          transition: 0.8s;
-          white-space: nowrap;
-        }
-        #submit:hover {
-          background-color: black;
-          color: white;
-          transition: 0.8s;
-        }
-        #submit:active, #submit:focus, #submit.active {
-          background-image: none;
-          outline: 0;
-          -webkit-box-shadow: none;
-                      box-shadow: none;
-        }
+        // #submit {
+        //   margin-top: 50px;
+        //   width: 100%;
+        //   height: 50px;
+        //   max-width: 200px;
+        //   max-high: 50px;
+        //   border-radius: 50px;
+        //   border: 2px solid;
+        //   background-color: white;
+        //   color: black;
+        //   font-size: 20px;
+        //   transition: 0.8s;
+        //   white-space: nowrap;
+        // }
+        // #submit:hover {
+        //   background-color: black;
+        //   color: white;
+        //   transition: 0.8s;
+        // }
+        // #submit:active, #submit:focus, #submit.active {
+        //   background-image: none;
+        //   outline: 0;
+        //   -webkit-box-shadow: none;
+        //               box-shadow: none;
+        // }
         div {
           text-align: center;
           width: 50%;
         }
         img {
-          heigh: 40%
-          width: 40%
+          heigh: 40%;
+          width: 40%;
         }
         span {
-          font-size: 48px
+          font-size: 48px;
+        }
+        .emph {
+          font-size: 72px;
+          font-weight: 300;
         }
         `}</style>
         <style jsx global>{`
@@ -75,6 +79,7 @@ const Login = () => (
             font-family: Kanit;
             color: #393939;
             animation: fadein 1s;
+            font-weight: 200;
           }
           @keyframes fadein {
               from { opacity: 0; };

@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 
-export default class Complete extends React.Component {
+export default class CompleteTemplate extends React.Component {
   render() {
     return (
       <div className='content'>
