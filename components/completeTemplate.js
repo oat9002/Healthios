@@ -17,7 +17,7 @@ export default class CompleteTemplate extends React.Component {
             margin-top: 20%;
           }
           img {
-            vertical-align:middle
+            vertical-align:middle;
           }
         `}</style>
         <style jsx global>{`
