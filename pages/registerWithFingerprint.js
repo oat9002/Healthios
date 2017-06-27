@@ -1,21 +1,17 @@
 import React from 'react';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Head from 'next/head';
-
-export default class Register extends React.Component {
+export default class RegisterWithFingerprint extends React.Component {
   render() {
-    return(
+    return (
       <div className='content'>
         <Head>
           <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         <div>
-          <span className='emph'>ไม่พบข้อมูลผู้ใช้</span>
+          <span>กรุณา<span className='emph2'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
           <br/>
-          <span>กรุณา<span className='emph2'>เสียบ</span>บัตรประชาชนเพื่อลงทะเบียน</span>
-          <br/>
-          <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+          <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
         </div>
         <style jsx>{`
           img {

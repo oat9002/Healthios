@@ -1,9 +1,10 @@
 import React from "react";
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Divider from "material-ui/Divider";
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Paper from "material-ui/Paper";
 import Head from "next/head";
 import PropTypes from 'prop-types';
+import axios from 'axios';
 
 export default class ResultTemplate extends React.Component {
   render() {
@@ -64,6 +65,23 @@ export default class ResultTemplate extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
+                          เพศ
+                        </td>
+                        <td className='value'>
+                          {this.props.gender}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <Divider></Divider>
+              </div>
+              <div className='info'>
+                <div className='text'>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className='key'>
                           อายุ(ปี)
                         </td>
                         <td className='value'>
@@ -81,27 +99,10 @@ export default class ResultTemplate extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          วันเกิด(ไทย)
+                          วันเกิด
                         </td>
                         <td className='value'>
-                          {this.props.thaiDateOfBirth}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <Divider></Divider>
-              </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
-                          วันเกิด(อังกฤษ)
-                        </td>
-                        <td className='value'>
-                          {this.props.engDateOfBirth}
+                          {this.props.dateOfBirth}
                         </td>
                       </tr>
                     </tbody>
@@ -119,6 +120,23 @@ export default class ResultTemplate extends React.Component {
                         </td>
                         <td className='value'>
                           {this.props.address}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <Divider></Divider>
+                </div>
+              </div>
+              <div className='info'>
+                <div className='text'>
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td className='key'>
+                          เลขประจำตัวประชาชน
+                        </td>
+                        <td className='value'>
+                          {this.props.idNumber}
                         </td>
                       </tr>
                     </tbody>
@@ -141,7 +159,7 @@ export default class ResultTemplate extends React.Component {
               height: 300px;
             }
             .info {
-              padding: 5px 5px 5px 5px
+              padding: 0px 5px 5px 5px
             }
             .text {
               padding-bottom: 5px
@@ -182,12 +200,13 @@ export default class ResultTemplate extends React.Component {
   }
 }
 
-ResultTemplate.propTypes = {
-  imgSrc: PropTypes.element.isRequired,
-  thaiName: PropTypes.element.isRequired,
-  engName: PropTypes.element.isRequired,
-  age: PropTypes.element.isRequired,
-  thaiDateOfBirth: PropTypes.element.isRequired,
-  engDateOfBirth: PropTypes.element.isRequired,
-  address: PropTypes.element.isRequired
-}
+// ResultTemplate.propTypes = {
+//   imgSrc: PropTypes.element.isRequired,
+//   thaiName: PropTypes.element.isRequired,
+//   engName: PropTypes.element.isRequired,
+//   age: PropTypes.element.isRequired,
+//   dateOfBirth: PropTypes.element.isRequired,
+//   address: PropTypes.element.isRequired,
+//   idNumber: PropTypes.element.isRequired,
+//   gender: PropTypes.element.isRequired
+// }

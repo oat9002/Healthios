@@ -1,8 +1,33 @@
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router from 'next/router';
 import Head from 'next/head';
+import axios from 'axios';
 
 export default class Index extends React.Component {
+  constructor(props) {
+    super(props);
+    this.checkThereIsHuman = this.checkThereIsHuman.bind(this);
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      this.checkThereIsHuman();
+    }, 3000)
+  }
+
+  checkThereIsHuman() {
+    // TODO: wait for ox to revise condition and url
+    axios.get('/test')
+      .then((response) => {
+        if(response) {
+          Router.push('/login');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+  }
+
   render() {
     return(
       <MuiThemeProvider>
