@@ -82,7 +82,7 @@ export default class ResultTemplate extends React.Component {
                     <tbody>
                       <tr>
                         <td className='key'>
-                          อายุ(ปี)
+                          อายุ
                         </td>
                         <td className='value'>
                           {this.props.age}
@@ -177,7 +177,7 @@ export default class ResultTemplate extends React.Component {
             }
             .value {
               font-family: Kanit;
-              max-width:200px;
+              width:200px;
               word-wrap:break-word;
             }
           `}</style>

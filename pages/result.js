@@ -17,6 +17,7 @@ export default class extends React.Component {
       idNumber: ''
     };
     this.generateAge = this.generateAge.bind(this);
+    this.getDaysInMonth = this.getDaysInMonth.bind(this);
   }
 
   componentWillMount() {
@@ -41,10 +42,48 @@ export default class extends React.Component {
     });
   }
 
-  generateAge(dateOfBirth) {
-    let yearOfBirth = parseInt(dateOfBirth.substring(6, dateOfBirth.length));
+  getDaysInMonth(month,year) {
+    return new Date(year, month, 0).getDate();
+  }
+
+  generateAge(birthDate) {
+    let dateOfBirth = parseInt(birthDate.substring(0,2))
+    let monthOfBirth = parseInt(birthDate.substring(3,5))
+    let yearOfBirth = parseInt(birthDate.substring(6, birthDate.length));
     let currentDate = new Date();
-    return currentDate.getFullYear() - (yearOfBirth - 543) + '';
+    let ageYear = currentDate.getFullYear() - (yearOfBirth - 543);
+    let ageMonth = 0;
+    let ageDate = 0;
+    if(currentDate.getMonth() + 1 > monthOfBirth) {
+      ageMonth = currentDate.getMonth() + 1 - monthOfBirth;
+      if(currentDate.getDate() < dateOfBirth) {
+        ageDate = currentDate.getDate() - dateOfBirth + this.getDaysInMonth(currentDate.getMonth(), currentDate.getFullYear());
+      }
+      else {
+        ageDate = currentDate.getDate() - dateOfBirth;
+      }
+    }
+    else if(currentDate.getMonth() + 1 == monthOfBirth) {
+      if(currentDate.getDate() < dateOfBirth) {
+        ageYear = ageYear - 1;
+        ageMonth = 11;
+        ageDate = currentDate.getDate() - dateOfBirth + this.getDaysInMonth(currentDate.getMonth(), currentDate.getFullYear());
+      }
+      else {
+        ageDate = currentDate.getDate() - dateOfBirth;
+      }
+    }
+    else {
+      ageYear = ageYear - 1;
+      ageMonth = (currentDate.getMonth() + 13) - monthOfBirth;
+      if(currentDate.getDate() < dateOfBirth) {
+        ageDate = currentDate.getDate() - dateOfBirth + this.getDaysInMonth(currentDate.getMonth(), currentDate.getFullYear());
+      }
+      else {
+        ageDate = currentDate.getDate() - dateOfBirth;
+      }
+    }
+    return ageYear + ' ปี ' + ageMonth + ' เดือน ' + ageDate + ' วัน';
   }
 
   render() {
