@@ -11,8 +11,9 @@ export default class Index extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-      this.checkThereIsHuman();
-    }, 3000)
+      Router.push('/login');
+      // this.checkThereIsHuman();
+    }, 5000);
   }
 
   checkThereIsHuman() {

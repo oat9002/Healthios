@@ -1,8 +1,47 @@
 import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Head from 'next/head';
+import Router from 'next/router';
+import axios from 'axios';
 
 export default class Register extends React.Component {
+  constructor(props) {
+    super(props);
+    this.ip = 'http://161.246.6.201:8080';
+    this.interval = null;
+  }
+
+  componentDidMount() {
+    let urlIsInsertCard = this.ip + '/thid/valid';
+    let urlIsCardReadablt = this.ip + '/thid/readable';
+    let status = false;
+    setTimeout(() => {
+      this.interval = setInterval(() => {
+        axios.get(urlIsInsertCard)
+        .then(res => {
+          if(res.data.status) {
+            axios.get(urlIsCardReadablt)
+            .then(res => {
+              if(res.data.status) {
+                Router.push('/result');
+              }
+            })
+            .catch(err => {
+              console.log(err);
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }, 1000);
+    }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   render() {
     return(
       <div className='content'>

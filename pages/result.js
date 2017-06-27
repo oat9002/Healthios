@@ -1,8 +1,6 @@
 import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
 
-const ip = 'http://161.246.6.201:8080';
-
 export default class extends React.Component {
   constructor(props) {
     super(props);
@@ -16,12 +14,13 @@ export default class extends React.Component {
       gender: '',
       idNumber: ''
     };
+    this.ip = 'http://161.246.6.201:8080';
     this.generateAge = this.generateAge.bind(this);
     this.getDaysInMonth = this.getDaysInMonth.bind(this);
   }
 
   componentWillMount() {
-    let url = ip + '/thid';
+    let url = this.ip + '/thid';
     axios.get(url).then(res => {
       if(res.data.status) {
         let data = res.data.data
