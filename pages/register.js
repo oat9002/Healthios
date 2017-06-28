@@ -7,23 +7,37 @@ import axios from 'axios';
 export default class Register extends React.Component {
   constructor(props) {
     super(props);
-    this.ip = 'http://161.246.6.201:8080';
+    this.piIp = 'http://161.246.6.201:8080';
+    this.serverIp = 'http://203.151.85.73:8080'
     this.interval = null;
   }
 
   componentDidMount() {
-    let urlIsInsertCard = this.ip + '/thid/valid';
-    let urlIsCardReadablt = this.ip + '/thid/readable';
+    let urlIsInsertCard = this.piIp + '/thid/valid';
+    let urlIsCardReadablt = this.piIp + '/thid/readable';
+    let urlGetData = this.piIp + '/thid';
+    let urlRegister = this.serverIp + '/api/auth/register';
     let status = false;
     setTimeout(() => {
       this.interval = setInterval(() => {
         axios.get(urlIsInsertCard)
-        .then(res => {
-          if(res.data.status) {
+        .then(resInsertCard => {
+          if(resInsertCard.data.status) {
             axios.get(urlIsCardReadablt)
-            .then(res => {
-              if(res.data.status) {
-                Router.push('/result');
+            .then(resCardReadable => {
+              if(resCardReadable.data.status) {
+                axios.get(urlGetData)
+                .then(resGetData => {
+                  let data = resGetData.data.data;
+                  axios.post(urlRegister, data)
+                  .then(resRegister => {
+                    console.log(resRegister.data);
+                    if(typeof(Storage) !== "undefined") {
+                      localStorage.setItem('data', resRegister.data);  
+                    }
+                    Router.push('/registerComplete');
+                  })
+                })
               }
             })
             .catch(err => {

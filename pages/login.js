@@ -9,26 +9,52 @@ export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null
+      data: null,
+      isLoading: false
     };
-    this.ip = 'http://161.246.6.201:8080';
+    this.piIp = 'http://161.246.6.201:8080';
+    this.serverIp = 'http://203.151.85.73:8080';
     this.interval = null;
   }
   componentDidMount() {
-    let urlIsInsertCard = this.ip + '/thid/valid';
-    let urlIsCardReadablt = this.ip + '/thid/readable';
+    let urlIsInsertCard = this.piIp + '/thid/valid';
+    let urlIsCardReadable = this.piIp + '/thid/readable';
+    let urlLogin = this.serverIp + '/api/auth/login';
+    let urlGetData = this.piIp + '/thid';
     setTimeout(() => {
       this.interval = setInterval(() => {
         axios.get(urlIsInsertCard)
-        .then(res => {
-          if(res.data.status) {
-            axios.get(urlIsCardReadablt)
-            .then(res => {
-              if(res.data.status) {
+        .then(resInsertCard => {
+          if(resInsertCard.data.status) {
+            axios.get(urlIsCardReadable)
+            .then(resIsCardReadable => {
+              if(resIsCardReadable.data.status) {
+                axios.get(urlGetData)
+                .then(resGetData => {
+                  axios({
+                    url: urlLogin,
+                    auth: {
+                      username: resGetData.data.data.idNumber,
+                      password: resGetData.data.data.idNumber
+                    }
+                  }).then(resLogin => {
+                    console.log(resLogin);
+                    if(resLogin.status != 401) {
+                      if(typeof(Storage) !== "undefined") {
+                        localStorage.setItem('data', resLogin.data);
+                      }
+                      Router.push('/welcome');
+                    }
+                    else {
+                      Router.push('/register');
+                    }
+                  })
+                })
+              }
+              else {
                 this.setState({
-                  data: res.data.data
+                  isLoading: true
                 });
-                Router.push('/register'); // just test
               }
             })
             .catch(err => {
@@ -39,10 +65,6 @@ export default class Login extends React.Component {
         .catch(err => {
           console.log(err);
         })
-        if(this.state.data != null) {
-          // TODO: send data to choke's server to authorize
-          Router.push('/register')
-        }
       }, 1000);
     }, 5000);
   }
