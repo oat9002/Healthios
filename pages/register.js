@@ -31,9 +31,8 @@ export default class Register extends React.Component {
                   let data = resGetData.data.data;
                   axios.post(urlRegister, data)
                   .then(resRegister => {
-                    console.log(resRegister.data);
                     if(typeof(Storage) !== "undefined") {
-                      localStorage.setItem('data', resRegister.data);  
+                      localStorage.setItem('data', JSON.stringify(resRegister.data));
                     }
                     Router.push('/registerComplete');
                   })
