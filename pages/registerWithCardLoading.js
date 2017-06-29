@@ -25,7 +25,7 @@ export default class RegisterWtihCardLoading extends React.Component {
         })
         .then(status => {
           if(status) {
-            axios.get(urlIsCardReadablt)
+            return axios.get(urlIsCardReadablt)
             .then(resCardReadable => {
               return resCardReadable.data.status;
             })
@@ -57,7 +57,7 @@ export default class RegisterWtihCardLoading extends React.Component {
         .catch(err => {
           console.log(err);
         })
-      }, 5000);
+      }, 1000);
     }, 3000);
   }
 

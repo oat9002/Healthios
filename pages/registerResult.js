@@ -44,7 +44,7 @@ export default class RegisterResult extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-      Router.push('/WeightAndHeight')
+      Router.push('/weightAndHeight')
     }, 5000);
   }
 

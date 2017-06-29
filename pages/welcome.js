@@ -18,6 +18,12 @@ export default class Welcome extends React.Component {
     }
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      Router.push('/weightAndHeight')
+    }, 5000);
+  }
+
   render() {
     let data = this.state.data;
 
