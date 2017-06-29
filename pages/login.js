@@ -6,7 +6,6 @@ import axios from 'axios';
 import Loading from './loading'
 
 export default class Login extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -15,49 +14,62 @@ export default class Login extends React.Component {
     };
     this.piIp = 'http://161.246.6.201:8080';
     this.serverIp = 'http://203.151.85.73:8080';
-    this.interval = null;
+    this.cardInterval = null;
+    this.fingerprintInterval = null;
+    this.insertCard = this.insertCard.bind(this);
   }
+
+  componentWillMount() {
+    let urlStartCardReading = this.piIp + '/thid/start';
+    axios.get(urlStartCardReading).then(res => {});
+  }
+
   componentDidMount() {
+    this.insertCard();
+  }
+
+  insertCard() {
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
     setTimeout(() => {
-      this.interval = setInterval(() => {
+      this.cardInterval = setInterval(() => {
         axios.get(urlIsInsertCard)
         .then(resInsertCard => {
-          if(resInsertCard.data.status) {
-            axios.get(urlIsCardReadable)
+          return resInsertCard.data.status;
+        })
+        .then(status => {
+          if(status) {
+            return axios.get(urlIsCardReadable)
             .then(resIsCardReadable => {
-              if(resIsCardReadable.data.status) {
-                axios.get(urlGetData)
-                .then(resGetData => {
-                  axios({
-                    url: urlLogin,
-                    auth: {
-                      username: resGetData.data.data.idNumber,
-                      password: resGetData.data.data.idNumber
-                    }
-                  }).then(resLogin => {
-                    if(typeof(Storage) !== "undefined") {
-                      localStorage.setItem('data', JSON.stringify(resLogin.data));
-                    }
-                    Router.push('/welcome');
-                  }).catch(err => {
-                    if(err.response.status == 401) {
-                      Router.push('/register');
-                    }
-                  })
-                })
-              }
-              else {
-                this.setState({
-                  isLoading: true
-                });
-              }
-            })
-            .catch(err => {
-              console.log(err);
+              return resIsCardReadable.data.status;
+            });
+          }
+        })
+        .then(status => {
+          if(status) {
+            this.setState({
+              isLoading: true
+            });
+            axios.get(urlGetData)
+            .then(resGetData => {
+              axios({
+                url: urlLogin,
+                auth: {
+                  username: resGetData.data.data.idNumber,
+                  password: resGetData.data.data.idNumber
+                }
+              }).then(resLogin => {
+                if(typeof(Storage) !== "undefined") {
+                  localStorage.setItem('data', JSON.stringify(resLogin.data));
+                }
+                Router.push('/welcome');
+              }).catch(err => {
+                if(err.response.status == 401) {
+                  Router.push({pathname: '/registerWithCardLoading', query: {first: 'card'}});
+                }
+              })
             })
           }
         })
@@ -69,7 +81,7 @@ export default class Login extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.cardInterval);
   }
 
   render() {

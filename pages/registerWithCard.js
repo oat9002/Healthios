@@ -4,44 +4,45 @@ import Head from 'next/head';
 import Router from 'next/router';
 import axios from 'axios';
 
-export default class Register extends React.Component {
+export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      data: null,
+      isLoading: false
+    };
     this.piIp = 'http://161.246.6.201:8080';
-    this.serverIp = 'http://203.151.85.73:8080'
-    this.interval = null;
+    this.serverIp = 'http://203.151.85.73:8080';
+    this.cardInterval = null;
+    this.fingerprintInterval = null;
+    this.insertCard = this.insertCard.bind(this);
+  }
+  componentDidMount() {
+    this.insertCard();
   }
 
-  componentDidMount() {
+  insertCard() {
     let urlIsInsertCard = this.piIp + '/thid/valid';
-    let urlIsCardReadablt = this.piIp + '/thid/readable';
+    let urlIsCardReadable = this.piIp + '/thid/readable';
+    let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
-    let urlRegister = this.serverIp + '/api/auth/register';
-    let status = false;
     setTimeout(() => {
-      this.interval = setInterval(() => {
+      this.cardInterval = setInterval(() => {
         axios.get(urlIsInsertCard)
         .then(resInsertCard => {
-          if(resInsertCard.data.status) {
-            axios.get(urlIsCardReadablt)
-            .then(resCardReadable => {
-              if(resCardReadable.data.status) {
-                axios.get(urlGetData)
-                .then(resGetData => {
-                  let data = resGetData.data.data;
-                  axios.post(urlRegister, data)
-                  .then(resRegister => {
-                    if(typeof(Storage) !== "undefined") {
-                      localStorage.setItem('data', JSON.stringify(resRegister.data));
-                    }
-                    Router.push('/registerComplete');
-                  })
-                })
-              }
+          return resInsertCard.data.status;
+        })
+        .then(status => {
+          if(status) {
+            axios.get(urlIsCardReadable)
+            .then(resIsCardReadable => {
+              return resIsCardReadable.data.status;
             })
-            .catch(err => {
-              console.log(err);
-            })
+          }
+        })
+        .then(status => {
+          if(status) {
+            Router.push({pathname: '/registerWithCardLoading', query: {first: 'fingerprint'}})
           }
         })
         .catch(err => {
@@ -52,7 +53,7 @@ export default class Register extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.cardInterval);
   }
 
   render() {
@@ -63,9 +64,7 @@ export default class Register extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         <div>
-          <span className='emph'>ไม่พบข้อมูลผู้ใช้</span>
-          <br/>
-          <span>กรุณา<span className='emph2'>เสียบ</span>บัตรประชาชนเพื่อลงทะเบียน</span>
+          <span>กรุณา<span className='emph2'>เสียบ</span>บัตรประชาชน</span>
           <br/>
           <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
         </div>
