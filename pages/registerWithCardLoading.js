@@ -1,5 +1,7 @@
 import React from 'react';
 import LoadingTemplate from '../components/loadingTemplate';
+import axios from 'axios';
+import Router from 'next/router';
 
 export default class RegisterWtihCardLoading extends React.Component {
   constructor(props) {
@@ -15,43 +17,41 @@ export default class RegisterWtihCardLoading extends React.Component {
     let urlGetData = this.piIp + '/thid';
     let urlRegister = this.serverIp + '/api/auth/register';
     let status = false;
-    setTimeout(() => {
-      this.interval = setInterval(() => {
-        axios.get(urlIsInsertCard)
-        .then(resInsertCard => {
-          return resInsertCard.data.status;
-        })
-        .then(status => {
-          if(status) {
-            return axios.get(urlIsCardReadablt)
-            .then(resCardReadable => {
-              return resCardReadable.data.status;
-            })
-          }
-          else {
-            return false;
-          }
-        })
-        .then(status) {
-          if(status) {
-            axios.get(urlGetData)
-            .then(resGetData => {
-              let data = resGetData.data.data;
-              axios.post(urlRegister, data)
-              .then(resRegister => {
-                if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('data', JSON.stringify(resRegister.data));
-                }
-                // TODO: add condition
-                Router.push('/registerComplete');
-              })
-            })
-          }
+    this.interval = setInterval(() => {
+      axios.get(urlIsInsertCard)
+      .then(resInsertCard => {
+        return resInsertCard.data.status;
+      })
+      .then(status => {
+        if(status) {
+          return axios.get(urlIsCardReadablt)
+          .then(resCardReadable => {
+            return resCardReadable.data.status;
+          })
         }
-        .catch(err => {
-          console.log(err);
-        })
-      }, 1000);
+        else {
+          return false;
+        }
+      })
+      .then(status => {
+        if(status) {
+          axios.get(urlGetData)
+          .then(resGetData => {
+            let data = resGetData.data.data;
+            axios.post(urlRegister, data)
+            .then(resRegister => {
+              if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('data', JSON.stringify(resRegister.data));
+              }
+              // TODO: add condition
+              Router.push('/registerComplete');
+            })
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     }, 5000);
   }
 

@@ -12,19 +12,25 @@ export default class LoadingTemplate extends React.Component {
             <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
-          <div>
+          <div className='content'>
             <p className='pulse animated infinite'>{this.props.text}</p>
-            <LinearProgress  mode="indeterminate"></LinearProgress>
+            <div>
+              <LinearProgress  mode="indeterminate"></LinearProgress>
+            </div>
           </div>
           <style jsx>{`
-            div {
-              margin-top: 20%;
+            .content {
+              position: absolute;
+              top: 30%;
               text-align: center;
-              margin-left: 20%;
-              margin-right: 20%;
+              width: 100%;
+            }
+            .content div{
+              margin-left: 10%;
+              width: 80%;
             }
             p {
-              font-size: 64px;
+              font-size: 60px;
               margin-bottom: 0;
             }
           `}</style>
