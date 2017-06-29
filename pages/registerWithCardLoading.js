@@ -25,7 +25,7 @@ export default class RegisterWtihCardLoading extends React.Component {
         })
         .then(status => {
           if(status) {
-            return axios.get(urlIsCardReadablt)
+            axios.get(urlIsCardReadablt)
             .then(resCardReadable => {
               return resCardReadable.data.status;
             })
