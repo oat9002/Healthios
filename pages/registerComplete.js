@@ -5,7 +5,7 @@ import Router from 'next/router';
 export default class registerComplete extends React.Component {
   componentDidMount() {
     setTimeout(() => {
-      Router.push('/result')
+      Router.push('/registerResult')
     }, 3000);
   }
 

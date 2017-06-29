@@ -1,7 +1,8 @@
 import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
+import Router from 'next/router';
 
-export default class extends React.Component {
+export default class RegisterResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,6 +40,12 @@ export default class extends React.Component {
     .catch(error => {
       console.log(error);
     });
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      Router.push('/WeightAndHeight')
+    }, 5000);
   }
 
   getDaysInMonth(month,year) {
