@@ -158,13 +158,14 @@ export default class MeasurementResult extends React.Component {
           <style jsx>{`
             .template {
               display: flex;
-              justify-content: space-around;
+              justify-content: center;
               margin-top: 3%;
               margin-left: 5%;
               margin-right: 5%;
             }
             .content {
               width: 20%;
+              margin: 0 1% 1% 1%;
             }
             table {
               text-align: center;
