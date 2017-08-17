@@ -21,10 +21,10 @@
   "homepage": "https://github.com/oat9002/Healthios#readme",
   "dependencies": {
     "axios": "^0.16.2",
-    "material-ui": "^0.18.2",
-    "next": "^3.0.0-beta11",
-    "react": "^15.5.4",
-    "react-dom": "^15.5.4",
+    "material-ui": "^0.18.7",
+    "next": "^3.0.6",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-tap-event-plugin": "^2.0.1"
   }
 }
