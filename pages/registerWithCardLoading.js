@@ -45,7 +45,7 @@ export default class RegisterWtihCardLoading extends React.Component {
                   localStorage.setItem('data', JSON.stringify(resRegister.data));
                 }
                 if(this.props.url.query.first == 'card'){
-                  Router.push('/registerComplete'); //must change to registerWithFingerprint
+                  Router.push('/registerWithFingerprint'); //must change to registerWithFingerprint
                 }
                 else if(this.props.url.query.first == 'fingerprint') {
                   Router.push('/registerComplete');
