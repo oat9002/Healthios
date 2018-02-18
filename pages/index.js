@@ -37,7 +37,7 @@ export default class Index extends React.Component {
             <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
             <link rel="stylesheet" href="/static/css/animate.css"/>
           </Head>
-          <span id='title'>Healthios</span>
+          <span id='title'>Health Kiosk</span>
           <span id='description'>by KMITL</span>
           <img className='rubberBand bounce animated' src="/static/pics/mascot.png" />
           {/* <button id='start' onClick={() => Router.push('/login')}>Let's start</button> */}

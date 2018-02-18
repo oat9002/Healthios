@@ -33,7 +33,7 @@ export default class Login extends React.Component {
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
-    setTimeout(() => {
+  
       this.cardInterval = setInterval(() => {
         axios.get(urlIsInsertCard)
         .then(resInsertCard => {
@@ -77,7 +77,7 @@ export default class Login extends React.Component {
           console.log(err);
         })
       }, 1000);
-    }, 5000);
+
   }
 
   componentWillUnmount() {

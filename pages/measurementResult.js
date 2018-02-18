@@ -29,11 +29,17 @@ export default class MeasurementResult extends React.Component {
     }
   }
 
+  componentDidMount() {
+    setInterval(() => {
+      Router.push('/welcome')
+    }, 5000)
+  }
+
   render() {
     let textStyle = {
       fontFamily: 'Kanit',
       fontWeight: 300,
-      fontSize: '16px'
+      fontSize: '28px'
     }
     let contentStyle = {
       display: 'flex',
@@ -43,36 +49,23 @@ export default class MeasurementResult extends React.Component {
     return (
       <MuiThemeProvider>
         <div>
+          <Head>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
+            <link href="/static/css/animate.css" rel="stylesheet" />
+          </Head>
           <div className='template'>
             <div className='content'>
               <Card>
-                <CardMedia overlay={<CardTitle title='น้ำหนัก' style={textStyle}></CardTitle>}>
+                <CardMedia overlay={<CardTitle title='60 กก.' titleStyle={textStyle}></CardTitle>}>
                   <img src="/static/pics/weight.jpg" />
                 </CardMedia>
-                <CardText style={textStyle}>
-                  <div style={contentStyle}>
-                    <div style={{fontSize: '18px'}}>
-                      60 กก.
-                    </div>
-                  </div>
-                </CardText>
               </Card>
             </div>
             <div className='content'>
               <Card>
-                <CardMedia>
+                <CardMedia overlay={<CardTitle title='170 ซม.' titleStyle={textStyle}></CardTitle>}>
                   <img src="/static/pics/height.jpg" />
                 </CardMedia>
-                <CardText style={textStyle}>
-                  <div style={contentStyle}>
-                    <div>
-                      ส่วนสูง
-                    </div>
-                    <div>
-                      175 ซม.
-                    </div>
-                  </div>
-                </CardText>
               </Card>
             </div>
             <div className='content'>
