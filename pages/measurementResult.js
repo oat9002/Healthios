@@ -52,7 +52,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/weight.jpg" className='image' />
             </div>
             <div className="content">
-              น้ำหนัก
+              น้ำหนัก {this.state.weight} กก.
             </div>
           </div>
           <Divider style={divider}/>
@@ -61,7 +61,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/height.jpg" className='image'/>
             </div>
             <div className="content">
-              ส่วนสูง
+              ส่วนสูง {this.state.height} ซม.
             </div>
           </div>
           <Divider style={divider}/>
@@ -70,7 +70,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/temperature.jpg" className='image'/>
             </div>
             <div className="content">
-              อุณหภูมิ
+              อุณหภูมิ {this.state.thermal} องศาเซลเซียส
             </div>
           </div>
           <Divider style={divider}/>
@@ -79,7 +79,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/bloodPressure.png" className='image'/>
             </div>
             <div className="content">
-              ความดันเลือดเฉลี่ย
+              ความดันเลือดเฉลี่ย 
               <br />ความดันเลือดต่ำสุด
               <br />ความดันเลือดสูงสุด
             </div>

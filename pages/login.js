@@ -17,6 +17,7 @@ export default class Login extends React.Component {
     this.cardInterval = null;
     this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
+    this.readFingerprint = this.readFingerprint.bind(this)
   }
 
   componentWillMount() {
@@ -26,6 +27,7 @@ export default class Login extends React.Component {
 
   componentDidMount() {
     this.insertCard();
+    this.readFingerprint();
   }
 
   insertCard() {
@@ -33,55 +35,120 @@ export default class Login extends React.Component {
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
-  
-      this.cardInterval = setInterval(() => {
-        axios.get(urlIsInsertCard)
-        .then(resInsertCard => {
-          return resInsertCard.data.status;
-        })
-        .then(status => {
-          if(status) {
-            return axios.get(urlIsCardReadable)
-            .then(resIsCardReadable => {
-              return resIsCardReadable.data.status;
-            });
-          }
-        })
-        .then(status => {
-          if(status) {
-            this.setState({
-              isLoading: true
-            });
-            axios.get(urlGetData)
-            .then(resGetData => {
-              axios({
-                url: urlLogin,
-                auth: {
-                  username: resGetData.data.data.idNumber,
-                  password: resGetData.data.data.idNumber
-                }
-              }).then(resLogin => {
-                if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('data', JSON.stringify(resLogin.data));
-                }
-                Router.push('/welcome');
-              }).catch(err => {
-                if(err.response.status == 401) {
-                  Router.push({pathname: '/registerWithCardLoading', query: {first: 'card'}});
-                }
-              })
-            })
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
-      }, 1000);
 
+    this.cardInterval = setInterval(() => {
+      axios.get(urlIsInsertCard)
+      .then(resInsertCard => {
+        return resInsertCard.data.status;
+      })
+      .then(status => {
+        if(status) {
+          return axios.get(urlIsCardReadable)
+          .then(resIsCardReadable => {
+            return resIsCardReadable.data.status;
+          });
+        }
+      })
+      .then(status => {
+        if(status) {
+          this.setState({
+            isLoading: true
+          });
+          axios.get(urlGetData)
+          .then(resGetData => {
+            axios({
+              url: urlLogin,
+              auth: {
+                username: resGetData.data.data.idNumber,
+                password: resGetData.data.data.idNumber
+              }
+            }).then(resLogin => {
+              if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('data', JSON.stringify(resLogin.data));
+              }
+              Router.push('/welcome');
+            }).catch(err => {
+              if(err.response.status == 401) {
+                Router.push({pathname: '/registerWithCardLoading', query: {first: 'card'}});
+              }
+            })
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }, 1000);
+  }
+
+  readFingerprint() {
+    const mockUrl = 'http://203.151.85.73:55442/';
+    let urlIsUseFingerprint = mockUrl + 'finger/valid';
+    let urlStartReadFingerprint = mockUrl + 'finger/start';
+    let urlFinishReadFingerprint = mockUrl + 'finger/finish';
+    let urlGetData = mockUrl + 'finger';
+
+    this.fingerprintInterval = setInterval(() => {
+      axios.get(urlIsUseFingerprint)
+      .then(res => {
+        return res.data.status;
+      })
+      .then(isUseFingerPrint => {
+        if(isUseFingerPrint) {
+          return axios.get(urlStartReadFingerprint)
+          .then(res => {
+            return res.data.status;
+          })
+        }
+      })
+      .then(isStartReadFingerprint => {
+        if(isStartReadFingerprint) {
+          return axios.get(urlFinishReadFingerprint)
+          .then(res => {
+            return res.data.status
+          })
+        }
+      })
+      .then(isFinishReadFingerprint => {
+        if(isFinishReadFingerprint) {
+          this.setState({
+            isLoading: true
+          });
+          return axios.get(urlGetData)
+          .then(res => {
+            if(res.data.staus) {
+                return res.data.data
+            }
+            return null;
+          })
+        }
+      })
+      .then(idNumber => {
+        if(idNumber != null) {
+          axios({
+            url: urlLogin,
+            auth: {
+              username: idNumber,
+              password: idNumber
+            }
+          }).then(resLogin => {
+            if(typeof(Storage) !== "undefined") {
+              //call server to get customer data
+            }
+            Router.push('/welcome');
+          }).catch(err => {
+            if(err.response.status == 401) {
+              Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
+            }
+          })
+        }
+      })
+    }, 1000);
   }
 
   componentWillUnmount() {
     clearInterval(this.cardInterval);
+    clearInterval(this.fingerprintInterval);
   }
 
   render() {
