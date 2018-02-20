@@ -1,6 +1,45 @@
 import React from 'react';
 import Head from 'next/head';
+import Router from 'next/Router';
+
 export default class RegisterWithFingerprint extends React.Component {
+  constructor(props) {
+    super(props);
+    this.fingerprintInterval = null;
+  }
+
+  componentDidMount() {
+    this.readFingerprint();
+  }
+
+  readFingerprint = () => {
+    const mockUrl = 'http://203.151.85.73:55442/';
+    let urlIsUseFingerprint = mockUrl + 'finger/valid';
+    let urlStartReadFingerprint = mockUrl + 'finger/start';
+    let urlFinishReadFingerprint = mockUrl + 'finger/finish';
+    let urlGetData = mockUrl + 'finger';
+    this.setTimeout(() => {
+      this.fingerprintInterval = setInterval(() => {
+        axios.get(urlIsUseFingerprint)
+        .then(res => {
+          return res.data.status;
+        })
+        .then(isUseFingerPrint => {
+          if(isUseFingerPrint) {
+            Router.push({pathname: '/registerWithFingerprintLoad', query: {first: this.props.query.first}});
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        })
+      }, 1000);
+    }, 3000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.fingerprintInterval);
+  }
+
   render() {
     return (
       <div className='content'>
