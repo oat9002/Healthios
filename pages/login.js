@@ -69,7 +69,7 @@ export default class Login extends React.Component {
               Router.push('/welcome');
             }).catch(err => {
               if(err.response.status == 401) {
-                Router.push({pathname: '/registerWithCardLoading', query: {first: 'card'}});
+                Router.push({pathname: '/registerWithCardLoading', query: {first: 'card', patientInfo: resGetData.data.data}});
               }
             })
           })

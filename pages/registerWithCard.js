@@ -42,7 +42,13 @@ export default class registerWithCard extends React.Component {
         })
         .then(status => {
           if(status) {
-            Router.push({pathname: '/registerWithCardLoading', query: {first: 'fingerprint'}})
+            axios.get(urlGetData)
+            .then(res => {
+              Router.push({pathname: '/registerWithCardLoading', query: {first: 'fingerprint', patientInfo: res.data.data}})
+            })
+            .catch(err => {
+              console.log(err);
+            })
           }
         })
         .catch(err => {
