@@ -22,7 +22,7 @@ export default class MeasurementResult extends React.Component {
       this.setState({
         weight: localStorage.getItem('weight'),
         height: localStorage.getItem('height'),
-        pressure: localStorage.getItem('pressure'),
+        pressure: JSON.parse(localStorage.getItem('pressure')),
         thermal: localStorage.getItem('thermal'),
         pulse: localStorage.getItem('pulse')
       });
@@ -52,7 +52,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/weight.jpg" className='image' />
             </div>
             <div className="content">
-              น้ำหนัก {this.state.weight} กก.
+              น้ำหนัก <span className='emphValue'>{this.state.weight}</span> กก.
             </div>
           </div>
           <Divider style={divider}/>
@@ -61,7 +61,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/height.jpg" className='image'/>
             </div>
             <div className="content">
-              ส่วนสูง {this.state.height} ซม.
+              ส่วนสูง <span className='emphValue'>{this.state.height}</span> ซม.
             </div>
           </div>
           <Divider style={divider}/>
@@ -70,7 +70,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/temperature.jpg" className='image'/>
             </div>
             <div className="content">
-              อุณหภูมิ {this.state.thermal} องศาเซลเซียส
+              อุณหภูมิ <span className='emphValue'>{this.state.thermal}</span>  ํC
             </div>
           </div>
           <Divider style={divider}/>
@@ -79,9 +79,9 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/bloodPressure.png" className='image'/>
             </div>
             <div className="content">
-              ความดันเลือดเฉลี่ย 
-              <br />ความดันเลือดต่ำสุด
-              <br />ความดันเลือดสูงสุด
+              ความดัน<span className='emph'>เฉลี่ย</span> <span className='emphValue'>{this.state.pressure[1]}</span> mmHg
+              <br />ความดัน<span className='emph'>ต่ำ</span>สุด <span className='emphValue'>{this.state.pressure[0]}</span> mmHg
+              <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure[2]}</span> mmHg
             </div>
           </div>
           <Divider style={divider}/>
@@ -90,7 +90,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/heartRate.jpg" className='image'/>
             </div>
             <div className="content">
-              อัตราหารเต้นหัวใจ
+              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse}</span> ครั้ง/นาที
             </div>
           </div>
           <style jsx>{`
@@ -105,6 +105,13 @@ export default class MeasurementResult extends React.Component {
               width: 200px;
               height: auto;
             }
+            .emph {
+              font-weight: 400;
+            }
+            .emphValue {
+              font-weight: 400;
+              font-size: 2em;
+            }
             .content{
               font-size: 2.5em;
               margin-left: 10%;
@@ -115,6 +122,7 @@ export default class MeasurementResult extends React.Component {
               font-family: Kanit;
               color: #393939;
               animation: fadein 1s;
+              font-weight: 200;
               background-color: #f7f7f7;
             }
             @keyframes fadein {
