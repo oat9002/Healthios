@@ -5,6 +5,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading'
 
+const configJson = import('../static/appConfig.json');
+
 export default class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -12,12 +14,18 @@ export default class Login extends React.Component {
       data: null,
       isLoading: false
     };
-    this.piIp = 'http://161.246.6.201:8080';
-    this.serverIp = 'http://203.151.85.73:8080';
+    const mockUrl = 'http://localhost:55442';
+    this.piIp = mockUrl != null ? mockUrl : this.props.config.piIp;
+    this.serverIp = this.props.config.serverIp;
     this.cardInterval = null;
     this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
     this.readFingerprint = this.readFingerprint.bind(this)
+  }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
   }
 
   componentWillMount() {
@@ -82,21 +90,22 @@ export default class Login extends React.Component {
   }
 
   readFingerprint() {
-    const mockUrl = 'http://203.151.85.73:55442/';
-    let urlIsUseFingerprint = mockUrl + 'finger/valid';
-    let urlStartReadFingerprint = mockUrl + 'finger/start';
-    let urlFinishReadFingerprint = mockUrl + 'finger/finish';
-    let urlGetData = mockUrl + 'finger';
+    let urlIsUseFingerprint = this.piIp + 'finger/valid';
+    let urlStartReadFingerprint = this.piIp + 'finger/start';
+    let urlFinishReadFingerprint = this.piIp + 'finger/finish';
+    let urlGetData = this.piIp + 'finger';
 
     this.fingerprintInterval = setInterval(() => {
       axios.get(urlIsUseFingerprint)
       .then(res => {
+        console.log('use fingerprint: ' + res.data.status)
         return res.data.status;
       })
       .then(isUseFingerPrint => {
         if(isUseFingerPrint) {
           return axios.get(urlStartReadFingerprint)
           .then(res => {
+            console.log('start reading fingerprint: ' + res.data.status)
             return res.data.status;
           })
         }
@@ -105,6 +114,7 @@ export default class Login extends React.Component {
         if(isStartReadFingerprint) {
           return axios.get(urlFinishReadFingerprint)
           .then(res => {
+            console.log('finnish reading fingerprint: ' + res.data.status)
             return res.data.status
           })
         }
@@ -117,6 +127,7 @@ export default class Login extends React.Component {
           return axios.get(urlGetData)
           .then(res => {
             if(res.data.staus) {
+                console.log('get data: ' + res.data.status)
                 return res.data.data
             }
             return null;

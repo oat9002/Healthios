@@ -3,16 +3,29 @@ import LoadingTemplate from '../components/loadingTemplate';
 import axios from 'axios';
 import Router from 'next/router';
 
+const configJson = import('../static/appConfig.json');
+
 export default class RegisterWtihCardLoading extends React.Component {
   constructor(props) {
     super(props);
     this.serverIp = 'http://203.151.85.73:8080';
   }
 
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentDidMount() {
-    let urlRegister = this.serverIp + '/api/auth/register';
-    let status = false;
     setTimeout(() => {
+      this.register();
+    }, 3000);
+  }
+
+  register = (retry = 0) => {
+    console.log(retry)
+    if(retry !== this.props.config.maxRetry) {
+      let urlRegister = this.serverIp + '/api/auth/register';
       let data = this.props.url.query.patientInfo;
       axios.post(urlRegister, data)
       .then(resRegister => {
@@ -28,8 +41,12 @@ export default class RegisterWtihCardLoading extends React.Component {
       })
       .catch(err => {
         console.log(err);
+        this.register(++retry)
       })
-    }, 3000);
+    }
+    else {
+      Router.push('/login');
+    }
   }
 
   render() {
