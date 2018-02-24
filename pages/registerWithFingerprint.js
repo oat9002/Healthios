@@ -1,6 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
-import Router from 'next/Router';
+import Router from 'next/router';
+
+const configJson = import('../static/appConfig.json');
 
 export default class RegisterWithFingerprint extends React.Component {
   constructor(props) {
@@ -8,17 +10,22 @@ export default class RegisterWithFingerprint extends React.Component {
     this.fingerprintInterval = null;
   }
 
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentDidMount() {
     this.readFingerprint();
   }
 
   readFingerprint = () => {
-    const mockUrl = 'http://203.151.85.73:55442/';
-    let urlIsUseFingerprint = mockUrl + 'finger/valid';
-    let urlStartReadFingerprint = mockUrl + 'finger/start';
-    let urlFinishReadFingerprint = mockUrl + 'finger/finish';
-    let urlGetData = mockUrl + 'finger';
-    this.setTimeout(() => {
+    const piIp = this.props.config.piIp
+    let urlIsUseFingerprint = piIp + 'finger/valid';
+    let urlStartReadFingerprint = piIp + 'finger/start';
+    let urlFinishReadFingerprint = piIp + 'finger/finish';
+    let urlGetData = piIp + 'finger';
+    setTimeout(() => {
       this.fingerprintInterval = setInterval(() => {
         axios.get(urlIsUseFingerprint)
         .then(res => {

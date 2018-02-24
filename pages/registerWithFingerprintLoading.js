@@ -1,6 +1,8 @@
 import React from 'react';
 import LoadingTemplate from '../components/loadingTemplate';
-import Router from 'next/Router';
+import Router from 'next/router';
+
+const configJson = import('../static/appConfig.json');
 
 export default class RegisterWithFingerprintLoading extends React.Component {
   constructor(props) {
@@ -9,7 +11,7 @@ export default class RegisterWithFingerprintLoading extends React.Component {
   }
 
   componentDidMount() {
-    this.setTimeout(() => {
+    setTimeout(() => {
       if(this.props.query.first === 'fingerprint') {
           Router.push({pathname: '/registerWithCard', query: {first: this.props.query.first}});
       }
@@ -22,14 +24,19 @@ export default class RegisterWithFingerprintLoading extends React.Component {
     }, 3000);
   }
 
-  readFingerprint = () => {
-    const mockUrl = 'http://203.151.85.73:55442/';
-    let urlIsUseFingerprint = mockUrl + 'finger/valid';
-    let urlStartReadFingerprint = mockUrl + 'finger/start';
-    let urlFinishReadFingerprint = mockUrl + 'finger/finish';
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
 
-    return new Promise((resolve, reject) => {
-      this.fingerprintInterval = setInterval(() => {
+  readFingerprint = (retry = 0) => {
+    if(retry != this.props.confg.maxRetry) {
+      const piIp = this.props.config.piIp;
+      let urlIsUseFingerprint = piIp + 'finger/valid';
+      let urlStartReadFingerprint = piIp + 'finger/start';
+      let urlFinishReadFingerprint = piIp + 'finger/finish';
+
+      return new Promise((resolve, reject) => {
         axios.get(urlIsUseFingerprint)
         .then(res => {
           return res.data.status;
@@ -52,15 +59,20 @@ export default class RegisterWithFingerprintLoading extends React.Component {
         })
         .then(isFinishReadFingerprint => {
           if(isFinishReadFingerprint) {
-            clearInterval(this.fingerprintInterval);
             resolve(true);
           }
         })
         .catch(err => {
           console.log(err);
+          this.setTimeout(() => {
+            this.readFingerprint(++retry);
+          }, 1000)
         })
-      }, 1000);
-    });
+      });
+    }
+    else {
+      Router.push('/login');
+    }
   }
 
   render() {

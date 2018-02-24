@@ -4,6 +4,8 @@ import Head from 'next/head';
 import Router from 'next/router';
 import axios from 'axios';
 
+const configJson = import('../static/appConfig.json');
+
 export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
@@ -11,12 +13,18 @@ export default class registerWithCard extends React.Component {
       data: null,
       isLoading: false
     };
-    this.piIp = 'http://161.246.6.201:8080';
-    this.serverIp = 'http://203.151.85.73:8080';
+    this.piIp = this.props.config.piIp;
+    this.serverIp = this.props.config.serverIp;
     this.cardInterval = null;
     this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
   }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentDidMount() {
     this.insertCard();
   }

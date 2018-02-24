@@ -14,8 +14,7 @@ export default class Login extends React.Component {
       data: null,
       isLoading: false
     };
-    const mockUrl = 'http://localhost:55442';
-    this.piIp = mockUrl != null ? mockUrl : this.props.config.piIp;
+    this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
     this.cardInterval = null;
     this.fingerprintInterval = null;
@@ -28,13 +27,8 @@ export default class Login extends React.Component {
     return { config }
   }
 
-  componentWillMount() {
-    let urlStartCardReading = this.piIp + '/thid/start';
-    axios.get(urlStartCardReading).then(res => {});
-  }
-
   componentDidMount() {
-    this.insertCard();
+    //this.insertCard();
     this.readFingerprint();
   }
 
@@ -90,22 +84,23 @@ export default class Login extends React.Component {
   }
 
   readFingerprint() {
-    let urlIsUseFingerprint = this.piIp + 'finger/valid';
-    let urlStartReadFingerprint = this.piIp + 'finger/start';
-    let urlFinishReadFingerprint = this.piIp + 'finger/finish';
-    let urlGetData = this.piIp + 'finger';
+    let urlIsUseFingerprint = this.piIp + '/finger/valid';
+    let urlStartReadFingerprint = this.piIp + '/finger/start';
+    let urlFinishReadFingerprint = this.piIp + '/finger/finish';
+    let urlGetData = this.piIp + '/finger';
+    let urlLogin = this.serverIp + '/api/auth/login';
 
     this.fingerprintInterval = setInterval(() => {
       axios.get(urlIsUseFingerprint)
       .then(res => {
-        console.log('use fingerprint: ' + res.data.status)
+        // console.log('use fingerprint: ' + res.data.status)
         return res.data.status;
       })
       .then(isUseFingerPrint => {
         if(isUseFingerPrint) {
           return axios.get(urlStartReadFingerprint)
           .then(res => {
-            console.log('start reading fingerprint: ' + res.data.status)
+            // console.log('start reading fingerprint: ' + res.data.status)
             return res.data.status;
           })
         }
@@ -114,7 +109,7 @@ export default class Login extends React.Component {
         if(isStartReadFingerprint) {
           return axios.get(urlFinishReadFingerprint)
           .then(res => {
-            console.log('finnish reading fingerprint: ' + res.data.status)
+            // console.log('finnish reading fingerprint: ' + res.data.status)
             return res.data.status
           })
         }
@@ -126,16 +121,17 @@ export default class Login extends React.Component {
           });
           return axios.get(urlGetData)
           .then(res => {
-            if(res.data.staus) {
-                console.log('get data: ' + res.data.status)
+            console.log('get data fingerprint: ' + res.data.status)
+            if(res.data.status) {
+                console.log('data: ' + res.data.data)
                 return res.data.data
             }
-            return null;
           })
         }
       })
       .then(idNumber => {
         if(idNumber != null) {
+          console.log('idNumber: ' + idNumber)
           axios({
             url: urlLogin,
             auth: {

@@ -40,6 +40,7 @@ export default class LoadingTemplate extends React.Component {
               color: #393939;
               animation: fadein 1s;
               background-color: #f7f7f7;
+              overflow: hidden;
             }
             @keyframes fadein {
                 from { opacity: 0; };

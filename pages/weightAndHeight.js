@@ -5,14 +5,21 @@ import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router from 'next/router';
 
+const configJson = import('../static/appConfig.json');
+
 export default class WeightAndHeight extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isProcess: false
     };
-    this.piIp = 'http://161.246.6.201:8080';
+    this.piIp = this.props.config.piIp;
     this.interval = null;
+  }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
   }
 
   componentDidMount() {

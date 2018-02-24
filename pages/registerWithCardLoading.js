@@ -8,7 +8,6 @@ const configJson = import('../static/appConfig.json');
 export default class RegisterWtihCardLoading extends React.Component {
   constructor(props) {
     super(props);
-    this.serverIp = 'http://203.151.85.73:8080';
   }
 
   static async getInitialProps({ req, query }) {
@@ -25,7 +24,7 @@ export default class RegisterWtihCardLoading extends React.Component {
   register = (retry = 0) => {
     console.log(retry)
     if(retry !== this.props.config.maxRetry) {
-      let urlRegister = this.serverIp + '/api/auth/register';
+      let urlRegister = this.props.config.serverIp + '/api/auth/register';
       let data = this.props.url.query.patientInfo;
       axios.post(urlRegister, data)
       .then(resRegister => {
