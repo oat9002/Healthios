@@ -87,7 +87,7 @@ export default class BloodPressureTemperatureHeartRate extends React.Component {
             {/* <img className='pulse animated infinite' src="/static/pics/footprint.png" alt=""/> */}
             <style jsx>{`
               span {
-                font-size: 74px;
+                font-size: 5em;
               }
             `}</style>
             <style jsx global>{`
