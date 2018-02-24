@@ -26,7 +26,7 @@ export default class RegisterWtihCardLoading extends React.Component {
     if(retry !== this.props.config.maxRetry) {
       let urlRegister = this.props.config.serverIp + '/api/auth/register';
       let data = this.props.url.query.patientInfo;
-      axios.post(urlRegister, data)
+      axios.post(urlRegister, data, { headers: {'Register-Type': 'idcard'} })
       .then(resRegister => {
         if(typeof(Storage) !== "undefined") {
           localStorage.setItem('data', JSON.stringify(resRegister.data));

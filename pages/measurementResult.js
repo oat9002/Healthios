@@ -29,6 +29,12 @@ export default class MeasurementResult extends React.Component {
     }
   }
 
+  componentDidMount() {
+    setTimeout(() => {
+      Router.push('/final');
+    });
+  }
+
   render() {
     const textStyle = {
       fontFamily: 'Kanit',
@@ -36,8 +42,8 @@ export default class MeasurementResult extends React.Component {
       fontSize: '28px'
     }
     const divider = {
-      'width': '60%',
-      'marginLeft': '20%'
+      'width': '70%',
+      'marginLeft': '15%'
     }
 
     return (

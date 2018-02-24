@@ -33,7 +33,7 @@ export default class RegisterWithFingerprint extends React.Component {
         })
         .then(isUseFingerPrint => {
           if(isUseFingerPrint) {
-            Router.push({pathname: '/registerWithFingerprintLoad', query: {first: this.props.query.first}});
+            Router.push({pathname: '/registerWithFingerprintLoading', query: {first: this.props.query.first}});
           }
         })
         .catch(err => {

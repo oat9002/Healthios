@@ -3,6 +3,12 @@ import Router from 'next/router';
 import Head from 'next/head';
 
 export default class Final extends React.Component {
+  componentDidMount() {
+    setTimeout(() => {
+      Router.push('/login');
+    }, 5000)
+  }
+
   render() {
     return (
       <div className='content'>
@@ -10,12 +16,17 @@ export default class Final extends React.Component {
           <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
-        <span>กรุณาดึงบัตรประชาชนออกเพื่อจบการทำงาน</span>
+        <span>เสร็จสิ้นการทำงาน</span>
+        <br/>
+        <span className='sub'>กรุณาดึงบัตรประชาชนออก(ถ้ามี)</span>
         <style jsx>{`
+          .sub {
+            font-size: 0.3em;
+          }
           .content {
-            font-size: 60px;
+            font-size: 5em;
             text-align: center;
-            margin-top: 20%;
+            margin-top: 15%;
           }
           img {
             vertical-align:middle;
