@@ -93,7 +93,7 @@ export default class BloodPressureTemperatureHeartRate extends React.Component {
             <style jsx global>{`
               .content {
                 position: absolute;
-                top: 25%;
+                top: 30%;
                 width: 100%;
                 text-align: center;
               }

@@ -174,7 +174,7 @@ export default class Login extends React.Component {
             <div>
               <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
               <br/>
-              <img src='/static/pics/fingerprints.svg'/>
+              <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
             </div>
             <div>
               <span>หรือ</span>
