@@ -2,6 +2,7 @@ import React from 'react';
 import LoadingTemplate from '../components/loadingTemplate';
 import axios from 'axios';
 import Router from 'next/router';
+import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
@@ -22,10 +23,10 @@ export default class RegisterWtihCardLoading extends React.Component {
   }
 
   register = (retry = 0) => {
-    console.log(retry)
     if(retry !== this.props.config.maxRetry) {
       let urlRegister = this.props.config.serverIp + '/api/auth/register';
-      let data = this.props.url.query.patientInfo;
+      let data = JSON.parse(cryptoJs.AES.decrypt(this.props.url.query.patientInfo, this.props.config.aesSecret).toString(cryptoJs.enc.Utf8));
+      console.log(data)
       axios.post(urlRegister, data, { headers: {'Register-Type': 'idcard'} })
       .then(resRegister => {
         if(typeof(Storage) !== "undefined") {
@@ -40,7 +41,9 @@ export default class RegisterWtihCardLoading extends React.Component {
       })
       .catch(err => {
         console.log(err);
-        this.register(++retry)
+        setTimeout(() => {
+          this.register(++retry)
+        }, 1000);
       })
     }
     else {

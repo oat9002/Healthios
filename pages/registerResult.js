@@ -2,6 +2,8 @@ import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
 import Router from 'next/router';
 
+const configJson = import('../static/appConfig.json');
+
 export default class RegisterResult extends React.Component {
   constructor(props) {
     super(props);
@@ -15,13 +17,18 @@ export default class RegisterResult extends React.Component {
       gender: '',
       idNumber: ''
     };
-    this.ip = 'http://161.246.6.201:8080';
+    this.piIp = this.props.config.piIp;
     this.generateAge = this.generateAge.bind(this);
     this.getDaysInMonth = this.getDaysInMonth.bind(this);
   }
 
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentWillMount() {
-    let url = this.ip + '/thid';
+    let url = this.piIp + '/thid';
     axios.get(url).then(res => {
       if(res.data.status) {
         let data = res.data.data

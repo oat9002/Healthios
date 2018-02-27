@@ -5,7 +5,7 @@ import Head from 'next/head';
 export default class Final extends React.Component {
   componentDidMount() {
     setTimeout(() => {
-      Router.push('/login');
+      Router.push('/');
     }, 5000)
   }
 

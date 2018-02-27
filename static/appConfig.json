@@ -1,5 +1,6 @@
 {
   "serverIp": "http://localhost:55442",
   "piIp": "http://localhost:55442",
-  "maxRetry": 20
+  "maxRetry": 20,
+  "aesSecret": "soup12345"
 }

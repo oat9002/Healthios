@@ -1,98 +1,237 @@
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import React from 'react';
 import Router from 'next/router';
 import Head from 'next/head';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
+import Loading from './loading';
+import cryptoJs from 'crypto-js';
 
-export default class Index extends React.Component {
+const configJson = import('../static/appConfig.json');
+
+export default class Login extends React.Component {
   constructor(props) {
     super(props);
-    this.checkThereIsHuman = this.checkThereIsHuman.bind(this);
+    this.state = {
+      data: null,
+      isLoading: false
+    };
+    this.piIp = this.props.config.piIp;
+    this.serverIp = this.props.config.serverIp;
+    this.cardInterval = null;
+    this.fingerprintInterval = null;
+    this.insertCard = this.insertCard.bind(this);
+    this.readFingerprint = this.readFingerprint.bind(this)
+  }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      Router.push('/login');
-      // this.checkThereIsHuman();
-    }, 5000);
+    this.insertCard();
+    this.readFingerprint();
   }
 
-  checkThereIsHuman() {
-    // TODO: wait for ox to revise condition and url
-    axios.get('/test')
-      .then((response) => {
-        if(response) {
-          Router.push('/login');
+  insertCard() {
+    let urlIsInsertCard = this.piIp + '/thid/valid';
+    let urlIsCardReadable = this.piIp + '/thid/readable';
+    let urlLogin = this.serverIp + '/api/auth/login';
+    let urlGetData = this.piIp + '/thid';
+
+    this.cardInterval = setInterval(() => {
+      axios.get(urlIsInsertCard)
+      .then(resInsertCard => {
+        return resInsertCard.data.status;
+      })
+      .then(status => {
+        if(status) {
+          return axios.get(urlIsCardReadable)
+          .then(resIsCardReadable => {
+            return resIsCardReadable.data.status;
+          });
         }
       })
-      .catch((error) => {
-        console.log(error);
+      .then(status => {
+        if(status) {
+          this.setState({
+            isLoading: true
+          });
+          axios.get(urlGetData)
+          .then(resGetData => {
+            axios({
+              url: urlLogin,
+              auth: {
+                username: resGetData.data.data.idNumber,
+                password: resGetData.data.data.idNumber
+              }
+            }).then(resLogin => {
+              if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data), this.props.config.aesSecret).toString());
+              }
+              Router.push('/loginComplete');
+            }).catch(err => {
+              if(err.response.status == 401) {
+                Router.push({pathname: '/registerWithCardLoading', query: {first: 'card', patientInfo:  cryptoJs.AES.encrypt(JSON.stringify(resGetData.data.data), this.props.config.aesSecret).toString()}}); //save to localStorage instead
+              }
+            })
+          })
+        }
       })
+      .catch(err => {
+        console.log(err);
+      })
+    }, 1000);
+  }
+
+  readFingerprint() {
+    let urlIsUseFingerprint = this.piIp + '/finger/valid';
+    let urlStartReadFingerprint = this.piIp + '/finger/start';
+    let urlFinishReadFingerprint = this.piIp + '/finger/finish';
+    let urlGetData = this.piIp + '/finger';
+    let urlLogin = this.serverIp + '/api/auth/login';
+
+    this.fingerprintInterval = setInterval(() => {
+      axios.get(urlIsUseFingerprint)
+      .then(res => {
+        // console.log('use fingerprint: ' + res.data.status)
+        return res.data.status;
+      })
+      .then(isUseFingerPrint => {
+        if(isUseFingerPrint) {
+          return axios.get(urlStartReadFingerprint)
+          .then(res => {
+            // console.log('start reading fingerprint: ' + res.data.status)
+            return res.data.status;
+          })
+        }
+      })
+      .then(isStartReadFingerprint => {
+        if(isStartReadFingerprint) {
+          return axios.get(urlFinishReadFingerprint)
+          .then(res => {
+            // console.log('finnish reading fingerprint: ' + res.data.status)
+            return res.data.status
+          })
+        }
+      })
+      .then(isFinishReadFingerprint => {
+        if(isFinishReadFingerprint) {
+          this.setState({
+            isLoading: true
+          });
+          return axios.get(urlGetData)
+          .then(res => {
+            console.log('get data fingerprint: ' + res.data.status)
+            if(res.data.status) {
+                console.log('data: ' + res.data.data)
+                return res.data.data
+            }
+          })
+        }
+      })
+      .then(idNumber => {
+        if(idNumber != null) {
+          console.log('idNumber: ' + idNumber)
+          axios({
+            url: urlLogin,
+            auth: {
+              username: idNumber,
+              password: idNumber
+            }
+          }).then(resLogin => {
+            if(typeof(Storage) !== "undefined") {
+              //call server to get customer data
+            }
+            Router.push('/loginComplete');
+          }).catch(err => {
+            if(err.response.status == 401) {
+              Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
+            }
+          })
+        }
+      })
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.cardInterval);
+    clearInterval(this.fingerprintInterval);
   }
 
   render() {
-    return(
+    let isLoading = this.state.isLoading;
+
+    return (
       <MuiThemeProvider>
-        <div id='content'>
-          <Head>
-            <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
-            <link rel="stylesheet" href="/static/css/animate.css"/>
-          </Head>
-          <span id='title'>Health Kiosk</span>
-          <span id='description'>by KMITL</span>
-          <img className='rubberBand bounce animated' src="/static/pics/mascot.png" />
-          {/* <button id='start' onClick={() => Router.push('/login')}>Let's start</button> */}
-          <style jsx>{`
-            #content {
-              position: absolute;
-              width: 100%;
-              text-align: center;
-              top: 10%;
-            }
+        {isLoading ? (
+          <Loading></Loading>
+        ) : (
+          <div className='content'>
+            <Head>
+              <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
+              <link href="/static/css/animate.css" rel="stylesheet" />
+            </Head>
+            <div>
+              <img className='rubberBand bounce animated' id='logo' src="/static/pics/logo.png" />
+            </div>
+            <div>
+              <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+              <br/>
+              <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
+            </div>
+            <div>
+              <span>หรือ</span>
+            </div>
+            <div>
+              <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
+              <br/>
+              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+            </div>
+            <br/>
+            {/* <button id='submit' onClick={() => Router.push('/register')}>Register</button> */}
+            <style jsx>{`
             #title {
-              font-size: 96px;
+              font-size: 7em;
+              font-weight: 300;
             }
-            #description {
+            #by {
               text-align: right;
+              font-size: 1.5em;
+            }
+            div {
+              width: 100%
+              text-align: center;
+              margin-top: 3%;
+              margin-bottom: 3%;
+            }
+            #logo {
+              width: 50%;
             }
             img {
-              vertical-align:middle;
+              heigh: auto;
               width: 30%;
-              height: auto;
             }
-            // #start {
-            //   width: 100%;
-            //   height: 50px;
-            //   max-width: 200px;
-            //   max-high: 50px;
-            //   border-radius: 50px;
-            //   border: 2px solid;
-            //   background-color: white;
-            //   color: black;
-            //   font-size: 20px;
-            //   transition: 0.8s;
-            //   white-space: nowrap;
-            // }
-            // #start:hover {
-            //   background-color: black;
-            //   color: white;
-            //   transition: 0.8s;
-            // }
-            // #start:active, #start:focus, #start.active {
-            //   background-image: none;
-            //   outline: 0;
-            //   -webkit-box-shadow: none;
-            //               box-shadow: none;
-            // }
-            `}
-          </style>
+            span {
+              font-size: 4em;
+            }
+            .emph {
+              font-size: 5em;
+              font-weight: 300;
+            }
+            `}</style>
           <style jsx global>{`
+            .content {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
             body {
-              font-family: Kanit;
               background-color: #f7f7f7;
+              font-family: Kanit;
               color: #393939;
               animation: fadein 1s;
-              background-color: #f7f7f7;
-              overflow: hidden;
+              font-weight: 200;
             }
             @keyframes fadein {
                 from { opacity: 0; };
@@ -100,6 +239,7 @@ export default class Index extends React.Component {
             }
           `}</style>
         </div>
+      )}
       </MuiThemeProvider>
     );
   }
