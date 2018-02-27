@@ -78,20 +78,20 @@ export default class registerWithCard extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         <div>
-          <span>กรุณา<span className='emph2'>เสียบ</span>บัตรประชาชน</span>
+          <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
           <br/>
           <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
         </div>
         <style jsx>{`
           img {
-            heigh: 20%;
-            width: 20%;
+            heigh: auto;
+            width: 30%;
           }
           span {
-            font-size: 48px;
+            font-size: 4em;
           }
           .emph {
-            font-size: 74px;
+            font-size: 2em;
             font-weight: bold;
           }
           .emph2 {

@@ -26,11 +26,11 @@ export default class LoadingTemplate extends React.Component {
               width: 100%;
             }
             .content div{
-              margin-left: 10%;
-              width: 80%;
+              margin-left: 5%;
+              width: 90%;
             }
             p {
-              font-size: 60px;
+              font-size: 5em;
               margin-bottom: 0;
             }
           `}</style>

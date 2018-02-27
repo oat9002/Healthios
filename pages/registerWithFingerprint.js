@@ -55,25 +55,21 @@ export default class RegisterWithFingerprint extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         <div>
-          <span>กรุณา<span className='emph2'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+          <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
           <br/>
           <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
         </div>
         <style jsx>{`
           img {
-            heigh: 20%;
-            width: 20%;
+            heigh: auto;
+            width: 30%;
           }
           span {
-            font-size: 48px;
+            font-size: 4em;
           }
           .emph {
-            font-size: 74px;
+            font-size: 2em;
             font-weight: bold;
-          }
-          .emph2 {
-            font-weight: bold;
-            color: blue;
           }
           `}</style>
           <style jsx global>{`

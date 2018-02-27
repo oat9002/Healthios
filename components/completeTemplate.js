@@ -12,7 +12,7 @@ export default class CompleteTemplate extends React.Component {
         <span>{this.props.text}!<img src="/static/pics/correct.svg" /></span>
         <style jsx>{`
           .content {
-            font-size: 60px;
+            font-size: 5em;
             text-align: center;
             margin-top: 20%;
           }
