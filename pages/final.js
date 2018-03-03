@@ -26,7 +26,7 @@ export default class Final extends React.Component {
           .content {
             font-size: 5em;
             text-align: center;
-            margin-top: 15%;
+            margin-top: 20%;
           }
           img {
             vertical-align:middle;
