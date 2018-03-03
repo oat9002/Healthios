@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { Card, CardMedia, CardText, CardTitle } from 'material-ui/Card';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
+import axios from 'axios';
 
 export default class MeasurementResult extends React.Component {
   constructor(props) {
@@ -31,8 +32,13 @@ export default class MeasurementResult extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
+
       Router.push('/final');
-    }, 5000);
+    }, 10000);
+  }
+
+  saveMeasurementData = () => {
+
   }
 
   render() {

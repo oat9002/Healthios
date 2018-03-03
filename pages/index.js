@@ -167,7 +167,7 @@ export default class Login extends React.Component {
         {isLoading ? (
           <Loading></Loading>
         ) : (
-          <div className='content'>
+          <div>
             <Head>
               <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
               <link href="/static/css/animate.css" rel="stylesheet" />
@@ -175,56 +175,54 @@ export default class Login extends React.Component {
             <div>
               <img className='rubberBand bounce animated' id='logo' src="/static/pics/logo.png" />
             </div>
-            <div>
-              <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
-              <br/>
-              <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
+            <div className='content'>
+              <div>
+                <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+                <br/>
+                <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
+              </div>
+              <div id='center'>
+                <span>หรือ</span>
+              </div>
+              <div>
+                <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
+                <br/>
+                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+              </div>
             </div>
-            <div>
-              <span>หรือ</span>
-            </div>
-            <div>
-              <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
-              <br/>
-              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-            </div>
-            <br/>
             {/* <button id='submit' onClick={() => Router.push('/register')}>Register</button> */}
             <style jsx>{`
-            #title {
-              font-size: 7em;
-              font-weight: 300;
-            }
-            #by {
-              text-align: right;
-              font-size: 1.5em;
-            }
-            div {
-              width: 100%
-              text-align: center;
-              margin-top: 3%;
-              margin-bottom: 3%;
-            }
-            #logo {
-              width: 50%;
-            }
-            img {
-              heigh: auto;
-              width: 30%;
-            }
-            span {
-              font-size: 4em;
-            }
-            .emph {
-              font-size: 5em;
-              font-weight: 300;
-            }
+              #center {
+                width 20%;
+              }
+              div {
+                width: 100%
+                text-align: center;
+                margin-top: 3%;
+                margin-bottom: 3%;
+              }
+              #logo {
+                width: 20%;
+                height: auto;
+              }
+              img {
+                heigh: auto;
+                width: 40%;
+              }
+              span {
+                font-size: 3em;
+              }
+              .emph {
+                font-size: 5em;
+                font-weight: 300;
+              }
             `}</style>
           <style jsx global>{`
             .content {
               display: flex;
-              flex-direction: column;
+              flex-direction: row;
               justify-content: center;
+              align-items: center;
             }
             body {
               background-color: #f7f7f7;
@@ -232,6 +230,7 @@ export default class Login extends React.Component {
               color: #393939;
               animation: fadein 1s;
               font-weight: 200;
+              overflow: hidden;
             }
             @keyframes fadein {
                 from { opacity: 0; };
