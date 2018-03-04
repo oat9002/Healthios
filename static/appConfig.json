@@ -2,5 +2,6 @@
   "serverIp": "http://localhost:55442",
   "piIp": "http://localhost:55442",
   "maxRetry": 20,
-  "aesSecret": "soup12345"
+  "aesSecret": "soup12345",
+  "pageTimeout": 90000
 }

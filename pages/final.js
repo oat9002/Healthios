@@ -24,7 +24,7 @@ export default class Final extends React.Component {
             font-size: 0.3em;
           }
           .content {
-            font-size: 5em;
+            font-size: 7em;
             text-align: center;
             margin-top: 20%;
           }

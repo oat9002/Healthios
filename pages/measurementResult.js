@@ -32,7 +32,6 @@ export default class MeasurementResult extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-
       Router.push('/final');
     }, 10000);
   }
