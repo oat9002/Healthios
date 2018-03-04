@@ -50,7 +50,6 @@ export default class Temperature extends React.Component {
           startSensor();
         })
       }
-    })
   }
 
   readTemperature = () => {
@@ -105,6 +104,12 @@ export default class Temperature extends React.Component {
               this.readTemperature();
             }, 1000)
           }
+        })
+        .catch(err => {
+          console.log(err);
+          setTimeout(() => {
+            this.readTemperature();
+          }, 1000)
         })
     }
   }
