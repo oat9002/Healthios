@@ -1,16 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
-import Router from 'next/router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 
 const configJson = import('../static/appConfig.json');
 
-export default class Temperature extends React.Component {
+export default class HeartRate extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
+    tthis.state = {
       isLoading: false,
     };
     this.isSensorStart = false;
@@ -19,7 +18,7 @@ export default class Temperature extends React.Component {
 
   componentDidMount() {
     this.startSensor();
-    this.readTemperature();
+    this.readHearRate();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout)
@@ -35,7 +34,7 @@ export default class Temperature extends React.Component {
   }
 
   startSensor = () => {
-    let urlStartSensor = this.props.config + '/thermal/start';
+    let urlStartSensor = this.props.config + '/pulse/start';
     if(!this.isSensorStart) {
       axios.get(urlStartSensor)
         .then(res => {
@@ -53,11 +52,11 @@ export default class Temperature extends React.Component {
       }
   }
 
-  readTemperature = () => {
+  readHearRate = () => {
     if(this.isSensorStart) {
-      let urlIsSensorReady = this.props.config.piIp + '/thermal/valid';
-      let urlIsSensorFinishRead = this.props.config + '/thermal/finish';
-      let urlGetData = this.props.config + '/thermal';
+      let urlIsSensorReady = this.props.config.piIp + '/pulse/valid';
+      let urlIsSensorFinishRead = this.props.config + '/pulse/finish';
+      let urlGetData = this.props.config + '/pulse';
 
       axios.get(urlIsSensorReady)
         .then(res => {
@@ -65,9 +64,6 @@ export default class Temperature extends React.Component {
         })
         .then(isSensorReady => {
           if(isSensorReady) {
-            this.setState({
-              isLoading: true
-            });
             return axios.get(urlIsSensorFinishRead)
               .then(res => {
                 return res.data.status
@@ -75,13 +71,13 @@ export default class Temperature extends React.Component {
               .catch(err => {
                 console.log(err);
                 setTimeout(() => {
-                  this.readTemperature();
+                  this.readHearRate();
                 }, 1000)
               })
           }
           else {
             setTimeout(() => {
-              this.readTemperature();
+              this.readHearRate();
             }, 1000)
           }
         })
@@ -90,7 +86,7 @@ export default class Temperature extends React.Component {
             axios.get(urlGetData)
               .then(res => {
                 if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('thermal', JSON.stringify(res.data.data));
+                  localStorage.setItem('pulse', JSON.stringify(res.data.data));
                 }
                 else {
                   //if not support HTML 5 local storage
@@ -99,27 +95,27 @@ export default class Temperature extends React.Component {
               .catch(err => {
                 console.log(err);
                 setTimeout(() => {
-                  this.readTemperature();
+                  this.readHearRate();
                 }, 1000)
               })
           }
           else {
             setTimeout(() => {
-              this.readTemperature();
+              this.readHearRate();
             }, 1000)
           }
         })
         .catch(err => {
           console.log(err);
           setTimeout(() => {
-            this.readTemperature();
+            this.readHearRate();
           }, 1000)
         })
     }
   }
 
   render() {
-    let isProcess = this.state.isProcess;
+    let isProcess = this.state.isLoading;
 
     return (
       <MuiThemeProvider>
@@ -174,6 +170,7 @@ export default class Temperature extends React.Component {
             </div>
           )
         }
+
       </MuiThemeProvider>
     );
   }
