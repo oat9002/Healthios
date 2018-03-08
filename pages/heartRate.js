@@ -47,7 +47,7 @@ export default class HeartRate extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          startSensor();
+          this.startSensor();
         })
       }
   }

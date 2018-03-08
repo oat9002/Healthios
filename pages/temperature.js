@@ -48,7 +48,7 @@ export default class Temperature extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          startSensor();
+          this.startSensor();
         })
       }
   }

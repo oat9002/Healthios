@@ -7,7 +7,7 @@ import Router from 'next/router';
 
 const configJson = import('../static/appConfig.json');
 
-export default class BloodPressureTemperatureHeartRate extends React.Component {
+export default class BloodPressure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -48,7 +48,7 @@ export default class BloodPressureTemperatureHeartRate extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          startSensor();
+          this.startSensor();
         })
       }
   }
