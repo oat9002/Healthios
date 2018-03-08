@@ -91,6 +91,7 @@ export default class HeartRate extends React.Component {
                 else {
                   //if not support HTML 5 local storage
                 }
+                Router.push('/measurementResult');
               })
               .catch(err => {
                 console.log(err);

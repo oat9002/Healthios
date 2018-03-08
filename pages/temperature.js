@@ -95,6 +95,7 @@ export default class Temperature extends React.Component {
                 else {
                   //if not support HTML 5 local storage
                 }
+                Router.push('/heartRate');
               })
               .catch(err => {
                 console.log(err);

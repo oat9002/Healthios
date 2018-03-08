@@ -13,8 +13,20 @@ export default class BloodPressureTemperatureHeartRate extends React.Component {
     this.state = {
       isProcess: false
     };
-    this.piIp = this.props.config.piIp;
-    this.interval = null;
+    this.isSensorStart = false;
+    this.pageTimeout = null;
+  }
+
+  componentDidMount() {
+    this.startSensor();
+    this.readBloodPressure();
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout)
+  }
+
+  componentWillUnmount() {
+     clearTimeout(this.pageTimeout);
   }
 
   static async getInitialProps({ req, query }) {
@@ -22,52 +34,93 @@ export default class BloodPressureTemperatureHeartRate extends React.Component {
     return { config }
   }
 
-  componentDidMount() {
-    this.interval = setInterval(() => {
-      axios.all([axios.get(this.piIp + '/pressure/valid'), axios.get(this.piIp + '/thermal/valid'), axios.get(this.piIp + '/pulse/valid')])
-      .then(axios.spread((pressureValid, theremalValid, pulseValid) => {
-        if(pressureValid.data.status || theremalValid.data.status || pulseValid.data.status) {
-          return true;
-        }
-        else {
-          return false;
-        }
-      }))
-      .then(valid => {
-        this.setState({
-          isProcess: true
-        });
-        axios.all([axios.get(this.piIp + '/pressure/finish'), axios.get(this.piIp + '/thermal/finish'), axios.get(this.piIp + '/pulse/valid')])
-        .then(axios.spread((pressureFinish, thermalFinish, pulseFinish) => {
-          if(pressureFinish.data.status && thermalFinish.data.status && pulseFinish.data.status) {
-            return true;
+  startSensor = () => {
+    let urlStartSensor = this.props.config + '/pressure/start';
+    if(!this.isSensorStart) {
+      axios.get(urlStartSensor)
+        .then(res => {
+          if(!res.data.status) {
+            this.startSensor();
           }
           else {
-            return false;
-          }
-        }))
-        .then(finish => {
-          if(finish) {
-              axios.all([axios.get(this.piIp + '/pressure/'), axios.get(this.piIp + '/thermal/'), axios.get(this.piIp + '/pulse/')])
-            .then(axios.spread((pressure, thermal, pulse) => {
-              if(typeof(Storage) !== "undefined") {
-                localStorage.setItem('pressure', JSON.stringify(pressure.data.data));
-                localStorage.setItem('thermal', JSON.stringify(thermal.data.data));
-                localStorage.setItem('pulse', JSON.stringify(pulse.data.data));
-              }
-              Router.push('/measurementResult');
-            }))
+            this.isSensorStart = true;
           }
         })
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    }, 2000)
+        .catch(err => {
+          console.log(err);
+          startSensor();
+        })
+      }
+  }
+
+  readBloodPressure = () => {
+    if(this.isSensorStart) {
+      let urlIsSensorReady = this.props.config.piIp + '/pressure/valid';
+      let urlIsSensorFinishRead = this.props.config + '/pressure/finish';
+      let urlGetData = this.props.config + '/pressure';
+
+      axios.get(urlIsSensorReady)
+        .then(res => {
+          return res.data.status
+        })
+        .then(isSensorReady => {
+          if(isSensorReady) {
+            this.setState({
+              isLoading: true
+            });
+            return axios.get(urlIsSensorFinishRead)
+              .then(res => {
+                return res.data.status
+              })
+              .catch(err => {
+                console.log(err);
+                setTimeout(() => {
+                  this.readBloodPressure();
+                }, 1000)
+              })
+          }
+          else {
+            setTimeout(() => {
+              this.readBloodPressure();
+            }, 1000)
+          }
+        })
+        .then(isSensorFinishRead => {
+          if(isSensorFinishRead) {
+            axios.get(urlGetData)
+              .then(res => {
+                if(typeof(Storage) !== "undefined") {
+                  localStorage.setItem('pressure', JSON.stringify(res.data.data));
+                }
+                else {
+                  //if not support HTML 5 local storage
+                }
+                Router.push('/temperature');
+              })
+              .catch(err => {
+                console.log(err);
+                setTimeout(() => {
+                  this.readBloodPressure();
+                }, 1000)
+              })
+          }
+          else {
+            setTimeout(() => {
+              this.readBloodPressure();
+            }, 1000)
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          setTimeout(() => {
+            this.readBloodPressure();
+          }, 1000)
+        })
+    }
   }
 
   componentWillUnmount() {
-    clearInterval(this.interval);
+    clearInterval(this.pageTimeout);
   }
 
   render() {
