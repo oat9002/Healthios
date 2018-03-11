@@ -9,6 +9,7 @@ export default class RegisterWithFingerprint extends React.Component {
   constructor(props) {
     super(props);
     this.fingerprintInterval = null;
+    this.pageTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -18,6 +19,13 @@ export default class RegisterWithFingerprint extends React.Component {
 
   componentDidMount() {
     this.readFingerprint();
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
   }
 
   readFingerprint = () => {

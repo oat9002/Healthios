@@ -135,10 +135,10 @@ export default class Temperature extends React.Component {
               </Head>
               <div>
                 <div className='content'>
-                  กรุณาเอานิ้ว<span className='emph'>แตะ</span>เครื่องหมายตามรูป
+                  กรุณาเอานิ้ว<span className='emph'>แตะ</span>เครื่องหมายตามรูปค้างไว้
                 </div>
-                <div>
-                  <img src="/static/pics/temperatureNew.jpg"/>
+                <div className='animated pulse infinite'>
+                  <img src="/static/pics/thermal.png"/>
                 </div>
               </div>
               <style jsx>{`
@@ -146,7 +146,7 @@ export default class Temperature extends React.Component {
                   text-align: center;
                 }
                 img {
-                  width: 30%;
+                  width: 50%;
                   height: auto;
                 }
                 .content {
@@ -166,6 +166,7 @@ export default class Temperature extends React.Component {
                   color: #393939;
                   animation: fadein 1s;
                   background-color: #f7f7f7;
+                  overflow: hidden;
                 }
                 @keyframes fadein {
                     from { opacity: 0; };

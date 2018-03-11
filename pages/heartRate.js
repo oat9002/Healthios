@@ -9,7 +9,7 @@ const configJson = import('../static/appConfig.json');
 export default class HeartRate extends React.Component {
   constructor(props) {
     super(props);
-    tthis.state = {
+    this.state = {
       isLoading: false,
     };
     this.isSensorStart = false;
@@ -131,10 +131,10 @@ export default class HeartRate extends React.Component {
               </Head>
               <div>
                 <div className='content'>
-                  กรุณาเอานิ้ว<span className='emph'>แตะ</span>เครื่องหมายตามรูป
+                  กรุณาเอานิ้ว<span className='emph'>แตะ</span>เครื่องหมายตามรูปค้างไว้
                 </div>
-                <div>
-                  <img src="/static/pics/temperatureNew.jpg"/>
+                <div className='animated pulse infinite'>
+                  <img src="/static/pics/heartRate.png"/>
                 </div>
               </div>
               <style jsx>{`
@@ -142,7 +142,7 @@ export default class HeartRate extends React.Component {
                   text-align: center;
                 }
                 img {
-                  width: 30%;
+                  width: 50%;
                   height: auto;
                 }
                 .content {
@@ -162,6 +162,7 @@ export default class HeartRate extends React.Component {
                   color: #393939;
                   animation: fadein 1s;
                   background-color: #f7f7f7;
+                  overflow: hidden;
                 }
                 @keyframes fadein {
                     from { opacity: 0; };

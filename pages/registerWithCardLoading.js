@@ -9,6 +9,7 @@ const configJson = import('../static/appConfig.json');
 export default class RegisterWtihCardLoading extends React.Component {
   constructor(props) {
     super(props);
+    this.pageTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -20,6 +21,13 @@ export default class RegisterWtihCardLoading extends React.Component {
     setTimeout(() => {
       this.register();
     }, 3000);
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout)
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
   }
 
   register = (retry = 0) => {

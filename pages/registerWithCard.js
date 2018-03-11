@@ -18,6 +18,7 @@ export default class registerWithCard extends React.Component {
     this.cardInterval = null;
     this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
+    this.pageTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -27,6 +28,9 @@ export default class registerWithCard extends React.Component {
 
   componentDidMount() {
     this.insertCard();
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout)
   }
 
   insertCard() {
@@ -68,6 +72,7 @@ export default class registerWithCard extends React.Component {
 
   componentWillUnmount() {
     clearInterval(this.cardInterval);
+    clearTimeout(this.pageTimeout);
   }
 
   render() {
