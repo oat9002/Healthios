@@ -6,21 +6,31 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import axios from 'axios';
 
+const configJson = import('../static/appConfig.json');
+
 export default class MeasurementResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      userId: '',
       weight: '',
       height: '',
       pressure: '',
       thermal: '',
       pulse: '',
     };
+    this.saveMeasurementUrl = this.props.config.serverIp + '/api/data/save';
+  }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
   }
 
   componentWillMount() {
     if(typeof(Storage) != 'undefined') {
       this.setState({
+        userId: localStorage.getItem('userId'),
         weight: localStorage.getItem('weight'),
         height: localStorage.getItem('height'),
         pressure: JSON.parse(localStorage.getItem('pressure')),
@@ -37,7 +47,113 @@ export default class MeasurementResult extends React.Component {
   }
 
   saveMeasurementData = () => {
+    axios.all(this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal())
+      .then(axios.spread((resWeight, resHeight, resPressure, resPulse, resThermal) => {
+        if(!resWeight) {
 
+        }
+        if(!resHeight) {
+
+        }
+        if(!resPressure) {
+
+        }
+        if(!resPulse) {
+
+        }
+        if(!resThermal) {
+          
+        }
+      }));
+  }
+
+  saveHeight() => {
+    return axios.post(this.saveMeasurementUrl, {
+      "body_height": {
+        "value": this.state.height,
+        "unit": "cm"
+      },
+      "effective_time_frame": {
+        "date_time": new Date().toISOString
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'userId': this.state.userId
+      }
+    });
+  }
+
+  saveWeight() => {
+    return axios.post(this.saveMeasurementUrl, {
+      "body_weight": {
+        "value": this.state.weight,
+        "unit": "kg"
+      },
+      "effective_time_frame": {
+        "date_time": new Date().toISOString
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'userId': this.state.userId
+      }
+    });
+  }
+
+  savePressure() => {
+    return axios.post(this.saveMeasurementUrl, {
+      'systolic_blood_pressure': {
+        'value': this.state.pressure[0],
+        'unit': "mmHg"
+      },
+      "diastolic_blood_pressure": {
+        "value": this.state.pressure[2],
+        "unit": "mmHg"
+      },
+      "effective_time_frame": {
+        "date_time": new Date().toISOString
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'userId': this.state.userId
+      }
+    });
+  }
+
+  saveThermal() => {
+    return axios.post(this.saveMeasurementUrl, {
+      "body_temperature": {
+        "value": this.state.thermal,
+        "unit": "C"
+      },
+      "effective_time_frame": {
+        "date_time": new Date().toISOString
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'userId': this.state.userId
+      }
+    });
+  }
+
+  savePulse() => {
+    return axios.post(this.saveMeasurementUrl, {
+      "heart_rate": {
+        "value": this.state.pulse,
+        "unit": "bpm"
+      },
+      "effective_time_frame": {
+        "date_time": new Date().toISOString
+      }
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'userId': this.state.userId
+      }
+    });
   }
 
   render() {
