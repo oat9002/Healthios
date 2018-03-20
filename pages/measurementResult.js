@@ -67,7 +67,7 @@ export default class MeasurementResult extends React.Component {
       }));
   }
 
-  saveHeight() => {
+  saveHeight = () => {
     return axios.post(this.saveMeasurementUrl, {
       "body_height": {
         "value": this.state.height,
@@ -84,7 +84,7 @@ export default class MeasurementResult extends React.Component {
     });
   }
 
-  saveWeight() => {
+  saveWeight = () => {
     return axios.post(this.saveMeasurementUrl, {
       "body_weight": {
         "value": this.state.weight,
@@ -101,7 +101,7 @@ export default class MeasurementResult extends React.Component {
     });
   }
 
-  savePressure() => {
+  savePressure = () => {
     return axios.post(this.saveMeasurementUrl, {
       'systolic_blood_pressure': {
         'value': this.state.pressure[0],
@@ -122,7 +122,7 @@ export default class MeasurementResult extends React.Component {
     });
   }
 
-  saveThermal() => {
+  saveThermal = () => {
     return axios.post(this.saveMeasurementUrl, {
       "body_temperature": {
         "value": this.state.thermal,
@@ -139,7 +139,7 @@ export default class MeasurementResult extends React.Component {
     });
   }
 
-  savePulse() => {
+  savePulse = () => {
     return axios.post(this.saveMeasurementUrl, {
       "heart_rate": {
         "value": this.state.pulse,
