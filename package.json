@@ -1,5 +1,5 @@
 {
-  "name": "Healthios",
+  "name": "healthios",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -31,6 +31,7 @@
     "three": "^0.91.0"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.2",
     "eslint": "^4.19.1",
     "eslint-plugin-react": "^7.7.0"
   }

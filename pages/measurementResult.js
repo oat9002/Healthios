@@ -19,6 +19,7 @@ export default class MeasurementResult extends React.Component {
       thermal: '',
       pulse: '',
     };
+    this.pageTimeout = null;
     this.saveMeasurementUrl = this.props.config.serverIp + '/api/data/save';
   }
 
@@ -44,27 +45,27 @@ export default class MeasurementResult extends React.Component {
     setTimeout(() => {
       Router.push('/final');
     }, 10000);
+    this.pageTimeout = setTimeOut(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout);
+    this.saveMeasurementData();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.pageTimeout);
   }
 
   saveMeasurementData = () => {
     axios.all(this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal())
       .then(axios.spread((resWeight, resHeight, resPressure, resPulse, resThermal) => {
-        if(!resWeight) {
-
+        if(resWeight.data.error || resHeight.data.error || resPressure.data.error || resPulse.data.error || resThermal.data.error) {
+          this.saveMeasurementData();
         }
-        if(!resHeight) {
-
-        }
-        if(!resPressure) {
-
-        }
-        if(!resPulse) {
-
-        }
-        if(!resThermal) {
-          
-        }
-      }));
+      }))
+      .catch(error => {
+        console.log(err);
+        this.saveMeasurementData();
+      });
   }
 
   saveHeight = () => {
