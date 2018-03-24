@@ -8,9 +8,14 @@ export default class RegisterWithFingerprintLoading extends React.Component {
   constructor(props) {
     super(props);
     this.fingerprintInterval = null;
+    this.pageTimeout = null;
   }
 
   componentDidMount() {
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    });
+
     setTimeout(() => {
       if(this.props.query.first === 'fingerprint') {
           Router.push({pathname: '/registerWithCard', query: {first: this.props.query.first}});
@@ -23,6 +28,11 @@ export default class RegisterWithFingerprintLoading extends React.Component {
       }
     }, 3000);
   }
+  
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
+  }
+  
 
   static async getInitialProps({ req, query }) {
     const config = await configJson

@@ -52,7 +52,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.pageTimeout);
+    clearTimeout(this.pageTimeout);
   }
 
   saveMeasurementData = () => {

@@ -20,6 +20,7 @@ export default class RegisterResult extends React.Component {
     this.piIp = this.props.config.piIp;
     this.generateAge = this.generateAge.bind(this);
     this.getDaysInMonth = this.getDaysInMonth.bind(this);
+    this.pageTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -28,6 +29,13 @@ export default class RegisterResult extends React.Component {
   }
 
   componentWillMount() {
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout);
+    this.getPersonalData();
+  }
+
+  getPersonalData = () => {
     let url = this.piIp + '/thid';
     axios.get(url).then(res => {
       if(res.data.status) {
@@ -46,6 +54,7 @@ export default class RegisterResult extends React.Component {
     })
     .catch(error => {
       console.log(error);
+      this.getPersonalData();
     });
   }
 
@@ -53,6 +62,10 @@ export default class RegisterResult extends React.Component {
     setTimeout(() => {
       Router.push('/weightAndHeight')
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
   }
 
   getDaysInMonth(month,year) {

@@ -15,6 +15,7 @@ export default class WeightAndHeight extends React.Component {
     };
     this.piIp = this.props.config.piIp;
     this.interval = null;
+    this.pageTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -23,6 +24,9 @@ export default class WeightAndHeight extends React.Component {
   }
 
   componentDidMount() {
+    this.pageTimeout = setTimeout(() => {
+      Router.push('/');
+    }, this.props.config.pageTimeout);
     this.interval = setInterval(() => {
       axios.all([axios.get(this.piIp + '/weight/valid'), axios.get(this.piIp + '/height/valid')])
       .then(axios.spread((weightValid, heightValid) => {

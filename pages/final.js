@@ -6,7 +6,7 @@ export default class Final extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       Router.push('/');
-    }, 5000)
+    }, 5000);
   }
 
   render() {
