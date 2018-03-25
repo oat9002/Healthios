@@ -30,9 +30,19 @@ export default class RegisterWtihCardLoading extends React.Component {
     clearTimeout(this.pageTimeout);
   }
 
+  prepareDataForRegister = (data) => {
+    let dateOfBirth = parseInt(data.birthDate.substring(0,2));
+    let monthOfBirth = parseInt(data.birthDate.substring(3,5));
+    let yearOfBirth = parseInt(data.birthDate.substring(6, birthDate.length));
+
+    data.birthDate = dateOfBirth + '-' + monthOfBirth + '-' + yearOfBirth;
+  }
+
   register = () => {
     let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
     let data = JSON.parse(cryptoJs.AES.decrypt(this.props.url.query.patientInfo, this.props.config.aesSecret).toString(cryptoJs.enc.Utf8));
+
+    prepareDataForRegister(data);
 
     axios.post(urlRegister, 
       data, 
