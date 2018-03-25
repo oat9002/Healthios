@@ -1,6 +1,9 @@
 import React from 'react';
 import Head from 'next/head';
 import Router from 'next/router';
+import cryptoJs from 'crypto-js';
+
+const configJson = import('../static/appConfig.json');
 
 export default class Welcome extends React.Component {
   constructor(props) {
@@ -10,10 +13,15 @@ export default class Welcome extends React.Component {
     };
   }
 
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentWillMount() {
     if(typeof(Storage) !== "undefined") {
       this.setState({
-        data: JSON.parse(localStorage.getItem('data'))
+        data: JSON.parse(cryptoJs.AES.decrypt(localStorage.getItem('data'), this.props.aesSecret))
       });
     }
   }
