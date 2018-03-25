@@ -72,7 +72,7 @@ export default class Login extends React.Component {
               url: urlLogin,
               auth: {
                 username: resGetData.data.data.idNumber,
-                password: resGetData.data.data.birthOfDate
+                password: resGetData.data.data.birthOfDate.replace('/', '')
               }
             }).then(resLogin => {
               if(typeof(Storage) !== "undefined") {
