@@ -39,50 +39,45 @@ export default class RegisterWithFingerprintLoading extends React.Component {
     return { config }
   }
 
-  readFingerprint = (retry = 0) => {
-    if(retry != this.props.confg.maxRetry) {
-      const piIp = this.props.config.piIp;
-      let urlIsUseFingerprint = piIp + 'finger/valid';
-      let urlStartReadFingerprint = piIp + 'finger/start';
-      let urlFinishReadFingerprint = piIp + 'finger/finish';
+  readFingerprint = () => {
+    const piIp = this.props.config.piIp;
+    let urlIsUseFingerprint = piIp + 'finger/valid';
+    let urlStartReadFingerprint = piIp + 'finger/start';
+    let urlFinishReadFingerprint = piIp + 'finger/finish';
 
-      return new Promise((resolve, reject) => {
-        axios.get(urlIsUseFingerprint)
-        .then(res => {
-          return res.data.status;
-        })
-        .then(isUseFingerPrint => {
-          if(isUseFingerPrint) {
-            return axios.get(urlStartReadFingerprint)
-            .then(res => {
-              return res.data.status;
-            })
-          }
-        })
-        .then(isStartReadFingerprint => {
-          if(isStartReadFingerprint) {
-            return axios.get(urlFinishReadFingerprint)
-            .then(res => {
-              return res.data.status;
-            })
-          }
-        })
-        .then(isFinishReadFingerprint => {
-          if(isFinishReadFingerprint) {
-            resolve(true);
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.setTimeout(() => {
-            this.readFingerprint(++retry);
-          }, 1000)
-        })
-      });
-    }
-    else {
-      Router.push('/login');
-    }
+    return new Promise((resolve, reject) => {
+      axios.get(urlIsUseFingerprint)
+      .then(res => {
+        return res.data.status;
+      })
+      .then(isUseFingerPrint => {
+        if(isUseFingerPrint) {
+          return axios.get(urlStartReadFingerprint)
+          .then(res => {
+            return res.data.status;
+          })
+        }
+      })
+      .then(isStartReadFingerprint => {
+        if(isStartReadFingerprint) {
+          return axios.get(urlFinishReadFingerprint)
+          .then(res => {
+            return res.data.status;
+          })
+        }
+      })
+      .then(isFinishReadFingerprint => {
+        if(isFinishReadFingerprint) {
+          resolve(true);
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        this.setTimeout(() => {
+          this.readFingerprint();
+        }, 1000)
+      })
+    });
   }
 
   render() {

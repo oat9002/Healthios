@@ -30,33 +30,39 @@ export default class RegisterWtihCardLoading extends React.Component {
     clearTimeout(this.pageTimeout);
   }
 
-  register = (retry = 0) => {
-    if(retry !== this.props.config.maxRetry) {
-      let urlRegister = this.props.config.serverIp + '/api/auth/register';
-      let data = JSON.parse(cryptoJs.AES.decrypt(this.props.url.query.patientInfo, this.props.config.aesSecret).toString(cryptoJs.enc.Utf8));
-      console.log(data)
-      axios.post(urlRegister, data, { headers: {'Register-Type': 'idcard'} })
-      .then(resRegister => {
-        if(typeof(Storage) !== "undefined") {
-          localStorage.setItem('data', JSON.stringify(resRegister.data));
-        }
-        if(this.props.url.query.first == 'card'){
-          Router.push({pathname: '/registerWithFingerprint', query: {first: this.props.url.query.first}});
-        }
-        else if(this.props.url.query.first == 'fingerprint') {
-          Router.push('/registerComplete');
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        setTimeout(() => {
-          this.register(++retry)
-        }, 1000);
-      })
-    }
-    else {
-      Router.push('/login');
-    }
+  register = () => {
+    let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
+    let data = JSON.parse(cryptoJs.AES.decrypt(this.props.url.query.patientInfo, this.props.config.aesSecret).toString(cryptoJs.enc.Utf8));
+
+    axios.post(urlRegister, 
+      data, 
+      { 
+        headers : {
+          'X-Station-Key': '5ab75943167f6f116e668a85'
+        },
+        auth: {
+          username: 'kmitl-test2',
+          password: 'test1234'
+        } 
+      }
+    )
+    .then(resRegister => {
+      if(typeof(Storage) !== "undefined") {
+        localStorage.setItem('data', JSON.stringify(resRegister.data));
+      }
+      if(this.props.url.query.first == 'card'){
+        Router.push({pathname: '/registerWithFingerprint', query: {first: this.props.url.query.first}});
+      }
+      else if(this.props.url.query.first == 'fingerprint') {
+        Router.push('/registerComplete');
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      setTimeout(() => {
+        this.register();
+      }, 1000);
+    })
   }
 
   render() {
