@@ -34,15 +34,24 @@ export default class Login extends React.Component {
   }
 
   insertCard() {
+    let urlIsStart = this.piIp + '/thid/start'
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
 
     this.cardInterval = setInterval(() => {
-      axios.get(urlIsInsertCard)
-      .then(resInsertCard => {
-        return resInsertCard.data.status;
+      axios.get(urlIsStart)
+      .then(resStart => {
+        return resStart.data.status;
+      })
+      .then(status => {
+        if(status) {
+          return axios.get(urlIsInsertCard)
+          .then(resInsertCard => {
+            return resInsertCard.data.status;
+          })
+        }
       })
       .then(status => {
         if(status) {
@@ -85,8 +94,8 @@ export default class Login extends React.Component {
   }
 
   readFingerprint() {
-    let urlIsUseFingerprint = this.piIp + '/finger/valid';
-    let urlStartReadFingerprint = this.piIp + '/finger/start';
+    let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
+    let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
     let urlFinishReadFingerprint = this.piIp + '/finger/finish';
     let urlGetData = this.piIp + '/finger';
     let urlLogin = this.serverIp + '/api/auth/login';
