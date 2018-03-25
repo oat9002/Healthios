@@ -35,7 +35,7 @@ export default class RegisterWtihCardLoading extends React.Component {
     let monthOfBirth = parseInt(data.birthOfDate.substring(3,5));
     let yearOfBirth = parseInt(data.birthOfDate.substring(6, birthDate.length));
 
-    data.birthDate = dateOfBirth + '-' + monthOfBirth + '-' + yearOfBirth;
+    data.birthOfDate = dateOfBirth + '-' + monthOfBirth + '-' + yearOfBirth;
   }
 
   register = () => {
