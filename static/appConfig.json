@@ -1,6 +1,6 @@
 {
-  "serverIp": "http://localhost:55442",
-  "piIp": "http://localhost:55442",
+  "serverIp": "http://203.154.59.215:8080",
+  "piIp": "http://localhost:54322",
   "maxRetry": 20,
   "aesSecret": "soup12345",
   "pageTimeout": 90000
