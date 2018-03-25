@@ -42,7 +42,7 @@ export default class RegisterWtihCardLoading extends React.Component {
     let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
     let data = JSON.parse(cryptoJs.AES.decrypt(this.props.url.query.patientInfo, this.props.config.aesSecret).toString(cryptoJs.enc.Utf8));
 
-    prepareDataForRegister(data);
+    this.prepareDataForRegister(data);
 
     axios.post(urlRegister, 
       data, 
