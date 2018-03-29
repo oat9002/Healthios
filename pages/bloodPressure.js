@@ -56,8 +56,8 @@ export default class BloodPressure extends React.Component {
   readBloodPressure = () => {
     if(this.isSensorStart) {
       let urlIsSensorReady = this.props.config.piIp + '/pressure/valid';
-      let urlIsSensorFinishRead = this.props.config + '/pressure/finish';
-      let urlGetData = this.props.config + '/pressure';
+      let urlIsSensorFinishRead = this.props.config.piIp + '/pressure/finish';
+      let urlGetData = this.props.config.piIp + '/pressure';
 
       axios.get(urlIsSensorReady)
         .then(res => {

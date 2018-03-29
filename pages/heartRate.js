@@ -55,8 +55,8 @@ export default class HeartRate extends React.Component {
   readHearRate = () => {
     if(this.isSensorStart) {
       let urlIsSensorReady = this.props.config.piIp + '/pulse/valid';
-      let urlIsSensorFinishRead = this.props.config + '/pulse/finish';
-      let urlGetData = this.props.config + '/pulse';
+      let urlIsSensorFinishRead = this.props.config.piIp + '/pulse/finish';
+      let urlGetData = this.props.config.piIp + '/pulse';
 
       axios.get(urlIsSensorReady)
         .then(res => {

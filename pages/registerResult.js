@@ -29,10 +29,10 @@ export default class RegisterResult extends React.Component {
   }
 
   componentWillMount() {
+    this.getPersonalData();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout);
-    this.getPersonalData();
   }
 
   getPersonalData = () => {
