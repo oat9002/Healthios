@@ -1,5 +1,6 @@
 import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import LoadingTemplate from '../components/loadingTemplate';
 import Head from 'next/head';
 import Router from 'next/router';
 import axios from 'axios';
@@ -10,14 +11,12 @@ export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: null,
       isLoading: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
     this.cardInterval = null;
     this.fingerprintInterval = null;
-    this.insertCard = this.insertCard.bind(this);
     this.pageTimeout = null;
   }
 
@@ -27,13 +26,26 @@ export default class registerWithCard extends React.Component {
   }
 
   componentDidMount() {
-    this.insertCard();
+    this.process();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout)
   }
 
-  insertCard() {
+  componentWillUnmount() {
+    clearInterval(this.cardInterval);
+    clearTimeout(this.pageTimeout);
+  }
+
+  prepareDataForRegister = (data) => {
+    let dateOfBirth = parseInt(data.birthOfDate.substring(0,2));
+    let monthOfBirth = parseInt(data.birthOfDate.substring(3,5));
+    let yearOfBirth = parseInt(data.birthOfDate.substring(6, data.birthOfDate.length));
+
+    data.birthOfDate = yearOfBirth + '-' + monthOfBirth + '-' + dateOfBirth;
+  }
+
+  process = () => {
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
@@ -45,6 +57,10 @@ export default class registerWithCard extends React.Component {
           return resInsertCard.data.status;
         })
         .then(status => {
+          this.setState = {
+            isLoading: true
+          };
+
           if(status) {
             axios.get(urlIsCardReadable)
             .then(resIsCardReadable => {
@@ -56,7 +72,7 @@ export default class registerWithCard extends React.Component {
           if(status) {
             axios.get(urlGetData)
             .then(res => {
-              Router.push({pathname: '/registerWithCardLoading', query: {first: this.props.query.first, patientInfo: res.data.data}})
+              this.register(res.data.data);
             })
             .catch(err => {
               console.log(err);
@@ -70,23 +86,66 @@ export default class registerWithCard extends React.Component {
     }, 3000);
   }
 
-  componentWillUnmount() {
-    clearInterval(this.cardInterval);
-    clearTimeout(this.pageTimeout);
+  register = (patientInfo) => {
+    let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
+
+    this.prepareDataForRegister(patientInfo);
+
+    axios.post(urlRegister, 
+      patientInfo, 
+      { 
+        headers : {
+          'X-Station-Key': '5ab75943167f6f116e668a85'
+        },
+        auth: {
+          username: 'kmitl-test2',
+          password: 'test1234'
+        } 
+      }
+    )
+    .then(resRegister => {
+      if(typeof(Storage) !== "undefined") {
+        localStorage.setItem('data', JSON.stringify(resRegister.data));
+      }
+      if(this.props.url.query.first == 'card'){
+        Router.push({pathname: '/registerWithFingerprint', query: {first: this.props.url.query.first}});
+      }
+      else if(this.props.url.query.first == 'fingerprint') {
+        Router.push('/registerComplete');
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      setTimeout(() => {
+        this.register();
+      }, 1000);
+    })
   }
 
+  
+
   render() {
+    let isLoading = this.state.isLoading;
+
     return(
       <div className='content'>
         <Head>
           <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
-        <div>
-          <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
-          <br/>
-          <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-        </div>
+        {
+          isLoading ? (
+            <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
+          ) : 
+          (
+            <div>
+              <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
+              <br/>
+              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+            </div>
+          )
+        }
+       
         <style jsx>{`
           img {
             heigh: auto;
