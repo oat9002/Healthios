@@ -137,8 +137,12 @@ export default class BloodPressure extends React.Component {
               <link rel="stylesheet" href="/static/css/animate.css"/>
             </Head>
             <span>กรุณาใส่ปลอกเเขนที่เตรียมไว้ให้</span><br/>
-            {/* <img className='pulse animated infinite' src="/static/pics/footprint.png" alt=""/> */}
+            <img src="/static/pics/pressure.gif" alt=""/>
             <style jsx>{`
+              img {
+                width: 50%;
+                height: auto;
+              }
               span {
                 font-size: 5em;
               }
