@@ -11,7 +11,7 @@ export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false
+      isRegister: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -23,6 +23,14 @@ export default class registerWithCard extends React.Component {
   static async getInitialProps({ req, query }) {
     const config = await configJson
     return { config }
+  }
+
+  componentWillMount() {
+    if(this.props.query.first === 'card') {
+      this.setState = {
+        isRegister = true
+      };
+    }
   }
 
   componentDidMount() {
@@ -125,8 +133,6 @@ export default class registerWithCard extends React.Component {
   
 
   render() {
-    let isLoading = this.state.isLoading;
-
     return(
       <div className='content'>
         <Head>
@@ -134,7 +140,7 @@ export default class registerWithCard extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         {
-          isLoading ? (
+          this.state.isRegister ? (
             <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
           ) : 
           (
