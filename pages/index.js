@@ -31,6 +31,8 @@ export default class Login extends React.Component {
     this.readFingerprint();
   }
 
+  
+
   insertCard() {
     let urlIsStart = this.piIp + '/thid/start'
     let urlIsInsertCard = this.piIp + '/thid/valid';
@@ -45,31 +47,15 @@ export default class Login extends React.Component {
     .then(status => {
       if(status) {
         return axios.get(urlIsInsertCard)
-        .then(resInsertCard => {
-          return resInsertCard.data.status;
-        })
-      }
-      else {
-        setTimeout(() => {
-          this.insertCard();
-        }, 1000);
       }
     })
-    .then(status => {
-      if(status) {
+    .then(resIsInsertCard => {
+      if(resIsInsertCard !== 'undefined' && resIsInsertCard.data.status) {
         return axios.get(urlIsCardReadable)
-        .then(resIsCardReadable => {
-          return resIsCardReadable.data.status;
-        });
-      }
-      else {
-        setTimeout(() => {
-          this.insertCard();
-        }, 1000);
       }
     })
-    .then(status => {
-      if(status) { 
+    .then(resIsCardReadable => {
+      if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) { 
         this.setState({
           isLoading: true
         });
@@ -91,6 +77,12 @@ export default class Login extends React.Component {
           }).catch(err => {
             if(err.response.status == 401) {
               Router.push({pathname: '/registerWithCard', query: {first: 'card'}});
+            }
+            else {
+              console.log(err);
+              setTimeout(() => {
+                this.insertCard();
+              }, 1000);
             }
           })
         })
