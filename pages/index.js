@@ -17,7 +17,6 @@ export default class Login extends React.Component {
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
-    this.cardInterval = null;
     this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
     this.readFingerprint = this.readFingerprint.bind(this)
@@ -40,59 +39,75 @@ export default class Login extends React.Component {
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
 
-    this.cardInterval = setInterval(() => {
-      axios.get(urlIsStart)
-      .then(resStart => {
-        return resStart.data.status;
-      })
-      .then(status => {
-        if(status) {
-          this.setState({
-            isLoading: true
-          });
+    axios.get(urlIsStart)
+    .then(resStart => {
+      return resStart.data.status;
+    })
+    .then(status => {
+      if(status) {
+        this.setState({
+          isLoading: true
+        });
 
-          return axios.get(urlIsInsertCard)
-          .then(resInsertCard => {
-            return resInsertCard.data.status;
+        return axios.get(urlIsInsertCard)
+        .then(resInsertCard => {
+          return resInsertCard.data.status;
+        })
+      }
+      else {
+        setTimeout(() => {
+          this.insertCard();
+        }, 1000);
+      }
+    })
+    .then(status => {
+      if(status) {
+        return axios.get(urlIsCardReadable)
+        .then(resIsCardReadable => {
+          return resIsCardReadable.data.status;
+        });
+      }
+      else {
+        setTimeout(() => {
+          this.insertCard();
+        }, 1000);
+      }
+    })
+    .then(status => {
+      if(status) { 
+        axios.get(urlGetData)
+        .then(resGetData => {
+          axios({
+            url: urlLogin,
+            auth: {
+              username: resGetData.data.data.idNumber,
+              password: resGetData.data.data.birthOfDate.replace(/\//g, '')
+            }
+          }).then(resLogin => {
+            if(typeof(Storage) !== "undefined") {
+              localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+              localStorage.setItem('token', resLogin.data.token);
+            }
+            Router.push('/loginComplete');
+          }).catch(err => {
+            if(err.response.status == 401) {
+              Router.push({pathname: '/registerWithCard', query: {first: 'card'}});
+            }
           })
-        }
-      })
-      .then(status => {
-        if(status) {
-          return axios.get(urlIsCardReadable)
-          .then(resIsCardReadable => {
-            return resIsCardReadable.data.status;
-          });
-        }
-      })
-      .then(status => {
-        if(status) { 
-          axios.get(urlGetData)
-          .then(resGetData => {
-            axios({
-              url: urlLogin,
-              auth: {
-                username: resGetData.data.data.idNumber,
-                password: resGetData.data.data.birthOfDate.replace(/\//g, '')
-              }
-            }).then(resLogin => {
-              if(typeof(Storage) !== "undefined") {
-                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
-                localStorage.setItem('token', resLogin.data.token);
-              }
-              Router.push('/loginComplete');
-            }).catch(err => {
-              if(err.response.status == 401) {
-                Router.push({pathname: '/registerWithCard', query: {first: 'card'}});
-              }
-            })
-          })
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      })
-    }, 1000);
+        })
+      }
+      else {
+        setTimeout(() => {
+          this.insertCard();
+        }, 1000);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      setTimeout(() => {
+        this.insertCard();
+      }, 1000);
+    })
   }
 
   readFingerprint() {
@@ -170,7 +185,6 @@ export default class Login extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.cardInterval);
     clearInterval(this.fingerprintInterval);
   }
 
