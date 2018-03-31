@@ -11,8 +11,7 @@ export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isRegister: false,
-      isFinishRender: false,
+      isRegister: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -25,13 +24,15 @@ export default class registerWithCard extends React.Component {
     return { config }
   }
 
-  componentDidMount() {
-    if(this.props.query.first === 'card') {
-      this.setState = {
+  componentWillMount() {
+    if(this.props.url.query.first === 'card') {
+      this.setState({
         isRegister: true,
-      };
+      });
     }
+  }
 
+  componentDidMount() {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
@@ -61,9 +62,9 @@ export default class registerWithCard extends React.Component {
       return resInsertCard.data.status;
     })
     .then(status => {
-      this.setState = {
+      this.setState({
         isLoading: true
-      };
+      });
 
       if(status) {
         return axios.get(urlIsCardReadable)
@@ -117,10 +118,10 @@ export default class registerWithCard extends React.Component {
       if(typeof(Storage) !== "undefined") {
         localStorage.setItem('data', JSON.stringify(resRegister.data));
       }
-      if(this.props.url.query.first == 'card'){
+      if(this.props.url.query.first === 'card'){
         Router.push({pathname: '/registerWithFingerprint', query: {first: this.props.url.query.first}});
       }
-      else if(this.props.url.query.first == 'fingerprint') {
+      else if(this.props.url.query.first === 'fingerprint') {
         Router.push('/registerComplete');
       }
     })
@@ -132,6 +133,8 @@ export default class registerWithCard extends React.Component {
     })
   }
 
+  
+
   render() {
     return(
       <div className='content'>
@@ -140,19 +143,15 @@ export default class registerWithCard extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         {
-          this.state.isFinishRender ? (
-            this.state.isRegister ? (
-              <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
-            ) : 
-            (
-              <div>
-                <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
-                <br/>
-                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-              </div>
-            )
-          ) : (
-            <div></div>
+          this.state.isRegister ? (
+            <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
+          ) : 
+          (
+            <div>
+              <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
+              <br/>
+              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+            </div>
           )
         }
        

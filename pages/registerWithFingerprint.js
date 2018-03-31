@@ -3,6 +3,7 @@ import Head from 'next/head';
 import LoadingTemplate from '../components/loadingTemplate';
 import Router from 'next/router';
 import axios from 'axios';
+import { start } from 'repl';
 
 const configJson = import('../static/appConfig.json');
 
@@ -13,8 +14,8 @@ export default class RegisterWithFingerprint extends React.Component {
       nextState: false,
       isRegister: false
     };
-    this.fingerprintInterval = null;
     this.pageTimeout = null;
+    this.isStart = false;
   }
 
   static async getInitialProps({ req, query }) {
@@ -35,36 +36,94 @@ export default class RegisterWithFingerprint extends React.Component {
 
   readFingerprint = () => {
     const piIp = this.props.config.piIp
-    let urlStartReadFingerprint = piIp + '/finger/start/scan';
-    let urlIsUseFingerprint = piIp + '/finger/valid/scan';
-    let isStart = false;
-    
-    setTimeout(() => {
-      this.fingerprintInterval = setInterval(() => {
-        if(!isStart) {
-          axios.get(urlStartReadFingerprint)
-          .then(res => {
-            if(res.data.status) {
-              isStart = true;
-            }
-          })
-        }
-        else {
-          axios.get(urlIsUseFingerprint)
-          .then(res => {
-            return res.data.status;
-          })
-          .then(isUseFingerPrint => {
-            if(isUseFingerPrint) {
-              Router.push({pathname: '/registerWithFingerprintLoading', query: {first: this.props.query.first}});
-            }
-          })
-          .catch(err => {
-            console.log(err);
-          })
-        }
-      }, 1000);
-    }, 3000)
+    let urlStartReadFingerprint = piIp + '/finger/start/template';
+    let urlReadFingerprint = piIp + '/finger/valid/template1';
+    let urlReadFingerprint2 = piIp + '/finger/valid/template2';
+    let urlIsFinish = piIp + '/finger/template';
+    let urlRegister = piIp + '/api/auth/register/fingerprint';
+
+    if(!isStart) {
+      axios.get(urlStartReadFingerprint)
+      .then(resStartReadFingerprint => {
+         if(resStartReadFingerprint.data.status) {
+           this.isStart = true;
+           this.readFingerprint();
+         }
+         else {
+           setTimeout(() => {
+              this.readFingerprint()
+           }, 1000);
+         }
+      })
+      .catch(err => {
+        console.log(err);
+        setTimeout(() => {
+          this.readFingerprint()
+       }, 1000);
+      })
+    }
+    else {
+      axios.get(urlReadFingerprint)
+        .then(resReadFingerprint => {
+          return resReadFingerprint.data.status;
+        })
+        .then(status => {
+          if(status) {
+            this.setState({
+              nextState: true
+            });
+            return axios.get(urlReadFingerprint2);
+          }
+        })
+        .then(resReadFingerprint2 => {
+          if(resReadFingerprint2 !== undefined && resReadFingerprint2.data.status) {
+            return axios.get(urlIsFinish);
+          }
+        })
+        .then(resIsFinish => {
+          if(resIsFinish !== undefined && resIsFinish.data.status) {
+            axios.post(urlRegister, 
+              [resIsFinish.data.data], 
+              { 
+                headers : {
+                  'X-Station-Key': '5ab75943167f6f116e668a85',
+                  'X-Provider_Key': '5ab75831edfaaa6507e1e010'
+                }
+              }
+            )
+            .then(resRegister => {
+              if(resRegister.data.error) {
+                if(typeof(Storage) !== "undefined") {
+                  //localStorage.setItem('data', JSON.stringify(resRegister.data));
+                }
+                if(this.props.url.query.first === 'card'){
+                  Router.push('/registerComplete');
+                }
+                else if(this.props.url.query.first === 'fingerprint') {
+                  Router.push({ pathname: '/registerWithCard', query: { first: this.props.url.query.first }});
+                }
+              }
+              else {
+                setTimeout(() => {
+                  this.readFingerprint
+                }, 1000)
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              setTimeout(() => {
+                this.readFingerprint
+              }, 1000)
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          setTimeout(() => {
+            this.readFingerprint
+          }, 1000)
+        })
+    }
   }
 
   componentWillUnmount() {

@@ -19,6 +19,7 @@ export default class Login extends React.Component {
     this.serverIp = this.props.config.serverIp;
     this.insertCard = this.insertCard.bind(this);
     this.readFingerprint = this.readFingerprint.bind(this)
+    this.isStart = false;
   }
 
   static async getInitialProps({ req, query }) {
@@ -78,7 +79,7 @@ export default class Login extends React.Component {
             Router.push('/loginComplete');
           }).catch(err => {
             if(err.response.status == 401) {
-              Router.push({pathname: '/registerWithCard', query: {first: 'card'}});
+              Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
             }
             else {
               console.log(err);
@@ -108,13 +109,12 @@ export default class Login extends React.Component {
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
     let urlGetData = this.piIp + '/finger';
     let urlLogin = this.serverIp + '/api/auth/login';
-    let isStart = false;
 
-    if(!isStart) {
+    if(!this.isStart) {
       axios.get(urlStartReadFingerprint)
         .then(res => {
           if(res.data.status) {
-            isStart = true;
+            this.isStart = true;
           }
           else {
             setTimeout(() => {
