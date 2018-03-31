@@ -47,6 +47,10 @@ export default class Login extends React.Component {
       })
       .then(status => {
         if(status) {
+          this.setState({
+            isLoading: true
+          });
+
           return axios.get(urlIsInsertCard)
           .then(resInsertCard => {
             return resInsertCard.data.status;
@@ -62,10 +66,7 @@ export default class Login extends React.Component {
         }
       })
       .then(status => {
-        if(status) {
-          this.setState({
-            isLoading: true
-          });
+        if(status) { 
           axios.get(urlGetData)
           .then(resGetData => {
             axios({
@@ -76,12 +77,13 @@ export default class Login extends React.Component {
               }
             }).then(resLogin => {
               if(typeof(Storage) !== "undefined") {
-                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data), this.props.config.aesSecret).toString());
+                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+                localStorage.setItem('token', resLogin.data.token);
               }
               Router.push('/loginComplete');
             }).catch(err => {
               if(err.response.status == 401) {
-                Router.push({pathname: '/registerWithCardLoading', query: {first: 'card', patientInfo:  cryptoJs.AES.encrypt(JSON.stringify(resGetData.data.data), this.props.config.aesSecret).toString()}}); //save to localStorage instead
+                Router.push({pathname: '/registerWithCard', query: {first: 'card'}});
               }
             })
           })
@@ -94,72 +96,76 @@ export default class Login extends React.Component {
   }
 
   readFingerprint() {
-    let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
-    let urlFinishReadFingerprint = this.piIp + '/finger/finish';
+    let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
+    let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
     let urlGetData = this.piIp + '/finger';
     let urlLogin = this.serverIp + '/api/auth/login';
+    let isStart = false;
 
     this.fingerprintInterval = setInterval(() => {
-      axios.get(urlIsUseFingerprint)
-      .then(res => {
-        // console.log('use fingerprint: ' + res.data.status)
-        return res.data.status;
-      })
-      .then(isUseFingerPrint => {
-        if(isUseFingerPrint) {
-          return axios.get(urlStartReadFingerprint)
-          .then(res => {
-            // console.log('start reading fingerprint: ' + res.data.status)
-            return res.data.status;
-          })
-        }
-      })
-      .then(isStartReadFingerprint => {
-        if(isStartReadFingerprint) {
-          return axios.get(urlFinishReadFingerprint)
-          .then(res => {
-            // console.log('finnish reading fingerprint: ' + res.data.status)
-            return res.data.status
-          })
-        }
-      })
-      .then(isFinishReadFingerprint => {
-        if(isFinishReadFingerprint) {
-          this.setState({
-            isLoading: true
-          });
-          return axios.get(urlGetData)
-          .then(res => {
-            console.log('get data fingerprint: ' + res.data.status)
-            if(res.data.status) {
-                console.log('data: ' + res.data.data)
-                return res.data.data
-            }
-          })
-        }
-      })
-      .then(idNumber => {
-        if(idNumber != null) {
-          console.log('idNumber: ' + idNumber)
-          axios({
-            url: urlLogin,
-            auth: {
-              username: idNumber,
-              password: idNumber
-            }
-          }).then(resLogin => {
-            if(typeof(Storage) !== "undefined") {
-              //call server to get customer data
-            }
-            Router.push('/loginComplete');
-          }).catch(err => {
-            if(err.response.status == 401) {
-              Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
-            }
-          })
-        }
-      })
+      if(!isStart) {
+        axios.get(urlStartReadFingerprint)
+        .then(res => {
+          if(res.data.status) {
+            isStart = true;
+          }
+        })
+      }
+      else {
+        axios.get(urlIsUseFingerprint)
+        .then(res => {
+          return res.data.status;
+        })
+        .then(isUseFingerPrint => {
+          if(isUseFingerPrint) {
+            this.setState({
+              isLoading: true
+            });
+  
+            return axios.get(urlCompareFingerprint)
+            .then(res => {
+              return res.data.status;
+            })
+          }
+        })
+        .then(isCompareFinish => {
+          if(isCompareFinish) {
+            return axios.get(urlGetData)
+            .then(res => {
+              if(res.data.status) {
+                return res.data.data.idNumber;
+              }
+              return null;
+            })
+          }
+        })
+        .then(userKey => {
+          if(userKey != null) {
+            axios({
+              url: urlLogin,
+              auth: {
+                username: 'kmitl-test2',
+                password: 'test1234'
+              },
+              headers : {
+                'x-user-key': userKey
+              }
+            }).then(resLogin => {
+              if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+                localStorage.setItem('token', resLogin.data.token);
+              }
+              Router.push('/loginComplete');
+            }).catch(err => {
+              console.log(err);
+            })
+          }
+          else {
+            Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
+          }
+        }) 
+      }
     }, 1000);
   }
 

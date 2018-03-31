@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import LoadingTemplate from '../components/loadingTemplate';
 import Router from 'next/router';
 import axios from 'axios';
 
@@ -8,6 +9,10 @@ const configJson = import('../static/appConfig.json');
 export default class RegisterWithFingerprint extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      nextState: false,
+      isRegister: false
+    };
     this.fingerprintInterval = null;
     this.pageTimeout = null;
   }
@@ -30,30 +35,57 @@ export default class RegisterWithFingerprint extends React.Component {
 
   readFingerprint = () => {
     const piIp = this.props.config.piIp
-    let urlIsUseFingerprint = piIp + '/finger/valid';
-    let urlStartReadFingerprint = piIp + '/finger/start';
-    let urlFinishReadFingerprint = piIp + '/finger/finish';
-    let urlGetData = piIp + '/finger';
+    let urlStartReadFingerprint = piIp + '/finger/start/scan';
+    let urlIsUseFingerprint = piIp + '/finger/valid/scan';
+    let isStart = false;
+    
     setTimeout(() => {
       this.fingerprintInterval = setInterval(() => {
-        axios.get(urlIsUseFingerprint)
-        .then(res => {
-          return res.data.status;
-        })
-        .then(isUseFingerPrint => {
-          if(isUseFingerPrint) {
-            Router.push({pathname: '/registerWithFingerprintLoading', query: {first: this.props.query.first}});
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        })
+        if(!isStart) {
+          axios.get(urlStartReadFingerprint)
+          .then(res => {
+            if(res.data.status) {
+              isStart = true;
+            }
+          })
+        }
+        else {
+          axios.get(urlIsUseFingerprint)
+          .then(res => {
+            return res.data.status;
+          })
+          .then(isUseFingerPrint => {
+            if(isUseFingerPrint) {
+              Router.push({pathname: '/registerWithFingerprintLoading', query: {first: this.props.query.first}});
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          })
+        }
       }, 1000);
     }, 3000)
   }
 
   componentWillUnmount() {
     clearInterval(this.fingerprintInterval);
+  }
+
+  scanStateRender = () => {
+    return !this.state.nextState ? 
+    (
+      <div>
+        <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+        <br/>
+        <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
+      </div>
+    ) : (
+      <div>
+        <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ<span className='emph'>อีกครั้ง</span></span>
+        <br/>
+        <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
+      </div>
+    )
   }
 
   render() {
@@ -63,11 +95,14 @@ export default class RegisterWithFingerprint extends React.Component {
           <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
-        <div>
-          <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
-          <br/>
-          <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
-        </div>
+        {
+          !this.state.isRegister ? (
+            this.scanStateRender()
+          ) : (
+            <LoadingTemplate text='กำลังลงทะเบียนด้วยลายนิ้วมือ...'></LoadingTemplate>
+          )
+        }
+      
         <style jsx>{`
           img {
             heigh: auto;
