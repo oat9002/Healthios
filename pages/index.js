@@ -50,12 +50,12 @@ export default class Login extends React.Component {
         }
       })
       .then(resIsInsertCard => {
-        if(resIsInsertCard !== 'undefined' && resIsInsertCard.data.status) {
+        if(resIsInsertCard !== undefined && resIsInsertCard.data.status) {
           return axios.get(urlIsCardReadable)
         }
       })
       .then(resIsCardReadable => {
-        if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) { 
+        if(resIsCardReadable !== undefined && resIsCardReadable.data.status) { 
           this.setState({
             isLoading: true
           });
@@ -63,7 +63,7 @@ export default class Login extends React.Component {
         }
       })
       .then(resGetData => {
-        if(resGetData !== 'undefined' && resGetData.data.status) {
+        if(resGetData !== undefined && resGetData.data.status) {
           return axios({
             url: urlLogin,
             auth: {
@@ -140,12 +140,12 @@ export default class Login extends React.Component {
         }
       })
       .then(resIsCompareFinish => {
-        if(resIsCompareFinish !== 'undefined' && resIsCompareFinish.data.status) {
+        if(resIsCompareFinish !== undefined && resIsCompareFinish.data.status) {
           return axios.get(urlGetData)
         }
       })
       .then(resGetData => {
-        if(resGetData !== 'undefined') {
+        if(resGetData !== undefined) {
           this.setState({
             isLoading: true
           });

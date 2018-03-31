@@ -72,12 +72,12 @@ export default class Temperature extends React.Component {
           }
         })
         .then(resIsSensorFinishRead => {
-          if(resIsSensorFinishRead !== 'undefined' && resIsSensorFinishRead.data.status) {
+          if(resIsSensorFinishRead !== undefined && resIsSensorFinishRead.data.status) {
             return axios.get(urlGetData)
           }
         })
         .then(resGetData => {
-          if(resGetData !== 'undefined' && resGetData.data.status) {
+          if(resGetData !== undefined && resGetData.data.status) {
             if(typeof(Storage) !== "undefined") {
               localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
             }
