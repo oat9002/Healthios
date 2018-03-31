@@ -41,28 +41,30 @@ export default class Login extends React.Component {
     let urlGetData = this.piIp + '/thid';
 
     axios.get(urlIsStart)
-    .then(resStart => {
-      return resStart.data.status;
-    })
-    .then(status => {
-      if(status) {
-        return axios.get(urlIsInsertCard)
-      }
-    })
-    .then(resIsInsertCard => {
-      if(resIsInsertCard !== 'undefined' && resIsInsertCard.data.status) {
-        return axios.get(urlIsCardReadable)
-      }
-    })
-    .then(resIsCardReadable => {
-      if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) { 
-        this.setState({
-          isLoading: true
-        });
-
-        axios.get(urlGetData)
-        .then(resGetData => {
-          axios({
+      .then(resStart => {
+        return resStart.data.status;
+      })
+      .then(status => {
+        if(status) {
+          return axios.get(urlIsInsertCard)
+        }
+      })
+      .then(resIsInsertCard => {
+        if(resIsInsertCard !== 'undefined' && resIsInsertCard.data.status) {
+          return axios.get(urlIsCardReadable)
+        }
+      })
+      .then(resIsCardReadable => {
+        if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) { 
+          this.setState({
+            isLoading: true
+          });
+          return axios.get(urlGetData)
+        }
+      })
+      .then(resGetData => {
+        if(resGetData !== 'undefined' && resGetData.data.status) {
+          return axios({
             url: urlLogin,
             auth: {
               username: resGetData.data.data.idNumber,
@@ -85,20 +87,19 @@ export default class Login extends React.Component {
               }, 1000);
             }
           })
-        })
-      }
-      else {
+        }
+        else {
+          setTimeout(() => {
+            this.insertCard();
+          }, 1000);
+        }
+      })
+      .catch(err => {
+        console.log(err);
         setTimeout(() => {
           this.insertCard();
         }, 1000);
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      setTimeout(() => {
-        this.insertCard();
-      }, 1000);
-    })
+      })
   }
 
   readFingerprint() {
@@ -111,16 +112,22 @@ export default class Login extends React.Component {
 
     if(!isStart) {
       axios.get(urlStartReadFingerprint)
-      .then(res => {
-        if(res.data.status) {
-          isStart = true;
-        }
-        else {
+        .then(res => {
+          if(res.data.status) {
+            isStart = true;
+          }
+          else {
+            setTimeout(() => {
+              this.readFingerprint()
+            }, 1000);
+          }
+        })
+        .catch(err => {
+          console.log(err)
           setTimeout(() => {
             this.readFingerprint()
-          });
-        }
-      })
+          }, 1000);
+        })
     }
     else {
       axios.get(urlIsUseFingerprint)
@@ -130,64 +137,58 @@ export default class Login extends React.Component {
       .then(isUseFingerPrint => {
         if(isUseFingerPrint) {
           return axios.get(urlCompareFingerprint)
-          .then(res => {
-            return res.data.status;
-          })
-        }
-        else {
-          setTimeout(() => {
-            this.readFingerprint()
-          });
         }
       })
-      .then(isCompareFinish => {
-        if(isCompareFinish) {
+      .then(resIsCompareFinish => {
+        if(resIsCompareFinish !== 'undefined' && resIsCompareFinish.data.status) {
           return axios.get(urlGetData)
-          .then(res => {
-            if(res.data.status) {
-              return res.data.data.idNumber;
-            }
-            return null;
-          })
-        }
-        else {
-          setTimeout(() => {
-            this.readFingerprint()
-          });
         }
       })
-      .then(userKey => {
-        if(userKey != null) {
+      .then(resGetData => {
+        if(resGetData !== 'undefined') {
           this.setState({
             isLoading: true
           });
 
-          axios({
-            url: urlLogin,
-            auth: {
-              username: 'kmitl-test2',
-              password: 'test1234'
-            },
-            headers : {
-              'x-user-key': userKey
-            }
-          }).then(resLogin => {
-            if(typeof(Storage) !== "undefined") {
-              localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
-              localStorage.setItem('token', resLogin.data.token);
-            }
-            Router.push('/loginComplete');
-          }).catch(err => {
-            console.log(err);
-            setTimeout(() => {
-              this.readFingerprint()
-            });
-          })
+          if(resGetData.data.status) {
+            axios({
+              url: urlLogin,
+              auth: {
+                username: 'kmitl-test2',
+                password: 'test1234'
+              },
+              headers : {
+                'x-user-key': resGetData.data.data.idNumber
+              }
+            }).then(resLogin => {
+              if(typeof(Storage) !== "undefined") {
+                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+                localStorage.setItem('token', resLogin.data.token);
+              }
+              Router.push('/loginComplete');
+            }).catch(err => {
+              console.log(err);
+              setTimeout(() => {
+                this.readFingerprint()
+              }, 1000);
+            })
+          }
+          else {
+            Router.push({ pathname: '/registerWithFingerprint', query: { first: 'fingerprint' }});
+          }
         }
         else {
-          Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
+          setTimeout(() => {
+            this.readFingerprint()
+          }, 1000);
         }
-      }) 
+      })
+      .catch(err => {
+        console.log(err);
+        setTimeout(() => {
+          this.readFingerprint()
+        }, 1000);
+      })
     }
   }
 
