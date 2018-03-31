@@ -11,7 +11,8 @@ export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isRegister: false
+      isRegister: false,
+      isFinishRender: false,
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -24,15 +25,13 @@ export default class registerWithCard extends React.Component {
     return { config }
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if(this.props.query.first === 'card') {
       this.setState = {
-        isRegister: true
+        isRegister: true,
       };
     }
-  }
 
-  componentDidMount() {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
@@ -71,7 +70,7 @@ export default class registerWithCard extends React.Component {
       }
     })
     .then(resIsCardReadable => {
-      if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) {
+      if(resIsCardReadable !== undefined && resIsCardReadable.data.status) {
         axios.get(urlGetData)
         .then(res => {
           this.register(res.data.data);
@@ -133,8 +132,6 @@ export default class registerWithCard extends React.Component {
     })
   }
 
-  
-
   render() {
     return(
       <div className='content'>
@@ -143,15 +140,19 @@ export default class registerWithCard extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         {
-          this.state.isRegister ? (
-            <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
-          ) : 
-          (
-            <div>
-              <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
-              <br/>
-              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-            </div>
+          this.state.isFinishRender ? (
+            this.state.isRegister ? (
+              <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
+            ) : 
+            (
+              <div>
+                <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
+                <br/>
+                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+              </div>
+            )
+          ) : (
+            <div></div>
           )
         }
        
