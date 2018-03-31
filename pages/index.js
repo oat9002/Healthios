@@ -44,10 +44,6 @@ export default class Login extends React.Component {
     })
     .then(status => {
       if(status) {
-        this.setState({
-          isLoading: true
-        });
-
         return axios.get(urlIsInsertCard)
         .then(resInsertCard => {
           return resInsertCard.data.status;
@@ -74,6 +70,10 @@ export default class Login extends React.Component {
     })
     .then(status => {
       if(status) { 
+        this.setState({
+          isLoading: true
+        });
+
         axios.get(urlGetData)
         .then(resGetData => {
           axios({
@@ -137,10 +137,6 @@ export default class Login extends React.Component {
       })
       .then(isUseFingerPrint => {
         if(isUseFingerPrint) {
-          this.setState({
-            isLoading: true
-          });
-
           return axios.get(urlCompareFingerprint)
           .then(res => {
             return res.data.status;
@@ -170,6 +166,10 @@ export default class Login extends React.Component {
       })
       .then(userKey => {
         if(userKey != null) {
+          this.setState({
+            isLoading: true
+          });
+
           axios({
             url: urlLogin,
             auth: {
