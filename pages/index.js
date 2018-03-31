@@ -115,17 +115,18 @@ export default class Login extends React.Component {
         .then(res => {
           if(res.data.status) {
             this.isStart = true;
+            this.readFingerprint();
           }
           else {
             setTimeout(() => {
-              this.readFingerprint()
+              this.readFingerprint();
             }, 1000);
           }
         })
         .catch(err => {
           console.log(err)
           setTimeout(() => {
-            this.readFingerprint()
+            this.readFingerprint();
           }, 1000);
         })
     }
