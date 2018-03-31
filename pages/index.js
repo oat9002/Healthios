@@ -17,7 +17,6 @@ export default class Login extends React.Component {
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
-    this.fingerprintInterval = null;
     this.insertCard = this.insertCard.bind(this);
     this.readFingerprint = this.readFingerprint.bind(this)
   }
@@ -118,74 +117,86 @@ export default class Login extends React.Component {
     let urlLogin = this.serverIp + '/api/auth/login';
     let isStart = false;
 
-    this.fingerprintInterval = setInterval(() => {
-      if(!isStart) {
-        axios.get(urlStartReadFingerprint)
-        .then(res => {
-          if(res.data.status) {
-            isStart = true;
-          }
-        })
-      }
-      else {
-        axios.get(urlIsUseFingerprint)
-        .then(res => {
-          return res.data.status;
-        })
-        .then(isUseFingerPrint => {
-          if(isUseFingerPrint) {
-            this.setState({
-              isLoading: true
-            });
-  
-            return axios.get(urlCompareFingerprint)
-            .then(res => {
-              return res.data.status;
-            })
-          }
-        })
-        .then(isCompareFinish => {
-          if(isCompareFinish) {
-            return axios.get(urlGetData)
-            .then(res => {
-              if(res.data.status) {
-                return res.data.data.idNumber;
-              }
-              return null;
-            })
-          }
-        })
-        .then(userKey => {
-          if(userKey != null) {
-            axios({
-              url: urlLogin,
-              auth: {
-                username: 'kmitl-test2',
-                password: 'test1234'
-              },
-              headers : {
-                'x-user-key': userKey
-              }
-            }).then(resLogin => {
-              if(typeof(Storage) !== "undefined") {
-                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
-                localStorage.setItem('token', resLogin.data.token);
-              }
-              Router.push('/loginComplete');
-            }).catch(err => {
-              console.log(err);
-            })
-          }
-          else {
-            Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
-          }
-        }) 
-      }
-    }, 1000);
-  }
+    if(!isStart) {
+      axios.get(urlStartReadFingerprint)
+      .then(res => {
+        if(res.data.status) {
+          isStart = true;
+        }
+        else {
+          setTimeout(() => {
+            this.readFingerprint()
+          });
+        }
+      })
+    }
+    else {
+      axios.get(urlIsUseFingerprint)
+      .then(res => {
+        return res.data.status;
+      })
+      .then(isUseFingerPrint => {
+        if(isUseFingerPrint) {
+          this.setState({
+            isLoading: true
+          });
 
-  componentWillUnmount() {
-    clearInterval(this.fingerprintInterval);
+          return axios.get(urlCompareFingerprint)
+          .then(res => {
+            return res.data.status;
+          })
+        }
+        else {
+          setTimeout(() => {
+            this.readFingerprint()
+          });
+        }
+      })
+      .then(isCompareFinish => {
+        if(isCompareFinish) {
+          return axios.get(urlGetData)
+          .then(res => {
+            if(res.data.status) {
+              return res.data.data.idNumber;
+            }
+            return null;
+          })
+        }
+        else {
+          setTimeout(() => {
+            this.readFingerprint()
+          });
+        }
+      })
+      .then(userKey => {
+        if(userKey != null) {
+          axios({
+            url: urlLogin,
+            auth: {
+              username: 'kmitl-test2',
+              password: 'test1234'
+            },
+            headers : {
+              'x-user-key': userKey
+            }
+          }).then(resLogin => {
+            if(typeof(Storage) !== "undefined") {
+              localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+              localStorage.setItem('token', resLogin.data.token);
+            }
+            Router.push('/loginComplete');
+          }).catch(err => {
+            console.log(err);
+            setTimeout(() => {
+              this.readFingerprint()
+            });
+          })
+        }
+        else {
+          Router.push({pathname: '/registerWithFingerprintLoading', query: {first: 'fingerprint'}});
+        }
+      }) 
+    }
   }
 
   render() {
