@@ -69,51 +69,33 @@ export default class Temperature extends React.Component {
               isLoading: true
             });
             return axios.get(urlIsSensorFinishRead)
-              .then(res => {
-                return res.data.status
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readTemperature();
-                }, 1000)
-              })
-          }
-          else {
-            setTimeout(() => {
-              this.readTemperature();
-            }, 1000)
           }
         })
-        .then(isSensorFinishRead => {
-          if(isSensorFinishRead) {
-            axios.get(urlGetData)
-              .then(res => {
-                if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('thermal', JSON.stringify(res.data.data));
-                }
-                else {
-                  //if not support HTML 5 local storage
-                }
-                Router.push('/heartRate');
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readTemperature();
-                }, 1000)
-              })
+        .then(resIsSensorFinishRead => {
+          if(resIsSensorFinishRead !== 'undefined' && resIsSensorFinishRead.data.status) {
+            return axios.get(urlGetData)
+          }
+        })
+        .then(resGetData => {
+          if(resGetData !== 'undefined' && resGetData.data.status) {
+            if(typeof(Storage) !== "undefined") {
+              localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
+            }
+            else {
+              //if not support HTML 5 local storage
+            }
+            Router.push('/heartRate');
           }
           else {
             setTimeout(() => {
-              this.readTemperature();
+              this.readHearRate();
             }, 1000)
           }
         })
         .catch(err => {
           console.log(err);
           setTimeout(() => {
-            this.readTemperature();
+            this.readHearRate();
           }, 1000)
         })
     }

@@ -69,40 +69,22 @@ export default class BloodPressure extends React.Component {
               isLoading: true
             });
             return axios.get(urlIsSensorFinishRead)
-              .then(res => {
-                return res.data.status
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readBloodPressure();
-                }, 1000)
-              })
-          }
-          else {
-            setTimeout(() => {
-              this.readBloodPressure();
-            }, 1000)
           }
         })
-        .then(isSensorFinishRead => {
-          if(isSensorFinishRead) {
-            axios.get(urlGetData)
-              .then(res => {
-                if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('pressure', JSON.stringify(res.data.data));
-                }
-                else {
-                  //if not support HTML 5 local storage
-                }
-                Router.push('/temperature');
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readBloodPressure();
-                }, 1000)
-              })
+        .then(resIsSensorFinishRead => {
+          if(resIsSensorFinishRead !== 'undefined' && resIsSensorFinishRead.data.status) {
+            return axios.get(urlGetData)
+          }
+        })
+        .then(resGetData => {
+          if(resGetData !== 'undefined' && resGetData.data.status) {
+            if(typeof(Storage) !== "undefined") {
+              localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
+            }
+            else {
+              //if not support HTML 5 local storage
+            }
+            Router.push('/temperature');
           }
           else {
             setTimeout(() => {

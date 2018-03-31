@@ -64,41 +64,26 @@ export default class HeartRate extends React.Component {
         })
         .then(isSensorReady => {
           if(isSensorReady) {
+            this.setState({
+              isLoading: true
+            });
             return axios.get(urlIsSensorFinishRead)
-              .then(res => {
-                return res.data.status
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readHearRate();
-                }, 1000)
-              })
-          }
-          else {
-            setTimeout(() => {
-              this.readHearRate();
-            }, 1000)
           }
         })
-        .then(isSensorFinishRead => {
-          if(isSensorFinishRead) {
-            axios.get(urlGetData)
-              .then(res => {
-                if(typeof(Storage) !== "undefined") {
-                  localStorage.setItem('pulse', JSON.stringify(res.data.data));
-                }
-                else {
-                  //if not support HTML 5 local storage
-                }
-                Router.push('/measurementResult');
-              })
-              .catch(err => {
-                console.log(err);
-                setTimeout(() => {
-                  this.readHearRate();
-                }, 1000)
-              })
+        .then(resIsSensorFinishRead => {
+          if(resIsSensorFinishRead !== 'undefined' && resIsSensorFinishRead.data.status) {
+            return axios.get(urlGetData)
+          }
+        })
+        .then(resGetData => {
+          if(resGetData !== 'undefined' && resGetData.data.status) {
+            if(typeof(Storage) !== "undefined") {
+              localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
+            }
+            else {
+              //if not support HTML 5 local storage
+            }
+            Router.push('/measurementResult');
           }
           else {
             setTimeout(() => {

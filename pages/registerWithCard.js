@@ -15,7 +15,6 @@ export default class registerWithCard extends React.Component {
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
-    this.cardInterval = null;
     this.fingerprintInterval = null;
     this.pageTimeout = null;
   }
@@ -28,7 +27,7 @@ export default class registerWithCard extends React.Component {
   componentWillMount() {
     if(this.props.query.first === 'card') {
       this.setState = {
-        isRegister = true
+        isRegister: true
       };
     }
   }
@@ -41,7 +40,6 @@ export default class registerWithCard extends React.Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.cardInterval);
     clearTimeout(this.pageTimeout);
   }
 
@@ -58,40 +56,45 @@ export default class registerWithCard extends React.Component {
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
-    setTimeout(() => {
-      this.cardInterval = setInterval(() => {
-        axios.get(urlIsInsertCard)
-        .then(resInsertCard => {
-          return resInsertCard.data.status;
-        })
-        .then(status => {
-          this.setState = {
-            isLoading: true
-          };
 
-          if(status) {
-            axios.get(urlIsCardReadable)
-            .then(resIsCardReadable => {
-              return resIsCardReadable.data.status;
-            })
-          }
-        })
-        .then(status => {
-          if(status) {
-            axios.get(urlGetData)
-            .then(res => {
-              this.register(res.data.data);
-            })
-            .catch(err => {
-              console.log(err);
-            })
-          }
+    axios.get(urlIsInsertCard)
+    .then(resInsertCard => {
+      return resInsertCard.data.status;
+    })
+    .then(status => {
+      this.setState = {
+        isLoading: true
+      };
+
+      if(status) {
+        return axios.get(urlIsCardReadable)
+      }
+    })
+    .then(resIsCardReadable => {
+      if(resIsCardReadable !== 'undefined' && resIsCardReadable.data.status) {
+        axios.get(urlGetData)
+        .then(res => {
+          this.register(res.data.data);
         })
         .catch(err => {
           console.log(err);
+          setTimeout(() => {
+            this.process();
+          }, 1000);
         })
+      }
+      else {
+        setTimeout(() => {
+          this.process();
+        }, 1000);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      setTimeout(() => {
+        this.process();
       }, 1000);
-    }, 3000);
+    })
   }
 
   register = (patientInfo) => {
