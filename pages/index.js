@@ -110,7 +110,7 @@ export default class Login extends React.Component {
     let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
     let urlGetData = this.piIp + '/finger';
-    let urlLogin = this.serverIp + '/api/auth/login';
+    let urlLogin = this.serverIp + '/api/auth/login/fingerprint';
 
     if(!this.isStart) {
       axios.get(urlStartReadFingerprint)
@@ -172,6 +172,10 @@ export default class Login extends React.Component {
               }
               Router.push({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
             }).catch(err => {
+              this.setState({
+                isLoading: false
+              });
+
               console.log(err);
               setTimeout(() => {
                 this.readFingerprint();
