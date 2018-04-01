@@ -118,7 +118,7 @@ export default class registerWithCard extends React.Component {
     )
     .then(resRegister => {
       if(typeof(Storage) !== "undefined") {
-        localStorage.setItem('data', JSON.stringify(resRegister.data));
+        localStorage.setItem('registerCardInfo', JSON.stringify(resRegister.data));
       }
       //if(this.props.url.query.first === 'card'){
         Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});

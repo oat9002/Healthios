@@ -73,10 +73,10 @@ export default class Login extends React.Component {
             }
           }).then(resLogin => {
             if(typeof(Storage) !== "undefined") {
-              localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+              localStorage.setItem('loginCardInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
               localStorage.setItem('token', resLogin.data.token);
             }
-            Router.push('/loginComplete');
+            Router.push({ pathname: '/loginComplete', query: { first: 'card' }});
           }).catch(err => {
             if(err.response.status == 401) {
               Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
@@ -163,10 +163,10 @@ export default class Login extends React.Component {
               }
             }).then(resLogin => {
               if(typeof(Storage) !== "undefined") {
-                localStorage.setItem('data', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+                localStorage.setItem('loginFingerprintInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
                 localStorage.setItem('token', resLogin.data.token);
               }
-              Router.push('/loginComplete');
+              Router.push({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
             }).catch(err => {
               console.log(err);
               setTimeout(() => {

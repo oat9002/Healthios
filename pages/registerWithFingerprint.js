@@ -82,7 +82,7 @@ export default class RegisterWithFingerprint extends React.Component {
           if(resIsFinish !== undefined && resIsFinish.data.status) {
             axios.post(urlRegister, 
               {
-                'useId': JSON.parse(localStorage.getItem('data')).userId,
+                'useId': JSON.parse(localStorage.getItem('registerCardInfo')).user._id,
                 'fingerPrint': [resIsFinish.data.data]
               },
               { 
@@ -93,16 +93,16 @@ export default class RegisterWithFingerprint extends React.Component {
               }
             )
             .then(resRegister => {
-              if(resRegister.data.error) {
+              if(!resRegister.data.error) {
                 if(typeof(Storage) !== "undefined") {
-                  //localStorage.setItem('data', JSON.stringify(resRegister.data));
+                  localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
                 }
-                if(this.props.url.query.first === 'card'){
+                //if(this.props.url.query.first === 'card'){
                   Router.push('/registerComplete');
-                }
-                else if(this.props.url.query.first === 'fingerprint') {
-                  Router.push({ pathname: '/registerWithCard', query: { first: this.props.url.query.first }});
-                }
+                //}
+                // else if(this.props.url.query.first === 'fingerprint') {
+                //   Router.push({ pathname: '/registerWithCard', query: { first: this.props.url.query.first }});
+                // }
               }
               else {
                 setTimeout(() => {
