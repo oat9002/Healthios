@@ -34,12 +34,11 @@ export default class RegisterWithFingerprint extends React.Component {
   }
 
   readFingerprint = () => {
-    const piIp = this.props.config.piIp
-    let urlStartReadFingerprint = piIp + '/finger/start/template';
-    let urlReadFingerprint = piIp + '/finger/valid/template1';
-    let urlReadFingerprint2 = piIp + '/finger/valid/template2';
-    let urlIsFinish = piIp + '/finger/template';
-    let urlRegister = piIp + '/api/auth/register/fingerprint';
+    let urlStartReadFingerprint = this.props.config.piIp + '/finger/start/template';
+    let urlReadFingerprint = this.props.config.piIp + '/finger/valid/template1';
+    let urlReadFingerprint2 = this.props.config.piIp + '/finger/valid/template2';
+    let urlIsFinish = this.props.config.piIp + '/finger/template';
+    let urlRegister = this.props.config.serverIp + '/api/auth/register/fingerprint';
 
     if(!this.isStart) {
       axios.get(urlStartReadFingerprint)
