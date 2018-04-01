@@ -129,23 +129,6 @@ export default class RegisterWithFingerprint extends React.Component {
     clearInterval(this.fingerprintInterval);
   }
 
-  scanStateRender = () => {
-    return !this.state.nextState ? 
-    (
-      <div>
-        <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
-        <br/>
-        <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
-      </div>
-    ) : (
-      <div>
-        <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ<span className='emph'>อีกครั้ง</span></span>
-        <br/>
-        <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
-      </div>
-    )
-  }
-
   render() {
     return (
       <div className='content'>
@@ -155,7 +138,20 @@ export default class RegisterWithFingerprint extends React.Component {
         </Head>
         {
           !this.state.isRegister ? (
-            this.scanStateRender()
+            !this.state.nextState ? 
+              (
+                <div>
+                  <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+                  <br/>
+                  <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
+                </div>
+              ) : (
+                <div>
+                  <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ<span className='emph'>อีกครั้ง</span></span>
+                  <br/>
+                  <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
+                </div>
+              )
           ) : (
             <LoadingTemplate text='กำลังลงทะเบียนด้วยลายนิ้วมือ...'></LoadingTemplate>
           )
