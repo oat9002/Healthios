@@ -114,6 +114,11 @@ export default class RegisterWithFingerprint extends React.Component {
               }, 1000)
             })
           }
+          else {
+            setTimeout(() => {
+              this.readFingerprint();
+            }, 1000)
+          }
         })
         .catch(err => {
           console.log(err);
