@@ -23,7 +23,7 @@ export default class RegisterWithFingerprint extends React.Component {
   }
 
   componentDidMount() {
-    this.readFingerprint();
+    this.process();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout)
@@ -33,7 +33,7 @@ export default class RegisterWithFingerprint extends React.Component {
     clearTimeout(this.pageTimeout);
   }
 
-  readFingerprint = () => {
+  process = () => {
     let urlStartReadFingerprint = this.props.config.piIp + '/finger/start/template';
     let urlReadFingerprint = this.props.config.piIp + '/finger/valid/template1';
     let urlReadFingerprint2 = this.props.config.piIp + '/finger/valid/template2';
@@ -45,18 +45,18 @@ export default class RegisterWithFingerprint extends React.Component {
       .then(resStartReadFingerprint => {
          if(resStartReadFingerprint.data.status) {
            this.isStart = true;
-           this.readFingerprint();
+           this.process();
          }
          else {
            setTimeout(() => {
-              this.readFingerprint()
+              this.process();
            }, 1000);
          }
       })
       .catch(err => {
         console.log(err);
         setTimeout(() => {
-          this.readFingerprint()
+          this.process();
        }, 1000);
       })
     }
@@ -106,27 +106,27 @@ export default class RegisterWithFingerprint extends React.Component {
               }
               else {
                 setTimeout(() => {
-                  this.readFingerprint();
+                  this.process();
                 }, 1000)
               }
             })
             .catch(err => {
               console.log(err);
               setTimeout(() => {
-                this.readFingerprint();
+                this.process();
               }, 1000)
             })
           }
           else {
             setTimeout(() => {
-              this.readFingerprint();
+              this.process();
             }, 1000)
           }
         })
         .catch(err => {
           console.log(err);
           setTimeout(() => {
-            this.readFingerprint();
+            this.process();
           }, 1000)
         })
     }
