@@ -81,7 +81,10 @@ export default class RegisterWithFingerprint extends React.Component {
         .then(resIsFinish => {
           if(resIsFinish !== undefined && resIsFinish.data.status) {
             axios.post(urlRegister, 
-              [resIsFinish.data.data], 
+              {
+                'useId': JSON.parse(localStorage.getItem('data')).userId,
+                'fingerPrint': [resIsFinish.data.data]
+              },
               { 
                 headers : {
                   'X-Station-Key': '5ab75943167f6f116e668a85',

@@ -11,7 +11,8 @@ export default class registerWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isRegister: false
+      isFromCard: false,
+      isLoading: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -118,12 +119,12 @@ export default class registerWithCard extends React.Component {
       if(typeof(Storage) !== "undefined") {
         localStorage.setItem('data', JSON.stringify(resRegister.data));
       }
-      if(this.props.url.query.first === 'card'){
-        Router.push({pathname: '/registerWithFingerprint', query: {first: this.props.url.query.first}});
-      }
-      else if(this.props.url.query.first === 'fingerprint') {
-        Router.push('/registerComplete');
-      }
+      //if(this.props.url.query.first === 'card'){
+        Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
+      //}
+      //else if(this.props.url.query.first === 'fingerprint') {
+      //  Router.push('/registerComplete');
+      //}
     })
     .catch(err => {
       console.log(err);
@@ -143,7 +144,7 @@ export default class registerWithCard extends React.Component {
           <link href="/static/css/animate.css" rel="stylesheet" />
         </Head>
         {
-          this.state.isRegister ? (
+          this.state.isFromCard || this.state.isLoading ? (
             <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
           ) : 
           (

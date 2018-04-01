@@ -175,7 +175,7 @@ export default class Login extends React.Component {
             })
           }
           else {
-            Router.push({ pathname: '/registerWithFingerprint', query: { first: 'fingerprint' }});
+            Router.push({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
           }
         }
         else {
