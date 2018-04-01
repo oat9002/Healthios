@@ -207,16 +207,16 @@ export default class Login extends React.Component {
             <div>
               <img className='rubberBand bounce animated' id='logo' src="/static/pics/logo.png" />
             </div>
-            <div className='content'>
-              <div>
+            <div>
+              <div className='content' id='fingerprint'>
                 <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
                 <br/>
                 <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
               </div>
-              <div id='center'>
+              <div className='content' id='center'>
                 <span>หรือ</span>
               </div>
-              <div style={{width: '50%'}}>
+              <div className='content' id='idCard'>
                 <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
                 <br/>
                 <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
@@ -225,6 +225,12 @@ export default class Login extends React.Component {
             <style jsx>{`
               #center {
                 width 20%;
+              }
+              #idCard {
+                width 40%;
+              }
+              #fingerprint {
+                width 40%;
               }
               #logo {
                 width: 20%;
@@ -244,15 +250,13 @@ export default class Login extends React.Component {
             `}</style>
           <style jsx global>{`
             .content {
-              display: flex;
-              flex-direction: row;
-              justify-content: center;
-              align-items: center;
+              display: inline-block;
             }
             div {
               margin-top: 3%;
               margin-bottom: 3%;
               text-align: center;
+              vertical-align: middle;
             }
             body {
               background-color: #f7f7f7;
@@ -260,7 +264,7 @@ export default class Login extends React.Component {
               color: #393939;
               animation: fadein 1s;
               font-weight: 200;
-              overflow: hidden;
+              // overflow: hidden;
             }
             @keyframes fadein {
                 from { opacity: 0; };
