@@ -3,7 +3,6 @@ import Head from 'next/head';
 import LoadingTemplate from '../components/loadingTemplate';
 import Router from 'next/router';
 import axios from 'axios';
-import { start } from 'repl';
 
 const configJson = import('../static/appConfig.json');
 
