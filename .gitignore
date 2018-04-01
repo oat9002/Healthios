@@ -17,3 +17,5 @@ test/**/out
 .DS_Store
 .jshintrc
 out
+test.js
+pages/test3d.js
