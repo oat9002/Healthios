@@ -68,6 +68,10 @@ export default class Login extends React.Component {
             auth: {
               username: resGetData.data.data.idNumber,
               password: resGetData.data.data.birthOfDate.replace(/\//g, '')
+            },
+            headers : {
+              'X-Station-Key': '5ab75943167f6f116e668a85',
+              'X-Provider-Key': '5ab75831edfaaa6507e1e010'
             }
           }).then(resLogin => {
             if(typeof(Storage) !== "undefined") {
@@ -157,7 +161,9 @@ export default class Login extends React.Component {
                 password: 'test1234'
               },
               headers : {
-                'x-user-key': resGetData.data.data.idNumber
+                'x-user-key': resGetData.data.data,
+                'X-Station-Key': '5ab75943167f6f116e668a85',
+                'X-Provider-Key': '5ab75831edfaaa6507e1e010'
               }
             }).then(resLogin => {
               if(typeof(Storage) !== "undefined") {
