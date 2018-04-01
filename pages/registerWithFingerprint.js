@@ -103,14 +103,14 @@ export default class RegisterWithFingerprint extends React.Component {
               }
               else {
                 setTimeout(() => {
-                  this.readFingerprint
+                  this.readFingerprint();
                 }, 1000)
               }
             })
             .catch(err => {
               console.log(err);
               setTimeout(() => {
-                this.readFingerprint
+                this.readFingerprint();
               }, 1000)
             })
           }
@@ -118,7 +118,7 @@ export default class RegisterWithFingerprint extends React.Component {
         .catch(err => {
           console.log(err);
           setTimeout(() => {
-            this.readFingerprint
+            this.readFingerprint();
           }, 1000)
         })
     }
