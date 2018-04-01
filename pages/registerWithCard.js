@@ -28,7 +28,7 @@ export default class registerWithCard extends React.Component {
   componentWillMount() {
     if(this.props.url.query.first === 'card') {
       this.setState({
-        isRegister: true,
+        isFromCard: true,
       });
     }
   }
@@ -107,7 +107,8 @@ export default class registerWithCard extends React.Component {
       patientInfo, 
       { 
         headers : {
-          'X-Station-Key': '5ab75943167f6f116e668a85'
+          'X-Station-Key': '5ab75943167f6f116e668a85',
+          'X-Provider-Key': '5ab75831edfaaa6507e1e010'
         },
         auth: {
           username: 'kmitl-test2',
@@ -129,7 +130,7 @@ export default class registerWithCard extends React.Component {
     .catch(err => {
       console.log(err);
       setTimeout(() => {
-        this.register();
+        this.process();
       }, 1000);
     })
   }
