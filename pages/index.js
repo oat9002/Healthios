@@ -27,7 +27,7 @@ export default class Login extends React.Component {
 
   componentDidMount() {
     this.loginWithCard();
-    this.loginWithFingerprint();
+    this.readFingerprint();
   }
 
   
@@ -101,7 +101,7 @@ export default class Login extends React.Component {
       })
   }
 
-  loginWithFingerprint = () =>{
+  readFingerprint = () => {
     let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
     let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
@@ -113,18 +113,18 @@ export default class Login extends React.Component {
         .then(res => {
           if(res.data.status) {
             this.isStart = true;
-            this.loginWithFingerprint();
+            this.readFingerprint();
           }
           else {
             setTimeout(() => {
-              this.loginWithFingerprint();
+              this.readFingerprint();
             }, 1000);
           }
         })
         .catch(err => {
           console.log(err)
           setTimeout(() => {
-            this.loginWithFingerprint();
+            this.readFingerprint();
           }, 1000);
         })
     }
@@ -168,7 +168,7 @@ export default class Login extends React.Component {
             }).catch(err => {
               console.log(err);
               setTimeout(() => {
-                this.loginWithFingerprint();
+                this.readFingerprint();
               }, 1000);
             })
           }
@@ -178,14 +178,14 @@ export default class Login extends React.Component {
         }
         else {
           setTimeout(() => {
-            this.loginWithFingerprint();
+            this.readFingerprint();
           }, 1000);
         }
       })
       .catch(err => {
         console.log(err);
         setTimeout(() => {
-          this.loginWithFingerprint();
+          this.readFingerprint();
         }, 1000);
       })
     }
@@ -216,22 +216,15 @@ export default class Login extends React.Component {
               <div id='center'>
                 <span>หรือ</span>
               </div>
-              <div>
+              <div style={{width: '50%'}}>
                 <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
                 <br/>
                 <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
               </div>
             </div>
-            {/* <button id='submit' onClick={() => Router.push('/register')}>Register</button> */}
             <style jsx>{`
               #center {
                 width 20%;
-              }
-              div {
-                width: 100%
-                text-align: center;
-                margin-top: 3%;
-                margin-bottom: 3%;
               }
               #logo {
                 width: 20%;
@@ -255,6 +248,11 @@ export default class Login extends React.Component {
               flex-direction: row;
               justify-content: center;
               align-items: center;
+            }
+            div {
+              margin-top: 3%;
+              margin-bottom: 3%;
+              text-align: center;
             }
             body {
               background-color: #f7f7f7;
