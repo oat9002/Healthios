@@ -1,6 +1,7 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
 import Head from 'next/head';
+import Router from 'next/router';
 
 export default class QrCode extends React.Component {
   constructor(props) {
@@ -9,6 +10,13 @@ export default class QrCode extends React.Component {
       qrValue: ''
     };
   }
+
+  componentDidMount() {
+    setTimeout(() => {
+      Router.push('/final');
+    }, 15000);
+  }
+  
 
   componentWillMount() {
     if(typeof(Storage) !== 'undefined') {
