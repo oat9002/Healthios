@@ -27,10 +27,8 @@ export default class Login extends React.Component {
 
   componentDidMount() {
     this.loginWithCard();
-    this.readFingerprint();
+    this.loginWithFingerprint();
   }
-
-  
 
   loginWithCard = () => {
     let urlIsStart = this.piIp + '/thid/start'
@@ -85,27 +83,25 @@ export default class Login extends React.Component {
             }
             else {
               console.log(err);
-              setTimeout(() => {
-                this.loginWithCard();
-              }, 1000);
+              this.retryLoginWithCard();
             }
           })
         }
         else {
-          setTimeout(() => {
-            this.loginWithCard();
-          }, 1000);
+          this.retryLoginWithCard();
         }
       })
       .catch(err => {
         console.log(err);
-        setTimeout(() => {
-          this.loginWithCard();
-        }, 1000);
+        this.retryLoginWithCard();
       })
   }
 
-  readFingerprint = () => {
+  retryLoginWithCard = () => {
+    setTimeout(this.loginWithCard, this.props.config.retryTimeout);
+  }
+
+  loginWithFingerprint = () => {
     let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
     let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
@@ -117,18 +113,18 @@ export default class Login extends React.Component {
         .then(res => {
           if(res.data.status) {
             this.isStart = true;
-            this.readFingerprint();
+            this.retryLoginWithFingerprint();
           }
           else {
             setTimeout(() => {
-              this.readFingerprint();
+              this.retryLoginWithFingerprint();
             }, 1000);
           }
         })
         .catch(err => {
           console.log(err)
           setTimeout(() => {
-            this.readFingerprint();
+            this.retryLoginWithFingerprint();
           }, 1000);
         })
     }
@@ -177,9 +173,7 @@ export default class Login extends React.Component {
               });
 
               console.log(err);
-              setTimeout(() => {
-                this.readFingerprint();
-              }, 1000);
+              this.retryLoginWithFingerprint();
             })
           }
           else {
@@ -187,18 +181,18 @@ export default class Login extends React.Component {
           }
         }
         else {
-          setTimeout(() => {
-            this.readFingerprint();
-          }, 1000);
+          this.retryLoginWithFingerprint();
         }
       })
       .catch(err => {
         console.log(err);
-        setTimeout(() => {
-          this.readFingerprint();
-        }, 1000);
+        this.retryLoginWithFingerprint();
       })
     }
+  }
+
+  retryLoginWithFingerprint = () => {
+    setTimeout(this.loginWithFingerprint, this.props.config.retryTimeout);
   }
 
   render() {

@@ -48,16 +48,12 @@ export default class RegisterWithFingerprint extends React.Component {
            this.process();
          }
          else {
-           setTimeout(() => {
-              this.process();
-           }, 1000);
+          this.retryProcess();
          }
       })
       .catch(err => {
         console.log(err);
-        setTimeout(() => {
-          this.process();
-       }, 1000);
+        this.retryProcess();
       })
     }
     else {
@@ -105,31 +101,27 @@ export default class RegisterWithFingerprint extends React.Component {
                 // }
               }
               else {
-                setTimeout(() => {
-                  this.process();
-                }, 1000)
+                this.retryProcess();
               }
             })
             .catch(err => {
               console.log(err);
-              setTimeout(() => {
-                this.process();
-              }, 1000)
+              this.retryProcess();
             })
           }
           else {
-            setTimeout(() => {
-              this.process();
-            }, 1000)
+            this.retryProcess();
           }
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.process();
-          }, 1000)
+          this.retryProcess();
         })
     }
+  }
+
+  retryProcess = () => {
+    setTimeout(this.process, this.props.config.retryTimeout);
   }
 
   componentWillUnmount() {
