@@ -18,6 +18,7 @@ export default class registerWithCard extends React.Component {
     this.serverIp = this.props.config.serverIp;
     this.fingerprintInterval = null;
     this.pageTimeout = null;
+    this.retryTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -42,6 +43,7 @@ export default class registerWithCard extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
+    clearTimeout(this.retryTimeout);
   }
 
   prepareDataForRegister = (data) => {
@@ -79,22 +81,16 @@ export default class registerWithCard extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.process();
-          }, 1000);
+          this.retryProcess();
         })
       }
       else {
-        setTimeout(() => {
-          this.process();
-        }, 1000);
+        this.retryProcess();
       }
     })
     .catch(err => {
       console.log(err);
-      setTimeout(() => {
-        this.process();
-      }, 1000);
+      this.retryProcess();
     })
   }
 
@@ -129,12 +125,13 @@ export default class registerWithCard extends React.Component {
     })
     .catch(err => {
       console.log(err);
-      setTimeout(() => {
-        this.process();
-      }, 1000);
+      this.retryProcess();
     })
   }
 
+  retryProcess = () => {
+    this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
+  }
   
 
   render() {

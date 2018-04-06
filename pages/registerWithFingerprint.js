@@ -14,6 +14,7 @@ export default class RegisterWithFingerprint extends React.Component {
       isRegister: false
     };
     this.pageTimeout = null;
+    this.retryTimeout = null;
     this.isStart = false;
   }
 
@@ -31,6 +32,7 @@ export default class RegisterWithFingerprint extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
+    clearTimeout(this.retryTimeout);
   }
 
   process = () => {
@@ -42,19 +44,19 @@ export default class RegisterWithFingerprint extends React.Component {
 
     if(!this.isStart) {
       axios.get(urlStartReadFingerprint)
-      .then(resStartReadFingerprint => {
-         if(resStartReadFingerprint.data.status) {
-           this.isStart = true;
-           this.process();
-         }
-         else {
+        .then(resStartReadFingerprint => {
+          if(resStartReadFingerprint.data.status) {
+            this.isStart = true;
+            this.process();
+          }
+          else {
+            this.retryProcess();
+          }
+        })
+        .catch(err => {
+          console.log(err);
           this.retryProcess();
-         }
-      })
-      .catch(err => {
-        console.log(err);
-        this.retryProcess();
-      })
+        })
     }
     else {
       axios.get(urlReadFingerprint)
@@ -121,11 +123,7 @@ export default class RegisterWithFingerprint extends React.Component {
   }
 
   retryProcess = () => {
-    setTimeout(this.process, this.props.config.retryTimeout);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.fingerprintInterval);
+    this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
   }
 
   render() {
