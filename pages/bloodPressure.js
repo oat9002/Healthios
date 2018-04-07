@@ -126,7 +126,7 @@ export default class BloodPressure extends React.Component {
               <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
               <link rel="stylesheet" href="/static/css/animate.css"/>
             </Head>
-            <span>กรุณาใส่ปลอกเเขนที่เตรียมไว้ให้</span><br/>
+            <span>กรุณาใส่ปลอกเเขนที่เตรียมให้</span><br/>
             <img src="/static/pics/pressure.gif" alt=""/>
             <style jsx>{`
               img {
