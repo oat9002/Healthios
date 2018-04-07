@@ -14,6 +14,8 @@ export default class HeartRate extends React.Component {
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
+    this.readHearRateTimeout = null;
+    this.startSensorTimeout = null;
   }
 
   componentDidMount() {
@@ -26,6 +28,8 @@ export default class HeartRate extends React.Component {
 
   componentWillUnmount() {
      clearTimeout(this.pageTimeout);
+     clearTimeout(this.readHearRateTimeout);
+     clearTimeout(this.startSensorTimeout);
   }
 
   static async getInitialProps({ req, query }) {
@@ -39,7 +43,7 @@ export default class HeartRate extends React.Component {
       axios.get(urlStartSensor)
         .then(res => {
           if(!res.data.status) {
-            this.startSensor();
+            this.retryStartSensor();
           }
           else {
             this.isSensorStart = true;
@@ -47,9 +51,13 @@ export default class HeartRate extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          this.startSensor();
+          this.retryStartSensor();
         })
       }
+  }
+
+  retryStartSensor = () => {
+    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
   }
 
   readHearRate = () => {
@@ -86,18 +94,18 @@ export default class HeartRate extends React.Component {
             Router.push('/measurementResult');
           }
           else {
-            setTimeout(() => {
-              this.readHearRate();
-            }, 1000)
+            this.retryReadHeartRate();
           }
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.readHearRate();
-          }, 1000)
+          this.retryReadHeartRate();
         })
     }
+  }
+
+  retryReadHeartRate = () => {
+    this.readHearRateTimeout = setTimeout(this.readHearRate, this.props.config.retryTimeout);
   }
 
   render() {

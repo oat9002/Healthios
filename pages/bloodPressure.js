@@ -15,6 +15,8 @@ export default class BloodPressure extends React.Component {
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
+    this.readBloodPressureTimeout = null;
+    this.startSensorTimeout = null;
   }
 
   componentDidMount() {
@@ -27,6 +29,8 @@ export default class BloodPressure extends React.Component {
 
   componentWillUnmount() {
      clearTimeout(this.pageTimeout);
+     clearTimeout(this.readBloodPressureTimeout);
+     clearTimeout(this.startSensorTimeout);
   }
 
   static async getInitialProps({ req, query }) {
@@ -40,7 +44,7 @@ export default class BloodPressure extends React.Component {
       axios.get(urlStartSensor)
         .then(res => {
           if(!res.data.status) {
-            this.startSensor();
+            this.retryStartSensor();
           }
           else {
             this.isSensorStart = true;
@@ -48,9 +52,13 @@ export default class BloodPressure extends React.Component {
         })
         .catch(err => {
           console.log(err);
-          this.startSensor();
+          this.retryStartSensor();
         })
       }
+  }
+
+  retryStartSensor = () => {
+    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
   }
 
   readBloodPressure = () => {
@@ -87,18 +95,18 @@ export default class BloodPressure extends React.Component {
             Router.push('/temperature');
           }
           else {
-            setTimeout(() => {
-              this.readBloodPressure();
-            }, 1000)
+            this.readBloodPressure();
           }
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.readBloodPressure();
-          }, 1000)
+          this.readBloodPressure();
         })
     }
+  }
+
+  retryReadBloodPressure = () => {
+    this.readBloodPressureTimeout = setTimeout(this.readBloodPressure, this.props.config.retryTimeout);
   }
 
   componentWillUnmount() {

@@ -52,8 +52,8 @@ export default class RegisterResult extends React.Component {
         });
       }
     })
-    .catch(error => {
-      console.log(error);
+    .catch(err => {
+      console.log(err);
       this.getPersonalData();
     });
   }

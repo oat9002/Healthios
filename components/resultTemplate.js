@@ -1,10 +1,9 @@
-import React from "react";
-import Divider from "material-ui/Divider";
+import React from 'react';
+import Divider from 'material-ui/Divider';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Paper from "material-ui/Paper";
-import Head from "next/head";
+import Paper from 'material-ui/Paper';
+import Head from 'next/head';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 
 export default class ResultTemplate extends React.Component {
   render() {
@@ -16,14 +15,11 @@ export default class ResultTemplate extends React.Component {
         <div>
           <Head>
             <title>Result</title>
-            <link href="/static/css/animate.css" rel="stylesheet" />
-            <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
+            <link href='/static/css/animate.css' rel='stylesheet' />
+            <link href='https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai' rel='stylesheet' />
           </Head>
-          <h1 className="bounce animated title">ข้อมูลส่วนตัว</h1>
-          <div className="content">
-            <Paper className='profile' zDepth={2} style={{marginRight: '50px', height:'300px', width:'auto'}}>
-              <img className='pic' src={this.props.imgSrc}/>
-            </Paper>
+          <h1 className='bounce animated title'>ข้อมูลส่วนตัว</h1>
+          <div className='content'>
             <Paper zDepth={2}>
               <div className='info'>
                 <div className='text'>
@@ -200,13 +196,13 @@ export default class ResultTemplate extends React.Component {
   }
 }
 
-// ResultTemplate.propTypes = {
-//   imgSrc: PropTypes.element.isRequired,
-//   thaiName: PropTypes.element.isRequired,
-//   engName: PropTypes.element.isRequired,
-//   age: PropTypes.element.isRequired,
-//   dateOfBirth: PropTypes.element.isRequired,
-//   address: PropTypes.element.isRequired,
-//   idNumber: PropTypes.element.isRequired,
-//   gender: PropTypes.element.isRequired
-// }
+ResultTemplate.propTypes = {
+  // imgSrc: PropTypes.element.isRequired,
+  thaiName: PropTypes.element.isRequired,
+  engName: PropTypes.element.isRequired,
+  age: PropTypes.element.isRequired,
+  dateOfBirth: PropTypes.element.isRequired,
+  address: PropTypes.element.isRequired,
+  idNumber: PropTypes.element.isRequired,
+  gender: PropTypes.element.isRequired
+};
