@@ -135,59 +135,60 @@ export default class registerWithCard extends React.Component {
 
   render() {
     return(
-      <div className='content'>
-        <Head>
-          <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
-          <link href="/static/css/animate.css" rel="stylesheet" />
-        </Head>
-        {
-          this.state.isFromCard || this.state.isLoading ? (
-            <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
-          ) : 
-          (
-            <div>
-              <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
-              <br/>
-              <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-            </div>
-          )
-        }
-       
-        <style jsx>{`
-          img {
-            heigh: auto;
-            width: 30%;
+      <MuiThemeProvider>
+        <div className='content'>
+          <Head>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
+            <link href="/static/css/animate.css" rel="stylesheet" />
+          </Head>
+          {
+            this.state.isFromCard || this.state.isLoading ? (
+              <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
+            ) : 
+            (
+              <div>
+                <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
+                <br/>
+                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+              </div>
+            )
           }
-          span {
-            font-size: 4em;
-          }
-          .emph {
-            font-size: 2em;
-            font-weight: bold;
-          }
-          .emph2 {
-            font-weight: bold;
-            color: blue;
-          }
-          `}</style>
-          <style jsx global>{`
-            .content {
-              text-align: center;
-              margin-top: 13%;
+          <style jsx>{`
+            img {
+              heigh: auto;
+              width: 30%;
             }
-            body {
-              font-family: Kanit;
-              font-weight: 200;
-              color: #393939;
-              animation: fadein 1s;
-              background-color: #f7f7f7;
+            span {
+              font-size: 4em;
             }
-            @keyframes fadein {
-                from { opacity: 0; };
-                to   { opacity: 1; };
+            .emph {
+              font-size: 2em;
+              font-weight: bold;
             }
-          `}</style>
-      </div>
+            .emph2 {
+              font-weight: bold;
+              color: blue;
+            }
+            `}</style>
+            <style jsx global>{`
+              .content {
+                text-align: center;
+                margin-top: 13%;
+              }
+              body {
+                font-family: Kanit;
+                font-weight: 200;
+                color: #393939;
+                animation: fadein 1s;
+                background-color: #f7f7f7;
+              }
+              @keyframes fadein {
+                  from { opacity: 0; };
+                  to   { opacity: 1; };
+              }
+            `}</style>
+        </div>
+      </MuiThemeProvider>
     );
   }
 }

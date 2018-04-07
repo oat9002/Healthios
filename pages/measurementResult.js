@@ -42,7 +42,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   componentDidMount() {
-    this.pageTimeout = setTimeOut(() => {
+    this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout);
     this.saveMeasurementData().then(() => {
