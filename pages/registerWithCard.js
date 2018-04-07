@@ -63,11 +63,10 @@ export default class registerWithCard extends React.Component {
       return resInsertCard.data.status;
     })
     .then(status => {
-      this.setState({
-        isLoading: true
-      });
-
       if(status) {
+        this.setState({
+          isLoading: true
+        });
         return axios.get(urlIsCardReadable)
       }
     })
