@@ -18,6 +18,8 @@ export default class Login extends React.Component {
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
     this.isStart = false;
+    this.loginWithFingerprintTimeout = null;
+    this.loginWithCardTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -98,7 +100,7 @@ export default class Login extends React.Component {
   }
 
   retryLoginWithCard = () => {
-    setTimeout(this.loginWithCard, this.props.config.retryTimeout);
+    this.loginWithCardTimeout = setTimeout(this.loginWithCard, this.props.config.retryTimeout);
   }
 
   loginWithFingerprint = () => {
@@ -192,7 +194,12 @@ export default class Login extends React.Component {
   }
 
   retryLoginWithFingerprint = () => {
-    setTimeout(this.loginWithFingerprint, this.props.config.retryTimeout);
+    this.loginWithFingerprintTimeout = setTimeout(this.loginWithFingerprint, this.props.config.retryTimeout);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.loginWithFingerprintTimeout);
+    clearTimeout(this.loginWithCardTimeout);
   }
 
   render() {
