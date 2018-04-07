@@ -14,6 +14,7 @@ export default class RegisterWithFingerprint extends React.Component {
       isRegister: false
     };
     this.pageTimeout = null;
+    this.retryTimeout = null;
     this.isStart = false;
   }
 
@@ -31,6 +32,7 @@ export default class RegisterWithFingerprint extends React.Component {
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
+    clearTimeout(this.retryTimeout);
   }
 
   process = () => {
@@ -42,23 +44,19 @@ export default class RegisterWithFingerprint extends React.Component {
 
     if(!this.isStart) {
       axios.get(urlStartReadFingerprint)
-      .then(resStartReadFingerprint => {
-         if(resStartReadFingerprint.data.status) {
-           this.isStart = true;
-           this.process();
-         }
-         else {
-           setTimeout(() => {
-              this.process();
-           }, 1000);
-         }
-      })
-      .catch(err => {
-        console.log(err);
-        setTimeout(() => {
-          this.process();
-       }, 1000);
-      })
+        .then(resStartReadFingerprint => {
+          if(resStartReadFingerprint.data.status) {
+            this.isStart = true;
+            this.process();
+          }
+          else {
+            this.retryProcess();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.retryProcess();
+        })
     }
     else {
       axios.get(urlReadFingerprint)
@@ -105,35 +103,27 @@ export default class RegisterWithFingerprint extends React.Component {
                 // }
               }
               else {
-                setTimeout(() => {
-                  this.process();
-                }, 1000)
+                this.retryProcess();
               }
             })
             .catch(err => {
               console.log(err);
-              setTimeout(() => {
-                this.process();
-              }, 1000)
+              this.retryProcess();
             })
           }
           else {
-            setTimeout(() => {
-              this.process();
-            }, 1000)
+            this.retryProcess();
           }
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.process();
-          }, 1000)
+          this.retryProcess();
         })
     }
   }
 
-  componentWillUnmount() {
-    clearInterval(this.fingerprintInterval);
+  retryProcess = () => {
+    this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
   }
 
   render() {
