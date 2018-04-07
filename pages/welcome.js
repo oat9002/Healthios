@@ -20,14 +20,9 @@ export default class Welcome extends React.Component {
 
   componentWillMount() {
     if(typeof(Storage) !== "undefined") {
-      if(this.props.url.query.first === 'card') {
-        this.setState({
-          data: JSON.parse(cryptoJs.AES.decrypt(localStorage.getItem('loginCardInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))
-        });
-      }
-      else {
-        //fingerprint
-      }
+      this.setState({
+        data: JSON.parse(cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))
+      });
     }
   }
 
