@@ -57,7 +57,7 @@ export default class WeightAndHeight extends React.Component {
   }
 
   readWeightAndHeight = () => {
-    if(!this.isSensorStart) return;
+    if(!this.isSensorStart) this.retryReadWeightAndHeight();
 
     axios.all([axios.get(this.piIp + '/weight/valid'), axios.get(this.piIp + '/height/valid')])
       .then(axios.spread((weightValid, heightValid) => {
