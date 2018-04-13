@@ -7,7 +7,7 @@ export default class QrCode extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      qrValue: ''
+      qrData: ''
     };
   }
 
@@ -22,7 +22,7 @@ export default class QrCode extends React.Component {
     if(typeof(Storage) !== 'undefined') {
       let data = JSON.parse(localStorage.getItem('registerCardInfo'));
       this.setState({
-        qrValue: data //Fixme 
+        qrData: data //Fixme 
       });
     }
   }
@@ -37,10 +37,10 @@ export default class QrCode extends React.Component {
         </Head>
         <div className='content'>
           <div className='txt'>
-            scan this qrcode to change your password on monile application
+            แสกน QR Code เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
           </div>
           <div className='qr'>
-            <QRCode value={ this.state.qrValue === undefined ? 'www.' : 'w' } size={ 128 * 4 }/>
+            <QRCode value={ this.state.qrValue === undefined ? 'www.google.co.th' : this.state.qrData } size={ 128 * 4 }/>
           </div>
         </div>
         <style jsx>{`
