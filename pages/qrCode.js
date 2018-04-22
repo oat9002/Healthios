@@ -17,6 +17,9 @@ export default class QrCode extends React.Component {
     }, 15000);
   }
   
+  componentWillUnmount() {
+    localStorage.clear();
+  }
 
   componentWillMount() {
     if(typeof(Storage) !== 'undefined') {
@@ -27,7 +30,6 @@ export default class QrCode extends React.Component {
     }
   }
   
-
   render() {
     return (
       <div>
