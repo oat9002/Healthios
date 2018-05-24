@@ -5,143 +5,143 @@ import Paper from 'material-ui/Paper';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 
-export default class ResultTemplate extends React.Component {
-  render() {
-    const style = {
-      marginLeft: 20
-    };
-    return (
-      <MuiThemeProvider>
-        <div>
-          <Head>
-            <title>Result</title>
-            <link href='/static/css/animate.css' rel='stylesheet' />
-            <link href='https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai' rel='stylesheet' />
-          </Head>
-          <h1 className='bounce animated title'>ข้อมูลส่วนตัว</h1>
-          <div className='content'>
-            <Paper zDepth={2}>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+const style = {
+  marginLeft: 20
+};
+
+const resultTemplate = (props) => {
+  return (
+    <MuiThemeProvider>
+      <div>
+        <Head>
+          <title>Result</title>
+          <link href='/static/css/animate.css' rel='stylesheet' />
+          <link href='https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai' rel='stylesheet' />
+        </Head>
+        <h1 className='bounce animated title'>ข้อมูลส่วนตัว</h1>
+        <div className='content'>
+          <Paper zDepth={2}>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           ชื่อ(ไทย)
-                        </td>
-                        <td className='value'>
-                          {this.props.thaiName}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <Divider></Divider>
+                      </td>
+                      <td className='value'>
+                        {props.thaiName}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+              <Divider></Divider>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           ชื่อ(อังกฤษ)
-                        </td>
-                        <td className='value'>
-                          {this.props.engName}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <Divider></Divider>
+                      </td>
+                      <td className='value'>
+                        {props.engName}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+              <Divider></Divider>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           เพศ
-                        </td>
-                        <td className='value'>
-                          {this.props.gender}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <Divider></Divider>
+                      </td>
+                      <td className='value'>
+                        {props.gender}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+              <Divider></Divider>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           อายุ
-                        </td>
-                        <td className='value'>
-                          {this.props.age}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <Divider></Divider>
+                      </td>
+                      <td className='value'>
+                        {props.age}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+              <Divider></Divider>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           วันเกิด
-                        </td>
-                        <td className='value'>
-                          {this.props.dateOfBirth}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                      </td>
+                      <td className='value'>
+                        {props.dateOfBirth}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <Divider></Divider>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
+                          ที่อยู่
+                      </td>
+                      <td className='value'>
+                        {props.address}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
                 <Divider></Divider>
               </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
-                          ที่อยู่
-                        </td>
-                        <td className='value'>
-                          {this.props.address}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <Divider></Divider>
-                </div>
-              </div>
-              <div className='info'>
-                <div className='text'>
-                  <table>
-                    <tbody>
-                      <tr>
-                        <td className='key'>
+            </div>
+            <div className='info'>
+              <div className='text'>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td className='key'>
                           เลขประจำตัวประชาชน
-                        </td>
-                        <td className='value'>
-                          {this.props.idNumber}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                      </td>
+                      <td className='value'>
+                        {props.idNumber}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-            </Paper>
-          </div>
-          <style jsx>{`
+            </div>
+          </Paper>
+        </div>
+        <style jsx>{`
             .content {
               display: flex;
               justify-content: center;
@@ -177,7 +177,7 @@ export default class ResultTemplate extends React.Component {
               word-wrap:break-word;
             }
           `}</style>
-          <style jsx global>{`
+        <style jsx global>{`
             body {
               font-family: Kanit;
               font-weight: 200;
@@ -190,13 +190,12 @@ export default class ResultTemplate extends React.Component {
                 to   { opacity: 1; };
             }
           `}</style>
-        </div>
-      </MuiThemeProvider>
-    );
-  }
-}
+      </div>
+    </MuiThemeProvider>
+  );
+};
 
-ResultTemplate.propTypes = {
+resultTemplate.propTypes = {
   // imgSrc: PropTypes.element.isRequired,
   thaiName: PropTypes.element.isRequired,
   engName: PropTypes.element.isRequired,
@@ -206,3 +205,5 @@ ResultTemplate.propTypes = {
   idNumber: PropTypes.element.isRequired,
   gender: PropTypes.element.isRequired
 };
+
+export default resultTemplate;
