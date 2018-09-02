@@ -65,9 +65,12 @@ export default class RegisterWithFingerprint extends React.Component {
         })
         .then(status => {
           if(status) {
-            this.setState({
-              nextState: true
-            });
+            if(!this.state.nextState) {
+              this.setState({
+                nextState: true
+              });
+            }
+           
             return axios.get(urlReadFingerprint2);
           }
         })
@@ -77,6 +80,12 @@ export default class RegisterWithFingerprint extends React.Component {
           }
         })
         .then(resIsFinish => {
+          if(!this.state.isRegister) {
+            this.setState({
+              isRegister: true
+            });
+          }
+
           if(resIsFinish !== undefined && resIsFinish.data.status) {
             axios.post(urlRegister, 
               {
@@ -95,12 +104,8 @@ export default class RegisterWithFingerprint extends React.Component {
                 if(typeof(Storage) !== "undefined") {
                   localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
                 }
-                //if(this.props.url.query.first === 'card'){
-                  Router.push('/registerComplete');
-                //}
-                // else if(this.props.url.query.first === 'fingerprint') {
-                //   Router.push({ pathname: '/registerWithCard', query: { first: this.props.url.query.first }});
-                // }
+                
+                Router.push('/registerComplete');
               }
               else {
                 this.retryProcess();

@@ -43,7 +43,7 @@ export default class WeightAndHeight extends React.Component {
           this.startSensor = true;
         }
         else {
-          this.retryStartSensor();
+          throw `wieght status: ${ weightResponse.data.status }, height status: ${ heightResponse.data.status }`
         }
       }))
       .catch(err => {
@@ -64,12 +64,15 @@ export default class WeightAndHeight extends React.Component {
         if(weightValid.data.status && heightValid.data.status) {
           return true;
         }
+
         return false;
       }))
       .then(valid => {
-        this.setState({
-          isProcess: true
-        });
+        if(!this.state.isProcess) {
+          this.setState({
+            isProcess: true
+          });
+        }
         
         if(valid) {
           axios.all([axios.get(this.piIp + '/weight/finish'), axios.get(this.piIp + '/height/finish')])

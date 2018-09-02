@@ -12,6 +12,7 @@ export default class QrCode extends React.Component {
   }
 
   componentDidMount() {
+    this.setQrcode();
     setTimeout(() => {
       Router.push('/final');
     }, 15000);
@@ -21,11 +22,11 @@ export default class QrCode extends React.Component {
     localStorage.clear();
   }
 
-  componentWillMount() {
+  setQrcode = () => {
     if(typeof(Storage) !== 'undefined') {
       let data = JSON.parse(localStorage.getItem('registerCardInfo'));
       this.setState({
-        qrData: data //Fixme 
+        qrData: data.user.firstTimeKey //Fixme 
       });
     }
   }

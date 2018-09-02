@@ -26,8 +26,8 @@ export default class registerWithCard extends React.Component {
     return { config }
   }
 
-  componentWillMount() {
-    if(this.props.url.query.first === 'card') {
+  setIsFromCard() {
+    if(this.props.url.query.first === 'card' && !this.state.isFromCard) {
       this.setState({
         isFromCard: true,
       });
@@ -35,6 +35,7 @@ export default class registerWithCard extends React.Component {
   }
 
   componentDidMount() {
+    this.setIsFromCard();
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
@@ -66,9 +67,12 @@ export default class registerWithCard extends React.Component {
     })
     .then(status => {
       if(status) {
-        this.setState({
-          isLoading: true
-        });
+        if(!this.state.isLoading) {
+          this.setState({
+            isLoading: true
+          });
+        }
+       
         return axios.get(urlIsCardReadable)
       }
     })
@@ -115,12 +119,8 @@ export default class registerWithCard extends React.Component {
       if(typeof(Storage) !== "undefined") {
         localStorage.setItem('registerCardInfo', JSON.stringify(resRegister.data));
       }
-      //if(this.props.url.query.first === 'card'){
-        Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
-      //}
-      //else if(this.props.url.query.first === 'fingerprint') {
-      //  Router.push('/registerComplete');
-      //}
+
+      Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
     })
     .catch(err => {
       console.log(err);
@@ -131,7 +131,6 @@ export default class registerWithCard extends React.Component {
   retryProcess = () => {
     this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
   }
-  
 
   render() {
     return(

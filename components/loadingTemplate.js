@@ -53,7 +53,7 @@ const loadingTemplate = (props) => {
 };
 
 loadingTemplate.propTypes = {
-  text: PropTypes.element.isRequired
+  text: PropTypes.string.isRequired
 };
 
 export default loadingTemplate;

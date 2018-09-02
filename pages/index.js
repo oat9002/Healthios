@@ -5,10 +5,11 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
+import { throws } from 'assert';
 
 const configJson = import('../static/appConfig.json');
 
-export default class Login extends React.Component {
+export default class Login extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,9 +57,11 @@ export default class Login extends React.Component {
       })
       .then(resIsCardReadable => {
         if(resIsCardReadable !== undefined && resIsCardReadable.data.status) { 
-          this.setState({
-            isLoading: true
-          });
+          if(!this.state.isLoading) {
+            this.setState({
+              isLoading: true
+            });
+          }  
           return axios.get(urlGetData)
         }
       })
@@ -86,13 +89,12 @@ export default class Login extends React.Component {
               Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
             }
             else {
-              console.log(err);
-              this.retryLoginWithCard();
+              throw err;
             }
           })
         }
         else {
-          this.retryLoginWithCard();
+          throw 'resGetData has a problem!'
         }
       })
       .catch(err => {
@@ -120,16 +122,12 @@ export default class Login extends React.Component {
             this.retryLoginWithFingerprint();
           }
           else {
-            setTimeout(() => {
-              this.retryLoginWithFingerprint();
-            }, 1000);
+              throw 'status is false'
           }
         })
         .catch(err => {
           console.log(err)
-          setTimeout(() => {
             this.retryLoginWithFingerprint();
-          }, 1000);
         })
     }
     else {
@@ -149,10 +147,12 @@ export default class Login extends React.Component {
       })
       .then(resGetData => {
         if(resGetData !== undefined) {
-          this.setState({
-            isLoading: true
-          });
-
+          if(!this.state.isLoading) {
+            this.setState({
+              isLoading: true
+            });  
+          }
+        
           if(resGetData.data.status) {
             axios({
               url: urlLogin,

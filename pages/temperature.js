@@ -15,6 +15,7 @@ export default class Temperature extends React.Component {
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
+    this.readTemperatureTimeout = null;
   }
 
   componentDidMount() {
@@ -35,7 +36,7 @@ export default class Temperature extends React.Component {
   }
 
   startSensor = () => {
-    let urlStartSensor = this.props.config + '/thermal/start';
+    let urlStartSensor = this.props.config.piIp + '/thermal/start';
     if(!this.isSensorStart) {
       axios.get(urlStartSensor)
         .then(res => {
@@ -56,8 +57,8 @@ export default class Temperature extends React.Component {
   readTemperature = () => {
     if(this.isSensorStart) {
       let urlIsSensorReady = this.props.config.piIp + '/thermal/valid';
-      let urlIsSensorFinishRead = this.props.config + '/thermal/finish';
-      let urlGetData = this.props.config + '/thermal';
+      let urlIsSensorFinishRead = this.props.config.piIp + '/thermal/finish';
+      let urlGetData = this.props.config.piIp + '/thermal';
 
       axios.get(urlIsSensorReady)
         .then(res => {
@@ -65,9 +66,12 @@ export default class Temperature extends React.Component {
         })
         .then(isSensorReady => {
           if(isSensorReady) {
-            this.setState({
-              isLoading: true
-            });
+            if(!this.state.isLoading) {
+              this.setState({
+                isLoading: true
+              });
+            }
+      
             return axios.get(urlIsSensorFinishRead)
           }
         })
@@ -76,8 +80,8 @@ export default class Temperature extends React.Component {
             return axios.get(urlGetData)
           }
         })
-        .then(resGetData => {
-          if(resGetData !== undefined && resGetData.data.status) {
+        .then(resGetData => { 
+          if(resGetData !== "undefined") {
             if(typeof(Storage) !== "undefined") {
               localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
             }
@@ -85,20 +89,20 @@ export default class Temperature extends React.Component {
               //if not support HTML 5 local storage
             }
             Router.push('/heartRate');
-          }
-          else {
-            setTimeout(() => {
-              this.readHearRate();
-            }, 1000)
-          }
+          } 
         })
         .catch(err => {
           console.log(err);
-          setTimeout(() => {
-            this.readHearRate();
-          }, 1000)
+          this.retryReadTemperature();
         })
     }
+    else {
+      this.retryReadTemperature();
+    }
+  }
+
+  retryReadTemperature = () => {
+    this.readTemperatureTimeout = setTimeout(this.readTemperature, this.props.config.retryTimeout);
   }
 
   render() {

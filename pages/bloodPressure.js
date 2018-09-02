@@ -73,9 +73,12 @@ export default class BloodPressure extends React.Component {
         })
         .then(isSensorReady => {
           if(isSensorReady) {
-            this.setState({
-              isLoading: true
-            });
+            if(!this.state.isLoading) {
+              this.setState({
+                isLoading: true
+              });
+            }
+            
             return axios.get(urlIsSensorFinishRead)
           }
         })

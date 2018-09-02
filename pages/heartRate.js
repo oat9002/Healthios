@@ -3,6 +3,7 @@ import Head from 'next/head';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
+import Router from 'next/router';
 
 const configJson = import('../static/appConfig.json');
 
@@ -38,7 +39,7 @@ export default class HeartRate extends React.Component {
   }
 
   startSensor = () => {
-    let urlStartSensor = this.props.config + '/pulse/start';
+    let urlStartSensor = this.props.config.piIp + '/pulse/start';
     if(!this.isSensorStart) {
       axios.get(urlStartSensor)
         .then(res => {
@@ -72,9 +73,12 @@ export default class HeartRate extends React.Component {
         })
         .then(isSensorReady => {
           if(isSensorReady) {
-            this.setState({
-              isLoading: true
-            });
+            if(!this.state.isLoading) {
+              this.setState({
+                isLoading: true
+              });
+            }
+            
             return axios.get(urlIsSensorFinishRead)
           }
         })
@@ -84,7 +88,7 @@ export default class HeartRate extends React.Component {
           }
         })
         .then(resGetData => {
-          if(resGetData !== undefined && resGetData.data.status) {
+          if(resGetData !== undefined) {
             if(typeof(Storage) !== "undefined") {
               localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
             }
@@ -93,14 +97,15 @@ export default class HeartRate extends React.Component {
             }
             Router.push('/measurementResult');
           }
-          else {
-            this.retryReadHeartRate();
-          }
+         
         })
         .catch(err => {
           console.log(err);
           this.retryReadHeartRate();
         })
+    }
+    else {
+      this.retryReadHeartRate();
     }
   }
 
@@ -115,7 +120,7 @@ export default class HeartRate extends React.Component {
       <MuiThemeProvider>
         {
           isProcess ? (
-            <Loading></Loading>
+            <Loading />
           ) : (
             <div>
               <Head>
