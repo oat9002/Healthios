@@ -31,12 +31,12 @@ export default class MeasurementResult extends React.Component {
   componentWillMount() {
     if(typeof(Storage) != 'undefined') {
       this.setState({
-        userId: localStorage.getItem('userId'),
-        weight: localStorage.getItem('weight'),
-        height: localStorage.getItem('height'),
-        pressure: JSON.parse(localStorage.getItem('pressure')),
-        thermal: localStorage.getItem('thermal'),
-        pulse: localStorage.getItem('pulse')
+        userId: localStorage.getItem('userId') !== undefined ? localStorage.getItem('userId') : '',
+        weight: localStorage.getItem('weight') !== undefined ? localStorage.getItem('weight') : '',
+        height: localStorage.getItem('height') !== undefined ? localStorage.getItem('height') : '',
+        pressure: JSON.parse(localStorage.getItem('pressure') !== undefined ? localStorage.getItem('pressure') : ['', '', '']),
+        thermal: localStorage.getItem('thermal') !== undefined ? localStorage.getItem('thermal') : '',
+        pulse: localStorage.getItem('pulse') !== undefined ? localStorage.getItem('pulse') : ''
       });
     }
   }

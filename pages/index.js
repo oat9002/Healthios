@@ -5,7 +5,6 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
-import { throws } from 'assert';
 
 const configJson = import('../static/appConfig.json');
 
