@@ -101,7 +101,7 @@ export default class RegisterWithFingerprint extends React.Component {
             )
             .then(resRegister => {
               if(!resRegister.data.error) {
-                if(typeof(Storage) !== "undefined") {
+                if(typeof(Storage) !== undefined) {
                   localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
                 }
                 

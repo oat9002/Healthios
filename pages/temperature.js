@@ -81,8 +81,8 @@ export default class Temperature extends React.Component {
           }
         })
         .then(resGetData => { 
-          if(resGetData !== "undefined") {
-            if(typeof(Storage) !== "undefined") {
+          if(resGetData !== undefined) {
+            if(typeof(Storage) !== undefined) {
               localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
             }
             else {
@@ -90,6 +90,9 @@ export default class Temperature extends React.Component {
             }
             Router.push('/heartRate');
           } 
+          else {
+            throw `Calll ${ urlGetData } failed`
+          }
         })
         .catch(err => {
           console.log(err);

@@ -89,7 +89,7 @@ export default class HeartRate extends React.Component {
         })
         .then(resGetData => {
           if(resGetData !== undefined) {
-            if(typeof(Storage) !== "undefined") {
+            if(typeof(Storage) !== undefined) {
               localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
             }
             else {

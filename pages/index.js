@@ -78,7 +78,7 @@ export default class Login extends React.PureComponent {
               'X-Provider-Key': '5ab75831edfaaa6507e1e010'
             }
           }).then(resLogin => {
-            if(typeof(Storage) !== "undefined") {
+            if(typeof(Storage) !== undefined) {
               localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
               localStorage.setItem('token', resLogin.data.token);
               localStorage.setItem('isLogin', true);
@@ -94,7 +94,7 @@ export default class Login extends React.PureComponent {
           })
         }
         else {
-          throw 'resGetData has a problem!'
+          throw `Call ${ urlGetData } failed`
         }
       })
       .catch(err => {
@@ -166,7 +166,7 @@ export default class Login extends React.PureComponent {
                 'X-Provider-Key': '5ab75831edfaaa6507e1e010'
               }
             }).then(resLogin => {
-              if(typeof(Storage) !== "undefined") {
+              if(typeof(Storage) !== undefined) {
                 localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
                 localStorage.setItem('token', resLogin.data.token);
                 localStorage.setItem('isLogin', true);

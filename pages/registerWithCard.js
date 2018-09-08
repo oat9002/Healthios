@@ -116,7 +116,7 @@ export default class registerWithCard extends React.Component {
       }
     )
     .then(resRegister => {
-      if(typeof(Storage) !== "undefined") {
+      if(typeof(Storage) !== undefined) {
         localStorage.setItem('registerCardInfo', JSON.stringify(resRegister.data));
       }
 

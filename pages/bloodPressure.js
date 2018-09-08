@@ -88,8 +88,8 @@ export default class BloodPressure extends React.Component {
           }
         })
         .then(resGetData => {
-          if(resGetData !== undefined && resGetData.data.status) {
-            if(typeof(Storage) !== "undefined") {
+          if(resGetData !== undefined) {
+            if(typeof(Storage) !== undefined) {
               localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
             }
             else {

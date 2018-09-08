@@ -88,7 +88,7 @@ export default class WeightAndHeight extends React.Component {
             if(finish) {
               axios.all([axios.get(this.piIp + '/weight/'), axios.get(this.piIp + '/height/')])
               .then(axios.spread((weight, height) => {
-                if(typeof(Storage) !== "undefined") {
+                if(typeof(Storage) !== undefined) {
                   localStorage.setItem('weight', JSON.stringify(weight.data.data));
                   localStorage.setItem('height', JSON.stringify(height.data.data));
                 }
