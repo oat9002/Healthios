@@ -2,7 +2,7 @@ import React from 'react';
 import CompleteTemplate from '../components/completeTemplate';
 import Router from 'next/router';
 
-export default class registerComplete extends React.Component {
+export default class LoginComplete extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
