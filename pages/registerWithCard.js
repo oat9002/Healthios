@@ -48,11 +48,14 @@ export default class registerWithCard extends React.Component {
   }
 
   prepareDataForRegister = (data) => {
-    let dateOfBirth = parseInt(data.birthOfDate.substring(0,2));
-    let monthOfBirth = parseInt(data.birthOfDate.substring(3,5));
-    let yearOfBirth = parseInt(data.birthOfDate.substring(6, data.birthOfDate.length));
+    let newData = { ...data };
+    let dateOfBirth = parseInt(newData.birthOfDate.substring(0,2));
+    let monthOfBirth = parseInt(newData.birthOfDate.substring(3,5));
+    let yearOfBirth = parseInt(newData.birthOfDate.substring(6, data.birthOfDate.length));
 
-    data.birthOfDate = yearOfBirth + '-' + monthOfBirth + '-' + dateOfBirth;
+    newData.birthOfDate = yearOfBirth + '-' + monthOfBirth + '-' + dateOfBirth;
+
+    return newData;
   }
 
   process = () => {
@@ -100,10 +103,10 @@ export default class registerWithCard extends React.Component {
   register = (patientInfo) => {
     let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
 
-    this.prepareDataForRegister(patientInfo);
+    let updatedPatientInfo = this.prepareDataForRegister(patientInfo);
 
     axios.post(urlRegister, 
-      patientInfo, 
+      updatedPatientInfo, 
       { 
         headers : {
           'X-Station-Key': this.props.config.stationKey,

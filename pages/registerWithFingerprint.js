@@ -80,13 +80,13 @@ export default class RegisterWithFingerprint extends React.Component {
           }
         })
         .then(resIsFinish => {
-          if(!this.state.isRegister) {
-            this.setState({
-              isRegister: true
-            });
-          }
-
           if(resIsFinish !== undefined && resIsFinish.data.status) {
+            if(!this.state.isRegister) {
+              this.setState({
+                isRegister: true
+              });
+            }
+
             axios.post(urlRegister, 
               {
                 'userId': JSON.parse(localStorage.getItem('registerCardInfo')).user._id,
