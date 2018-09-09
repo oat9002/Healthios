@@ -106,13 +106,9 @@ export default class registerWithCard extends React.Component {
       patientInfo, 
       { 
         headers : {
-          'X-Station-Key': '5ab75943167f6f116e668a85',
-          'X-Provider-Key': '5ab75831edfaaa6507e1e010'
-        },
-        auth: {
-          username: 'kmitl-test2',
-          password: 'test1234'
-        } 
+          'X-Station-Key': this.props.config.stationKey,
+          'X-Provider-Key': this.props.config.providerKey
+        }
       }
     )
     .then(resRegister => {

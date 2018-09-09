@@ -94,8 +94,8 @@ export default class RegisterWithFingerprint extends React.Component {
               },
               { 
                 headers : {
-                  'X-Station-Key': '5ab75943167f6f116e668a85',
-                  'X-Provider-Key': '5ab75831edfaaa6507e1e010'
+                  'X-Station-Key': this.props.config.stationKey,
+                  'X-Provider-Key': this.props.providerKey
                 }
               }
             )
