@@ -6,7 +6,7 @@ export default class registerComplete extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-      Router.push({ pathname: '/welcome');
+      Router.push({ pathname: '/welcome'});
     }, 3000);  
   }
 
