@@ -37,7 +37,7 @@ const completeTemplate = (props) => {
 };
 
 completeTemplate.propTypes = {
-  text: PropTypes.element.isRequired
+  text: PropTypes.string.isRequired
 };
 
 

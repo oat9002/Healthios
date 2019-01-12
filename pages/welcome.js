@@ -8,22 +8,16 @@ const configJson = import('../static/appConfig.json');
 export default class Welcome extends React.Component {
   constructor(props) {
     super(props);
+    const decryptUserInfo = cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
+
     this.state = {
-      data: null
+      data: JSON.parse(decryptUserInfo)
     };
   }
 
   static async getInitialProps({ req, query }) {
     const config = await configJson
     return { config }
-  }
-
-  componentWillMount() {
-    if(typeof(Storage) !== undefined) {
-      this.setState({
-        data: JSON.parse(cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))
-      });
-    }
   }
 
   componentDidMount() {
