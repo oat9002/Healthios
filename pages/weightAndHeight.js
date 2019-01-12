@@ -27,11 +27,12 @@ export default class WeightAndHeight extends React.Component {
   }
 
   componentDidMount() {
-    this.startSensor();
-    this.readWeightAndHeight();
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout);
+    
+    this.startSensor();
+    this.readWeightAndHeight();
   }
 
   startSensor = async() => {
@@ -65,13 +66,16 @@ export default class WeightAndHeight extends React.Component {
   }
 
   readWeightAndHeight = async() => {
+    const urlValidWeightSensor = this.piIp + '/weight/valid';
+    const urlValidHeightSensor = this.piIp + '/height/valid'
+
     if(!this.isSensorStart) {
       this.retryReadWeightAndHeight();
       return;
     }
 
     try {
-      const [resWeightValid, resHeightValid] = await Promise.all([[axios.get(this.piIp + '/weight/valid'), axios.get(this.piIp + '/height/valid')]]);
+      const [resWeightValid, resHeightValid] = await Promise.all([axios.get(urlValidWeightSensor), axios.get(urlValidHeightSensor)]);
 
       if(resWeightValid === undefined || !resWeightValid.data.status) {
         throw new Error(`Weight validate failed, status: ${ resWeightValid.data.status }`);

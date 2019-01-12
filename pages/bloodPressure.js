@@ -44,7 +44,7 @@ export default class BloodPressure extends React.Component {
       return;
     }
 
-    let urlStartSensor = this.props.config + '/pressure/start';
+    let urlStartSensor = this.props.config.piIp + '/pressure/start';
    
     try{
       const res = await axios.get(urlStartSensor);
