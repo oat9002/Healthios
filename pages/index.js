@@ -88,6 +88,7 @@ export default class Login extends React.PureComponent {
           localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
           localStorage.setItem('token', resLogin.data.token);
           localStorage.setItem('isLogin', true);
+          localStorage.setItem('userId', resLogin.data.data._id);
         }
         Router.push({ pathname: '/loginComplete', query: { first: 'card' }});
   

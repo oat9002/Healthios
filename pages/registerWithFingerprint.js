@@ -109,6 +109,7 @@ export default class RegisterWithFingerprint extends React.Component {
 
         if(typeof(Storage) !== undefined) {
           localStorage.setItem('registerResult', JSON.stringify(resRegister.data));
+          localStorage.setItem('userId', resRegister.data.user._id);
         }
         
         Router.push('/registerComplete');

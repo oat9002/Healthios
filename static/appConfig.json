@@ -4,7 +4,7 @@
   "piIp": "http://192.168.1.195:54322",
   "maxRetry": 20,
   "aesSecret": "soup12345",
-  "pageTimeout": 30000,
+  "pageTimeout": 60000,
   "retryTimeout": 1000,
   "stationKey": "5c39af2972607a0523762901",
   "providerKey" : "5c39aeda72607a0523762900"

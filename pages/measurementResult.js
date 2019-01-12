@@ -33,12 +33,12 @@ export default class MeasurementResult extends React.Component {
   prepareStateAndSaveMeasurementData = () => {
     if(typeof(Storage) != 'undefined') {
       this.setState({
-        userId: localStorage.getItem('registerResult') !== undefined ? JSON.parse(localStorage.getItem('registerResult')).user._id : '',
+        userId: localStorage.getItem('userId') !== undefined ? localStorage.getItem('userId') : '',
         weight: localStorage.getItem('weight') !== undefined ? localStorage.getItem('weight') : '',
         height: localStorage.getItem('height') !== undefined ? localStorage.getItem('height') : '',
         pressure: JSON.parse(localStorage.getItem('pressure') !== undefined ? localStorage.getItem('pressure') : ['', '', '']),
         thermal: localStorage.getItem('thermal') !== undefined ? localStorage.getItem('thermal') : '',
-        pulse: localStorage.getItem('pulse') !== undefined ? localStorage.getItem('pulse') : ''
+        pulse: localStorage.getItem('pulse') !== undefined ? JSON.parse(localStorage.getItem('pulse')).avg : ''
       }, this.saveMeasurementData);
     }
   }
@@ -57,6 +57,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   saveMeasurementData = async() => {
+    console.log(this.state.userId)
     try {
       const [resWeight, resHeight, resPressure, resPulse, resThermal] = await Promise.all([this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal()]);
      
@@ -92,7 +93,7 @@ export default class MeasurementResult extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'userId': this.state.userId
+        'user_id': this.state.userId
       }
     });
   }
@@ -109,7 +110,7 @@ export default class MeasurementResult extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'userId': this.state.userId
+        'user_id': this.state.userId
       }
     });
   }
@@ -130,7 +131,7 @@ export default class MeasurementResult extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'userId': this.state.userId
+        'user_id': this.state.userId
       }
     });
   }
@@ -147,7 +148,7 @@ export default class MeasurementResult extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'userId': this.state.userId
+        'user_id': this.state.userId
       }
     });
   }
@@ -164,7 +165,7 @@ export default class MeasurementResult extends React.Component {
     }, {
       headers: {
         'Content-Type': 'application/json',
-        'userId': this.state.userId
+        'user_id': this.state.userId
       }
     });
   }
