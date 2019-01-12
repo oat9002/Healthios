@@ -8,10 +8,8 @@ const configJson = import('../static/appConfig.json');
 export default class Welcome extends React.Component {
   constructor(props) {
     super(props);
-    const decryptUserInfo = cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
-
     this.state = {
-      data: JSON.parse(decryptUserInfo)
+      data: null
     };
   }
 
@@ -21,6 +19,12 @@ export default class Welcome extends React.Component {
   }
 
   componentDidMount() {
+    const decryptUserInfo = cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
+
+    this.setState({
+      data: JSON.parse(decryptUserInfo)
+    });
+
     setTimeout(() => {
       Router.push('/weightAndHeight')
     }, 5000);
@@ -36,7 +40,7 @@ export default class Welcome extends React.Component {
           <link rel="stylesheet" href="/static/css/animate.css"/>
         </Head>
         <div className='content'>
-          <span>ยินดีต้อนรับ</span><br/> {data ? data.user.thaiFullName : 'someone'}
+          <span>ยินดีต้อนรับ</span><br/> {data ? data.id_card.thaiFullName : 'someone'}
         </div>
         <style jsx>{`
           .content {

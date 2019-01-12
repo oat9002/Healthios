@@ -85,7 +85,7 @@ export default class Login extends React.PureComponent {
         }
   
         if(typeof(Storage) !== undefined) {
-          localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+          localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
           localStorage.setItem('token', resLogin.data.token);
           localStorage.setItem('isLogin', true);
         }
@@ -175,7 +175,7 @@ export default class Login extends React.PureComponent {
           }
   
           if(typeof(Storage) !== undefined) {
-            localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+            localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
             localStorage.setItem('token', resLogin.data.token);
             localStorage.setItem('isLogin', true);
           }
