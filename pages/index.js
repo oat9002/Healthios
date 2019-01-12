@@ -214,6 +214,12 @@ export default class Login extends React.PureComponent {
     localStorage.setItem("isLogin", false);
     localStorage.setItem("patientInfo", "");
     localStorage.setItem("registerResult", "");
+    localStorage.setItem("userId", "");
+    localStorage.setItem("weight", "");
+    localStorage.setItem("height", "");
+    localStorage.setItem("thermal", "");
+    localStorage.setItem("pressure", "");
+    localStorage.setItem("pulse", "");
   }
 
   render() {
