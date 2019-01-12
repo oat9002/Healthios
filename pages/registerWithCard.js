@@ -87,7 +87,7 @@ export default class registerWithCard extends React.Component {
         throw new Error(`Card get data failed`);
       }
 
-      this.register(res.data.data);
+      this.register(resGetData.data.data);
     }
     catch(ex) {
       Logging.sendLogMessage('RegisterWithCard', ex);
@@ -96,26 +96,11 @@ export default class registerWithCard extends React.Component {
   }
 
   register = async(patientInfo) => {
-    let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
     let updatedPatientInfo = this.prepareDataForRegister(patientInfo);
 
     try {
-      const resRegister = await axios.post(urlRegister, 
-        updatedPatientInfo, 
-        { 
-          headers : {
-            'X-Station-Key': this.props.config.stationKey,
-            'X-Provider-Key': this.props.config.providerKey
-          }
-        }
-      );
-
-      if(resRegister === undefined) {
-        throw new Error(`Card register failed`);
-      }
-
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('registerCardInfo', JSON.stringify(resRegister.data));
+        localStorage.setItem('patientInfo', JSON.stringify(updatedPatientInfo));
       }
 
       Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});

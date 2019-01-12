@@ -41,7 +41,7 @@ export default class RegisterWithFingerprint extends React.Component {
     let urlReadFingerprint = this.props.config.piIp + '/finger/valid/template1';
     let urlReadFingerprint2 = this.props.config.piIp + '/finger/valid/template2';
     let urlIsFinish = this.props.config.piIp + '/finger/template';
-    let urlRegister = this.props.config.serverIp + '/api/auth/register/fingerprint';
+    let urlRegister = this.props.config.serverIp + '/api/auth/register';
 
     if(!this.isStart) {
       try {
@@ -64,7 +64,7 @@ export default class RegisterWithFingerprint extends React.Component {
         const resReadFingerprint = await axios.get(urlReadFingerprint);
 
         if(resReadFingerprint === undefined || !resReadFingerprint.data.status) {
-          throw new Error(`Fingerprint read failed, status: ${ res.data.status }`);
+          throw new Error(`Fingerprint read failed, status: ${ resReadFingerprint.data.status }`);
         }
 
         if(!this.state.nextState) {
@@ -89,15 +89,16 @@ export default class RegisterWithFingerprint extends React.Component {
           });
         }
 
+
         const resRegister = await axios.post(urlRegister, 
           {
-            'userId': JSON.parse(localStorage.getItem('registerCardInfo')).user._id,
+            ...JSON.parse(localStorage.getItem('patientInfo')),
             'fingerPrint': [resIsFinish.data.data]
           },
           { 
             headers : {
               'X-Station-Key': this.props.config.stationKey,
-              'X-Provider-Key': this.props.providerKey
+              'X-Provider-Key': this.props.config.providerKey
             }
           }
         );
@@ -107,7 +108,7 @@ export default class RegisterWithFingerprint extends React.Component {
         }
 
         if(typeof(Storage) !== undefined) {
-          localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
+          localStorage.setItem('registerResult', JSON.stringify(resRegister.data));
         }
         
         Router.push('/registerComplete');

@@ -22,6 +22,7 @@ export default class MeasurementResult extends React.Component {
     };
     this.pageTimeout = null;
     this.saveMeasurementUrl = this.props.config.serverIp + '/api/data/save';
+    this.saveMeasurementTimeout = null;
   }
 
   static async getInitialProps({ req, query }) {
@@ -29,16 +30,16 @@ export default class MeasurementResult extends React.Component {
     return { config }
   }
 
-  componentWillMount() {
+  prepareStateAndSaveMeasurementData = () => {
     if(typeof(Storage) != 'undefined') {
       this.setState({
-        userId: localStorage.getItem('userId') !== undefined ? localStorage.getItem('userId') : '',
+        userId: localStorage.getItem('registerResult') !== undefined ? JSON.parse(localStorage.getItem('registerResult')).user._id : '',
         weight: localStorage.getItem('weight') !== undefined ? localStorage.getItem('weight') : '',
         height: localStorage.getItem('height') !== undefined ? localStorage.getItem('height') : '',
         pressure: JSON.parse(localStorage.getItem('pressure') !== undefined ? localStorage.getItem('pressure') : ['', '', '']),
         thermal: localStorage.getItem('thermal') !== undefined ? localStorage.getItem('thermal') : '',
         pulse: localStorage.getItem('pulse') !== undefined ? localStorage.getItem('pulse') : ''
-      });
+      }, this.saveMeasurementData);
     }
   }
 
@@ -46,38 +47,37 @@ export default class MeasurementResult extends React.Component {
     this.pageTimeout = setTimeout(() => {
       Router.push('/');
     }, this.props.config.pageTimeout);
-    this.saveMeasurementData().then(() => {
-      setTimeout(() => {
-        if(localStorage.getItem('isLogin')) {
-          Router.push('/final');
-        }
-        else {
-          Router.push('/qrCode');
-        }
-      }, 10000);
-    });
+
+    this.prepareStateAndSaveMeasurementData();
   }
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
+    clearTimeout(this.saveMeasurementTimeout);
   }
 
-  saveMeasurementData = () => {
-    return new Promise((resolve, reject) => {
-      axios.all(this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal())
-      .then(axios.spread((resWeight, resHeight, resPressure, resPulse, resThermal) => {
-        if(resWeight.data.error || resHeight.data.error || resPressure.data.error || resPulse.data.error || resThermal.data.error) {
-          this.saveMeasurementData();
-        }
-        else {
-          resolve(true);
-        }
-      }))
-      .catch(error => {
-        Logging.sendLogMessage('Measurement result', error);
+  saveMeasurementData = async() => {
+    try {
+      const [resWeight, resHeight, resPressure, resPulse, resThermal] = await Promise.all([this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal()]);
+     
+      if(resWeight.data.error || resHeight.data.error || resPressure.data.error || resPulse.data.error || resThermal.data.error) {
         this.saveMeasurementData();
-      });
-    })
+      }
+      else {
+        this.saveMeasurementTimeout = setTimeout(() => {
+          if(localStorage.getItem('isLogin')) {
+            Router.push('/final');
+          }
+          else {
+            Router.push('/qrCode');
+          }
+        }, 10000);
+      }
+    }
+    catch(error) {
+      Logging.sendLogMessage('Measurement result', error);
+      this.retrySaveMeasurementData();
+    }
   }
 
   saveHeight = () => {
@@ -167,6 +167,10 @@ export default class MeasurementResult extends React.Component {
         'userId': this.state.userId
       }
     });
+  }
+
+  retrySaveMeasurementData = () => {
+    this.retryTimeout = setTimeout(this.saveMeasurementData, this.props.config.retryTimeout);
   }
 
   render() {

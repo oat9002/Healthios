@@ -75,8 +75,8 @@ export default class Login extends React.PureComponent {
             password: resGetData.data.data.birthOfDate.replace(/\//g, '')
           },
           headers : {
-            'X-Station-Key': '5ab75943167f6f116e668a85',
-            'X-Provider-Key': '5ab75831edfaaa6507e1e010'
+            'X-Station-Key': this.props.config.stationKey,
+            'X-Provider-Key': this.props.config.providerKey
           }
         });
   
@@ -211,6 +211,8 @@ export default class Login extends React.PureComponent {
     localStorage.setItem("userInfo", "");
     localStorage.setItem("token", "");
     localStorage.setItem("isLogin", false);
+    localStorage.setItem("patientInfo", "");
+    localStorage.setItem("registerResult", "");
   }
 
   render() {
