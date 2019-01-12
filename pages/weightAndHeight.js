@@ -4,6 +4,7 @@ import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router from 'next/router';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -11,7 +12,7 @@ export default class WeightAndHeight extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isProcess: false
+      isProcessing: false
     };
     this.piIp = this.props.config.piIp;
     this.pageTimeout = null;
@@ -33,84 +34,87 @@ export default class WeightAndHeight extends React.Component {
     }, this.props.config.pageTimeout);
   }
 
-  startSensor = () => {
+  startSensor = async() => {
+    if(this.isSensorStart) {
+      return;
+    }
+
     let urlStartWeightSensor = this.piIp + '/weight/start';
     let urlStartHeightSensor = this.piIp + '/height/start';
 
-    axios.all([axios.get(urlStartWeightSensor), axios.get(urlStartHeightSensor)])
-      .then(axios.spread((weightResponse, heightResponse) => {
-        if(weightResponse.data.status && heightResponse.data.status) {
-          this.isSensorStart = true;
-        }
-        else {
-          throw `wieght status: ${ weightResponse.data.status }, height status: ${ heightResponse.data.status }`
-        }
-      }))
-      .catch(err => {
-        console.log(err);
-        this.retryStartSensor();
-      })
+    try {
+      const [weightResponse, heightResponse] = await Promise.all([axios.get(urlStartWeightSensor), axios.get(urlStartHeightSensor)]);
+
+      if(weightResponse === undefined || !weightResponse.data.status) {
+        throw new Error(`Weight start failed, status: ${ weightResponse.data.status }`);
+      }
+      if(heightResponse === undefined || !heightResponse.data.status) {
+        throw new Error(`Height start failed, status: ${ heightResponse.data.status }`);
+      }
+
+      this.isSensorStart = true;
+    }
+    catch(ex) {
+      Logging.sendLogMessage('WeightAndHeight', ex);
+      this.retryStartSensor();
+    }
   }
 
   retryStartSensor = () => {
     this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
   }
 
-  readWeightAndHeight = () => {
+  readWeightAndHeight = async() => {
     if(!this.isSensorStart) {
       this.retryReadWeightAndHeight();
+      return;
     }
 
-    axios.all([axios.get(this.piIp + '/weight/valid'), axios.get(this.piIp + '/height/valid')])
-      .then(axios.spread((weightValid, heightValid) => {
-        if(weightValid.data.status && heightValid.data.status) {
-          return true;
-        }
+    try {
+      const [resWeightValid, resHeightValid] = await Promise.all([[axios.get(this.piIp + '/weight/valid'), axios.get(this.piIp + '/height/valid')]]);
 
-        return false;
-      }))
-      .then(valid => {
-        if(!this.state.isProcess) {
-          this.setState({
-            isProcess: true
-          });
-        }
-        
-        if(valid) {
-          axios.all([axios.get(this.piIp + '/weight/finish'), axios.get(this.piIp + '/height/finish')])
-          .then(axios.spread((weighFinish, heightFinish) => {
-            if(weighFinish.data.status && heightFinish.data.status) {
-              return true;
-            }
-            else {
-              return false;
-            }
-          }))
-          .then(finish => {
-            if(finish) {
-              axios.all([axios.get(this.piIp + '/weight/'), axios.get(this.piIp + '/height/')])
-              .then(axios.spread((weight, height) => {
-                if(typeof(Storage) !== undefined) {
-                  localStorage.setItem('weight', JSON.stringify(weight.data.data));
-                  localStorage.setItem('height', JSON.stringify(height.data.data));
-                }
-                Router.push('/bloodPressure');
-              }))
-            }
-          })
-          .catch(err => {
-            console.log(err);
-            this.retryReadWeightAndHeight();
-          })
-        }
-        else {
-          this.retryReadWeightAndHeight();
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        this.retryReadWeightAndHeight();
-      })
+      if(resWeightValid === undefined || !resWeightValid.data.status) {
+        throw new Error(`Weight validate failed, status: ${ resWeightValid.data.status }`);
+      }
+      if(resHeightValid === undefined || !resHeightValid.data.status) {
+        throw new Error(`Height validate failed, status: ${ resHeightValid.data.status }`);
+      }
+
+      if(!this.state.isProcessing) {
+        this.setState({
+          isProcessing: true
+        });
+      }
+
+      const [resWeightFinish, resHeightFinish] = await Promise.all([axios.get(this.piIp + '/weight/finish'), axios.get(this.piIp + '/height/finish')]);
+
+      if(resWeightFinish === undefined || !resWeightFinish.data.status) {
+        throw new Error(`Weight doesn't finish reading, status: ${ resWeightFinish.data.status }`);
+      }
+      if(resHeightFinish === undefined || !resHeightFinish.data.status) {
+        throw new Error(`Height doesn't finish reading, status: ${ resHeightFinish.data.status }`);
+      }
+
+      const [weight, height] = await Promise.all([axios.get(this.piIp + '/weight/'), axios.get(this.piIp + '/height/')]);
+
+      if(resWeightFinish === undefined) {
+        throw new Error(`Weight get data failed`);
+      }
+      if(resHeightFinish === undefined) {
+        throw new Error(`Height get data failed`);
+      }
+
+      if(typeof(Storage) !== undefined) {
+        localStorage.setItem('weight', JSON.stringify(weight.data.data));
+        localStorage.setItem('height', JSON.stringify(height.data.data));
+      }
+
+      Router.push('/bloodPressure');
+    }
+    catch(ex) {
+      Logging.sendLogMessage('WeightAndHeight', ex);
+      this.retryReadWeightAndHeight();
+    }
   }
 
   retryReadWeightAndHeight = () => {
@@ -124,7 +128,7 @@ export default class WeightAndHeight extends React.Component {
   }
 
   render() {
-    let isProcess = this.state.isProcess;
+    let isProcess = this.state.isProcessing;
 
     return(
       <MuiThemeProvider>

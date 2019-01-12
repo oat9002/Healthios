@@ -1,6 +1,7 @@
 import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
 import Router from 'next/router';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -53,7 +54,7 @@ export default class RegisterResult extends React.Component {
       }
     })
     .catch(err => {
-      console.log(err);
+      Logging.sendLogMessage('Register result', err);
       this.getPersonalData();
     });
   }

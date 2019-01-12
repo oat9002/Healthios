@@ -4,6 +4,7 @@ import Router from 'next/router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -11,11 +12,12 @@ export default class Temperature extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
+      isProcessing: false,
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
     this.readTemperatureTimeout = null;
+    this.startSensorTimeout = null;
   }
 
   componentDidMount() {
@@ -35,86 +37,90 @@ export default class Temperature extends React.Component {
     return { config }
   }
 
-  startSensor = () => {
+  startSensor = async() => {
+    if(this.isSensorStart) {
+      return;
+    }
+    
     let urlStartSensor = this.props.config.piIp + '/thermal/start';
-    if(!this.isSensorStart) {
-      axios.get(urlStartSensor)
-        .then(res => {
-          if(!res.data.status) {
-            this.startSensor();
-          }
-          else {
-            this.isSensorStart = true;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.startSensor();
-        })
+
+    try {
+      const res = await axios.get(urlStartSensor);
+
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Thermal start failed, status: ${ res.data.status }`);
       }
+
+      this.isSensorStart = true;
+    }
+    catch(ex) {
+      Logging.sendLogMessage('Temperature', ex);
+      this.retryStartSensor();
+    }
   }
 
-  readTemperature = () => {
-    if(this.isSensorStart) {
-      let urlIsSensorReady = this.props.config.piIp + '/thermal/valid';
-      let urlIsSensorFinishRead = this.props.config.piIp + '/thermal/finish';
-      let urlGetData = this.props.config.piIp + '/thermal';
-
-      axios.get(urlIsSensorReady)
-        .then(res => {
-          return res.data.status
-        })
-        .then(isSensorReady => {
-          if(isSensorReady) {
-            if(!this.state.isLoading) {
-              this.setState({
-                isLoading: true
-              });
-            }
-      
-            return axios.get(urlIsSensorFinishRead)
-          }
-        })
-        .then(resIsSensorFinishRead => {
-          if(resIsSensorFinishRead !== undefined && resIsSensorFinishRead.data.status) {
-            return axios.get(urlGetData)
-          }
-        })
-        .then(resGetData => { 
-          if(resGetData !== undefined) {
-            if(typeof(Storage) !== undefined) {
-              localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
-            }
-            else {
-              //if not support HTML 5 local storage
-            }
-            Router.push('/heartRate');
-          } 
-          else {
-            throw `Calll ${ urlGetData } failed`
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryReadTemperature();
-        })
-    }
-    else {
+  readTemperature = async() => {
+    if(!this.isSensorStart) {
       this.retryReadTemperature();
+      return;
     }
+
+    let urlIsSensorReady = this.props.config.piIp + '/thermal/valid';
+    let urlIsSensorFinishRead = this.props.config.piIp + '/thermal/finish';
+    let urlGetData = this.props.config.piIp + '/thermal';
+
+    try {
+      const res = await axios.get(urlIsSensorReady);
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Thermal validate failed, status: ${ res.data.status }`);
+      }
+  
+      if(!this.state.isProcessing) {
+        this.setState({
+          isLoading: true
+        });
+      }
+  
+      const resIsSensorFinishRead = await axios.get(urlIsSensorFinishRead);
+      if(resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
+        throw new Error(`Thermal doesn't finsish reading, status: ${ resIsSensorFinishRead.data.status }`);
+      }
+  
+      const resGetData = await axios.get(urlGetData);
+      if(resGetData === undefined) {
+        throw new Error(`Thermal get data failed`);
+      }
+
+      if(typeof(Storage) !== undefined) {
+        localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
+      }
+      else {
+        //if not support HTML 5 local storage
+      }
+
+      Router.push('/heartRate');
+    }
+    catch(ex) {
+      Logging.sendLogMessage('Temperature', ex);
+      this.retryReadTemperature();
+    }  
   }
 
   retryReadTemperature = () => {
     this.readTemperatureTimeout = setTimeout(this.readTemperature, this.props.config.retryTimeout);
   }
 
+  retryStartSensor = () => {
+    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
+  }
+
   render() {
-    let isProcess = this.state.isProcess;
+    let isProcessing = this.state.isProcess;
 
     return (
       <MuiThemeProvider>
         {
-          isProcess ? (
+          isProcessing ? (
             <Loading></Loading>
           ) : (
             <div>

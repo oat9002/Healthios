@@ -5,6 +5,7 @@ import { Card, CardMedia, CardText, CardTitle } from 'material-ui/Card';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import axios from 'axios';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -73,7 +74,7 @@ export default class MeasurementResult extends React.Component {
         }
       }))
       .catch(error => {
-        console.log(err);
+        Logging.sendLogMessage('Measurement result', error);
         this.saveMeasurementData();
       });
     })
@@ -180,7 +181,7 @@ export default class MeasurementResult extends React.Component {
     }
 
     return (
-      <MuiThemeProvider>
+      <MuiThemeProvider >
         <div>
           <Head>
             <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>

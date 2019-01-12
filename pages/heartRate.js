@@ -4,6 +4,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import Router from 'next/router';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -11,7 +12,7 @@ export default class HeartRate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
+      isProcessing: false,
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
@@ -38,73 +39,75 @@ export default class HeartRate extends React.Component {
     return { config }
   }
 
-  startSensor = () => {
+  startSensor = async() => {
+    if(this.isSensorStart) {
+      return;
+    }
+
     let urlStartSensor = this.props.config.piIp + '/pulse/start';
-    if(!this.isSensorStart) {
-      axios.get(urlStartSensor)
-        .then(res => {
-          if(!res.data.status) {
-            this.retryStartSensor();
-          }
-          else {
-            this.isSensorStart = true;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryStartSensor();
-        })
+
+    try {
+      const res = await axios.get(urlStartSensor);
+
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Pulse start failed, status: ${ res.data.status }`);
       }
+
+      this.isSensorStart = true;
+    }
+    catch(ex) {
+      Logging.sendLogMessage('HeartRate', ex);
+      this.retryStartSensor();
+    }
   }
 
   retryStartSensor = () => {
     this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
   }
 
-  readHearRate = () => {
-    if(this.isSensorStart) {
-      let urlIsSensorReady = this.props.config.piIp + '/pulse/valid';
-      let urlIsSensorFinishRead = this.props.config.piIp + '/pulse/finish';
-      let urlGetData = this.props.config.piIp + '/pulse';
-
-      axios.get(urlIsSensorReady)
-        .then(res => {
-          return res.data.status
-        })
-        .then(isSensorReady => {
-          if(isSensorReady) {
-            if(!this.state.isLoading) {
-              this.setState({
-                isLoading: true
-              });
-            }
-            
-            return axios.get(urlIsSensorFinishRead)
-          }
-        })
-        .then(resIsSensorFinishRead => {
-          if(resIsSensorFinishRead !== undefined && resIsSensorFinishRead.data.status) {
-            return axios.get(urlGetData)
-          }
-        })
-        .then(resGetData => {
-          if(resGetData !== undefined) {
-            if(typeof(Storage) !== undefined) {
-              localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
-            }
-            else {
-              //if not support HTML 5 local storage
-            }
-            Router.push('/measurementResult');
-          }
-         
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryReadHeartRate();
-        })
+  readHearRate = async() => {
+    if(!this.isSensorStart) {
+      this.retryReadHeartRate();
+      return;
     }
-    else {
+
+    let urlIsSensorReady = this.props.config.piIp + '/pulse/valid';
+    let urlIsSensorFinishRead = this.props.config.piIp + '/pulse/finish';
+    let urlGetData = this.props.config.piIp + '/pulse';
+
+    try {
+      const res = await axios.get(urlIsSensorReady);
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Pulse validate failed, status: ${ res.data.status }`);
+      }
+
+      if(!this.state.isProcessing) {
+        this.setState({
+          isLoading: true
+        });
+      }
+
+      const resIsSensorFinishRead = await axios.get(urlIsSensorFinishRead);
+      if(resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
+        throw new Error(`Pulse doesn't finish reading, status: ${ resIsSensorFinishRead.data.status }`)
+      }
+
+      const resGetData = await axios.get(urlGetData);
+      if(resGetData === undefined) {
+        throw new Error(`Pulse get data failed`);
+      }
+
+      if(typeof(Storage) !== undefined) {
+        localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
+      }
+      else {
+        //if not support HTML 5 local storage
+      }
+
+      Router.push('/measurementResult');
+    }
+    catch(ex) {
+      Logging.sendLogMessage('HeartRate', ex);
       this.retryReadHeartRate();
     }
   }
@@ -114,12 +117,12 @@ export default class HeartRate extends React.Component {
   }
 
   render() {
-    let isProcess = this.state.isLoading;
+    let isProcessing = this.state.isProcessing;
 
     return (
       <MuiThemeProvider>
         {
-          isProcess ? (
+          isProcessing ? (
             <Loading />
           ) : (
             <div>

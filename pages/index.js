@@ -1,10 +1,10 @@
 import React from 'react';
 import Router from 'next/router';
 import Head from 'next/head';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -33,80 +33,85 @@ export default class Login extends React.PureComponent {
     localStorage.setItem('isLogin', false);
   }
 
-  loginWithCard = () => {
+  loginWithCard = async() => {
     let urlIsStart = this.piIp + '/thid/start'
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
 
-    axios.get(urlIsStart)
-      .then(resStart => {
-        return resStart.data.status;
-      })
-      .then(status => {
-        if(status) {
-          return axios.get(urlIsInsertCard)
+    try {
+      const resStart = await axios.get(urlIsStart);
+      if(resStart === undefined || !resStart.data.status) {
+        throw new Error(`Card start failed, status: ${ resStart.data.status }`);
+      }
+
+      const resIsInsertCard = await axios.get(urlIsInsertCard);
+      if(resIsInsertCard === undefined || !resIsInsertCard.data.status) {
+        throw new Error(`Card validate failed, status: ${ resIsInsertCard.data.status }`);
+      }
+
+      const resIsCardReadable = await axios.get(urlIsCardReadable);
+      if(resIsCardReadable === undefined || !resIsCardReadable.data.status) {
+        throw new Error(`Card read failed, status: ${ resIsCardReadable.data.status }`);
+      }
+
+      if(!this.state.isLoading) {
+        this.setState({
+          isLoading: true
+        });
+      }  
+
+      const resGetData = await axios.get(urlGetData);
+      if(resGetData === undefined || !resGetData.data.status) {
+        throw new Error(`Card get data failed, status: ${ resGetData.data.status }`);
+      }
+      
+      try {
+        const resLogin = await axios({
+          url: urlLogin,
+          auth: {
+            username: resGetData.data.data.idNumber,
+            password: resGetData.data.data.birthOfDate.replace(/\//g, '')
+          },
+          headers : {
+            'X-Station-Key': '5ab75943167f6f116e668a85',
+            'X-Provider-Key': '5ab75831edfaaa6507e1e010'
+          }
+        });
+  
+        if(resLogin === undefined) {
+          throw new Error(`Login with card failed.`);
         }
-      })
-      .then(resIsInsertCard => {
-        if(resIsInsertCard !== undefined && resIsInsertCard.data.status) {
-          return axios.get(urlIsCardReadable)
+  
+        if(typeof(Storage) !== undefined) {
+          localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+          localStorage.setItem('token', resLogin.data.token);
+          localStorage.setItem('isLogin', true);
         }
-      })
-      .then(resIsCardReadable => {
-        if(resIsCardReadable !== undefined && resIsCardReadable.data.status) { 
-          if(!this.state.isLoading) {
-            this.setState({
-              isLoading: true
-            });
-          }  
-          return axios.get(urlGetData)
-        }
-      })
-      .then(resGetData => {
-        if(resGetData !== undefined && resGetData.data.status) {
-          return axios({
-            url: urlLogin,
-            auth: {
-              username: resGetData.data.data.idNumber,
-              password: resGetData.data.data.birthOfDate.replace(/\//g, '')
-            },
-            headers : {
-              'X-Station-Key': this.props.config.stationKey,
-              'X-Provider-Key': this.props.config.providerKey
-            }
-          }).then(resLogin => {
-            if(typeof(Storage) !== undefined) {
-              localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
-              localStorage.setItem('token', resLogin.data.token);
-              localStorage.setItem('isLogin', true);
-            }
-            Router.push({ pathname: '/loginComplete', query: { first: 'card' }});
-          }).catch(err => {
-            if(err.response.status == 401) {
-              Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
-            }
-            else {
-              throw err;
-            }
-          })
+        Router.push({ pathname: '/loginComplete', query: { first: 'card' }});
+  
+      }
+      catch(ex) {
+        if(ex !== undefined && ex.response.status == 401) {
+          Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
         }
         else {
-          throw `Call ${ urlGetData } failed`
+          throw ex;
         }
-      })
-      .catch(err => {
-        console.log(err);
-        this.retryLoginWithCard();
-      })
+      }   
+    }
+    catch (ex) {
+      Logging.sendLogMessage('loginWithCard', ex);
+      this.retryLoginWithCard();
+    }
   }
 
   retryLoginWithCard = () => {
     this.loginWithCardTimeout = setTimeout(this.loginWithCard, this.props.config.retryTimeout);
   }
 
-  loginWithFingerprint = () => {
+  loginWithFingerprint = async() => {
     let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
     let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
@@ -114,84 +119,82 @@ export default class Login extends React.PureComponent {
     let urlLogin = this.serverIp + '/api/auth/login/fingerprint';
 
     if(!this.isStart) {
-      axios.get(urlStartReadFingerprint)
-        .then(res => {
-          if(res.data.status) {
-            this.isStart = true;
-            this.retryLoginWithFingerprint();
-          }
-          else {
-              throw 'status is false'
-          }
-        })
-        .catch(err => {
-          console.log(err)
-            this.retryLoginWithFingerprint();
-        })
+      try {
+        const res = await axios.get(urlStartReadFingerprint);
+        if(res === undefined || !res.data.status) {
+          throw new Error(`Fingerprint start scan failed, status: ${ res.data.status }`);
+        }
+
+        this.isStart = true;
+      }
+      catch(ex) {
+        Logging.sendLogMessage('loginWithFingerprint', ex);
+      }
+
+      this.retryLoginWithFingerprint();
     }
     else {
-      axios.get(urlIsUseFingerprint)
-      .then(res => {
-        return res.data.status;
-      })
-      .then(isUseFingerPrint => {
-        if(isUseFingerPrint) {
-          return axios.get(urlCompareFingerprint)
+      try {
+        const res = await axios.get(urlIsUseFingerprint);
+        if(res === undefined || !res.data.status) {
+          throw new Error(`Fingerprint valid scan failed, status: ${ res.data.status }`);
         }
-      })
-      .then(resIsCompareFinish => {
-        if(resIsCompareFinish !== undefined && resIsCompareFinish.data.status) {
-          return axios.get(urlGetData)
-        }
-      })
-      .then(resGetData => {
-        if(resGetData !== undefined) {
-          if(!this.state.isLoading) {
-            this.setState({
-              isLoading: true
-            });  
-          }
-        
-          if(resGetData.data.status) {
-            axios({
-              url: urlLogin,
-              auth: {
-                username: 'kmitl-test2',
-                password: 'test1234'
-              },
-              headers : {
-                'x-user-key': resGetData.data.data,
-                'X-Station-Key': this.props.config.stationKey,
-                'X-Provider-Key': this.props.config.providerKey
-              }
-            }).then(resLogin => {
-              if(typeof(Storage) !== undefined) {
-                localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
-                localStorage.setItem('token', resLogin.data.token);
-                localStorage.setItem('isLogin', true);
-              }
-              Router.push({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
-            }).catch(err => {
-              this.setState({
-                isLoading: false
-              });
 
-              console.log(err);
-              this.retryLoginWithFingerprint();
-            })
+        const resIsCompareFinish = await axios.get(urlCompareFingerprint);
+        if(resIsCompareFinish === undefined || !resIsCompareFinish.data.status) {
+          throw new Error(`Fingerprint compare failed, status: ${ resIsCompareFinish.data.status }`);
+        }
+
+        const resGetData = await axios.get(urlGetData);
+        if(resGetData === undefined || !resGetData.data.status) {
+          throw new Error(`Fingerprint get data failed, status: ${ resGetData.data.status }`)
+        }
+
+        if(!this.state.isLoading) {
+          this.setState({
+            isLoading: true
+          });  
+        }
+
+        try {
+          const resLogin = await axios({
+            url: urlLogin,
+            auth: {
+              username: 'kmitl-test2',
+              password: 'test1234'
+            },
+            headers : {
+              'x-user-key': resGetData.data.data,
+              'X-Station-Key': this.props.config.stationKey,
+              'X-Provider-Key': this.props.config.providerKey
+            }
+          });
+  
+          if(resLogin === undefined) {
+            throw new Error('Login with fingerprint failed.');
+          }
+  
+          if(typeof(Storage) !== undefined) {
+            localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.user), this.props.config.aesSecret).toString());
+            localStorage.setItem('token', resLogin.data.token);
+            localStorage.setItem('isLogin', true);
+          }
+
+          Router.push({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
+        }
+        catch(ex) {
+          if(ex !== undefined && ex.response.status == 401) {
+            Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
           }
           else {
-            Router.push({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
+            throw ex;
           }
         }
-        else {
-          this.retryLoginWithFingerprint();
-        }
-      })
-      .catch(err => {
-        console.log(err);
+      }
+      catch(ex) {
+        Logging.sendLogMessage('loginWithFingerprint', ex);
         this.retryLoginWithFingerprint();
-      })
+      }
     }
   }
 
@@ -208,7 +211,7 @@ export default class Login extends React.PureComponent {
     let isLoading = this.state.isLoading;
 
     return (
-      <MuiThemeProvider>
+      <div>
         {isLoading ? (
           <Loading></Loading>
         ) : (
@@ -286,7 +289,7 @@ export default class Login extends React.PureComponent {
           `}</style>
         </div>
       )}
-      </MuiThemeProvider>
+      </div>
     );
   }
 }

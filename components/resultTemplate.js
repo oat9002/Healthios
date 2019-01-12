@@ -5,10 +5,6 @@ import Paper from 'material-ui/Paper';
 import Head from 'next/head';
 import PropTypes from 'prop-types';
 
-const style = {
-  marginLeft: 20
-};
-
 const resultTemplate = (props) => {
   return (
     <MuiThemeProvider>

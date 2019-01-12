@@ -4,6 +4,7 @@ import LoadingTemplate from '../components/loadingTemplate';
 import Head from 'next/head';
 import Router from 'next/router';
 import axios from 'axios';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -12,7 +13,7 @@ export default class registerWithCard extends React.Component {
     super(props);
     this.state = {
       isFromCard: false,
-      isLoading: false
+      isProcessing: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -58,73 +59,70 @@ export default class registerWithCard extends React.Component {
     return newData;
   }
 
-  process = () => {
+  process = async() => {
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
-    let urlLogin = this.serverIp + '/api/auth/login';
     let urlGetData = this.piIp + '/thid';
 
-    axios.get(urlIsInsertCard)
-    .then(resInsertCard => {
-      return resInsertCard.data.status;
-    })
-    .then(status => {
-      if(status) {
-        if(!this.state.isLoading) {
-          this.setState({
-            isLoading: true
-          });
-        }
-       
-        return axios.get(urlIsCardReadable)
+    try{
+      const resInsertCard = await axios.get(urlIsInsertCard);
+
+      if(resInsertCard === undefined || !resInsertCard.data.status) {
+        throw new Error(`Card validate failed, status: ${ resInsertCard.data.status }`);
       }
-    })
-    .then(resIsCardReadable => {
-      if(resIsCardReadable !== undefined && resIsCardReadable.data.status) {
-        axios.get(urlGetData)
-        .then(res => {
-          this.register(res.data.data);
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryProcess();
-        })
+
+      if(!this.state.isProcessing) {
+        this.setState({
+          isProcessing: true
+        });
       }
-      else {
-        this.retryProcess();
+
+      const resIsCardReadable = await axios.get(urlIsCardReadable);
+      if(resIsCardReadable === undefined || ! resIsCardReadable.data.status) {
+        throw new Error(`Card read failed, status: ${ resIsCardReadable.data.status }`);
       }
-    })
-    .catch(err => {
-      console.log(err);
+
+      const resGetData = await  axios.get(urlGetData);
+      if(resGetData === undefined) {
+        throw new Error(`Card get data failed`);
+      }
+
+      this.register(res.data.data);
+    }
+    catch(ex) {
+      Logging.sendLogMessage('RegisterWithCard', ex);
       this.retryProcess();
-    })
+    }
   }
 
-  register = (patientInfo) => {
+  register = async(patientInfo) => {
     let urlRegister = this.props.config.serverIp + '/api/auth/register/card';
-
     let updatedPatientInfo = this.prepareDataForRegister(patientInfo);
 
-    axios.post(urlRegister, 
-      updatedPatientInfo, 
-      { 
-        headers : {
-          'X-Station-Key': this.props.config.stationKey,
-          'X-Provider-Key': this.props.config.providerKey
+    try {
+      const resRegister = await axios.post(urlRegister, 
+        updatedPatientInfo, 
+        { 
+          headers : {
+            'X-Station-Key': this.props.config.stationKey,
+            'X-Provider-Key': this.props.config.providerKey
+          }
         }
+      );
+
+      if(resRegister === undefined) {
+        throw new Error(`Card register failed`);
       }
-    )
-    .then(resRegister => {
+
       if(typeof(Storage) !== undefined) {
         localStorage.setItem('registerCardInfo', JSON.stringify(resRegister.data));
       }
 
       Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
-    })
-    .catch(err => {
-      console.log(err);
-      this.retryProcess();
-    })
+    }
+    catch(ex) {
+      throw ex;
+    }
   }
 
   retryProcess = () => {
@@ -140,7 +138,7 @@ export default class registerWithCard extends React.Component {
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
           {
-            this.state.isFromCard || this.state.isLoading ? (
+            this.state.isFromCard || this.state.isProcessing ? (
               <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
             ) : 
             (

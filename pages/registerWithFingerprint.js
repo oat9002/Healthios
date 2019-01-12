@@ -3,6 +3,7 @@ import Head from 'next/head';
 import LoadingTemplate from '../components/loadingTemplate';
 import Router from 'next/router';
 import axios from 'axios';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -35,7 +36,7 @@ export default class RegisterWithFingerprint extends React.Component {
     clearTimeout(this.retryTimeout);
   }
 
-  process = () => {
+  process = async() => {
     let urlStartReadFingerprint = this.props.config.piIp + '/finger/start/template';
     let urlReadFingerprint = this.props.config.piIp + '/finger/valid/template1';
     let urlReadFingerprint2 = this.props.config.piIp + '/finger/valid/template2';
@@ -43,87 +44,78 @@ export default class RegisterWithFingerprint extends React.Component {
     let urlRegister = this.props.config.serverIp + '/api/auth/register/fingerprint';
 
     if(!this.isStart) {
-      axios.get(urlStartReadFingerprint)
-        .then(resStartReadFingerprint => {
-          if(resStartReadFingerprint.data.status) {
-            this.isStart = true;
-            this.process();
-          }
-          else {
-            this.retryProcess();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryProcess();
-        })
+      try {
+        const resStartReadFingerprint = await axios.get(urlStartReadFingerprint);
+
+        if(resStartReadFingerprint === undefined || !resStartReadFingerprint.data.status) {
+          throw new Error(`Fingerprint read failed, status: ${ resStartReadFingerprint.data.status }`);
+        }
+
+        this.isStart = true;
+      }
+      catch(ex) {
+        Logging.sendLogMessage('RegisterWithFingerprint', ex);
+      }
+
+      this.retryProcess();
     }
     else {
-      axios.get(urlReadFingerprint)
-        .then(resReadFingerprint => {
-          return resReadFingerprint.data.status;
-        })
-        .then(status => {
-          if(status) {
-            if(!this.state.nextState) {
-              this.setState({
-                nextState: true
-              });
-            }
-           
-            return axios.get(urlReadFingerprint2);
-          }
-        })
-        .then(resReadFingerprint2 => {
-          if(resReadFingerprint2 !== undefined && resReadFingerprint2.data.status) {
-            return axios.get(urlIsFinish);
-          }
-        })
-        .then(resIsFinish => {
-          if(resIsFinish !== undefined && resIsFinish.data.status) {
-            if(!this.state.isRegister) {
-              this.setState({
-                isRegister: true
-              });
-            }
+      try {
+        const resReadFingerprint = await axios.get(urlReadFingerprint);
 
-            axios.post(urlRegister, 
-              {
-                'userId': JSON.parse(localStorage.getItem('registerCardInfo')).user._id,
-                'fingerPrint': [resIsFinish.data.data]
-              },
-              { 
-                headers : {
-                  'X-Station-Key': this.props.config.stationKey,
-                  'X-Provider-Key': this.props.providerKey
-                }
-              }
-            )
-            .then(resRegister => {
-              if(!resRegister.data.error) {
-                if(typeof(Storage) !== undefined) {
-                  localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
-                }
-                
-                Router.push('/registerComplete');
-              }
-              else {
-                this.retryProcess();
-              }
-            })
-            .catch(err => {
-              console.log(err);
-              this.retryProcess();
-            })
+        if(resReadFingerprint === undefined || !resReadFingerprint.data.status) {
+          throw new Error(`Fingerprint read failed, status: ${ res.data.status }`);
+        }
+
+        if(!this.state.nextState) {
+          this.setState({
+            nextState: true
+          });
+        }
+
+        const resReadFingerprint2 = await axios.get(urlReadFingerprint2);
+        if(resReadFingerprint2 === undefined || !resReadFingerprint2.data.status) {
+          throw new Error(`Fingerprint 2nd read failed, status: ${ resReadFingerprint2.data.status } `);
+        }
+
+        const resIsFinish = await axios.get(urlIsFinish);
+        if(resIsFinish === undefined || !resIsFinish.data.status) {
+          throw new Error(`Finger doesn't finsish reading, status: ${ resIsFinish.data.status }`);
+        }
+
+        if(!this.state.isRegister) {
+          this.setState({
+            isRegister: true
+          });
+        }
+
+        const resRegister = await axios.post(urlRegister, 
+          {
+            'userId': JSON.parse(localStorage.getItem('registerCardInfo')).user._id,
+            'fingerPrint': [resIsFinish.data.data]
+          },
+          { 
+            headers : {
+              'X-Station-Key': this.props.config.stationKey,
+              'X-Provider-Key': this.props.providerKey
+            }
           }
-          else {
-            this.retryProcess();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryProcess();
-        })
+        );
+
+        if(resRegister === undefined || resRegister.data.error) {
+          throw new Error(`Fingerprint register failed.`);
+        }
+
+        if(typeof(Storage) !== undefined) {
+          localStorage.setItem('registerFingerprintInfo', JSON.stringify(resRegister.data));
+        }
+        
+        Router.push('/registerComplete');
+      }
+      catch(ex) {
+        Logging.sendLogMessage('RegisterWithFingerprint', ex);
+        this.retryProcess();
+      }
     }
   }
 

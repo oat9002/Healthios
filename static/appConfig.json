@@ -1,5 +1,6 @@
 {
   "serverIp": "http://203.154.59.215:8080",
+  "logServerIp": "http://203.154.59.215:10000",
   "piIp": "http://192.168.1.195:54322",
   "maxRetry": 20,
   "aesSecret": "soup12345",

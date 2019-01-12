@@ -4,6 +4,7 @@ import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router from 'next/router';
+import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
@@ -11,7 +12,7 @@ export default class BloodPressure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isProcess: false
+      isProcessing: false
     };
     this.isSensorStart = false;
     this.pageTimeout = null;
@@ -28,9 +29,9 @@ export default class BloodPressure extends React.Component {
   }
 
   componentWillUnmount() {
-     clearTimeout(this.pageTimeout);
-     clearTimeout(this.readBloodPressureTimeout);
-     clearTimeout(this.startSensorTimeout);
+    clearTimeout(this.pageTimeout);
+    clearTimeout(this.readBloodPressurloginWithCardeTimeout);
+    clearTimeout(this.startSensorTimeout);
   }
 
   static async getInitialProps({ req, query }) {
@@ -38,73 +39,74 @@ export default class BloodPressure extends React.Component {
     return { config }
   }
 
-  startSensor = () => {
+  startSensor = async() => {
+    if(this.isSensorStart) {
+      return;
+    }
+
     let urlStartSensor = this.props.config + '/pressure/start';
-    if(!this.isSensorStart) {
-      axios.get(urlStartSensor)
-        .then(res => {
-          if(!res.data.status) {
-            this.retryStartSensor();
-          }
-          else {
-            this.isSensorStart = true;
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.retryStartSensor();
-        })
+   
+    try{
+      const res = await axios.get(urlStartSensor);
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Pressure start failed, status: ${ res.data.status }`);
       }
+
+      this.isSensorStart = true;
+    }
+    catch(ex) {
+      Logging.sendLogMessage('BloodPressure', ex);
+      this.retryStartSensor();
+    }
   }
 
   retryStartSensor = () => {
     this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
   }
 
-  readBloodPressure = () => {
-    if(this.isSensorStart) {
-      let urlIsSensorReady = this.props.config.piIp + '/pressure/valid';
-      let urlIsSensorFinishRead = this.props.config.piIp + '/pressure/finish';
-      let urlGetData = this.props.config.piIp + '/pressure';
+  readBloodPressure = async() => {
+    if(!this.isSensorStart) {
+      this.retryReadBloodPressure();
+      return;
+    }
 
-      axios.get(urlIsSensorReady)
-        .then(res => {
-          return res.data.status
-        })
-        .then(isSensorReady => {
-          if(isSensorReady) {
-            if(!this.state.isLoading) {
-              this.setState({
-                isLoading: true
-              });
-            }
-            
-            return axios.get(urlIsSensorFinishRead)
-          }
-        })
-        .then(resIsSensorFinishRead => {
-          if(resIsSensorFinishRead !== undefined && resIsSensorFinishRead.data.status) {
-            return axios.get(urlGetData)
-          }
-        })
-        .then(resGetData => {
-          if(resGetData !== undefined) {
-            if(typeof(Storage) !== undefined) {
-              localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
-            }
-            else {
-              //if not support HTML 5 local storage
-            }
-            Router.push('/temperature');
-          }
-          else {
-            this.readBloodPressure();
-          }
-        })
-        .catch(err => {
-          console.log(err);
-          this.readBloodPressure();
-        })
+    let urlIsSensorReady = this.props.config.piIp + '/pressure/valid';
+    let urlIsSensorFinishRead = this.props.config.piIp + '/pressure/finish';
+    let urlGetData = this.props.config.piIp + '/pressure';
+
+    try {
+      const res = await axios.get(urlIsSensorReady);
+      if(res === undefined || !res.data.status) {
+        throw new Error(`Pressure validate failed, status: ${ res.data.status }`);
+      }
+
+      if(!this.state.isProcessing) {
+        this.setState({
+          isLoading: true
+        });
+      }
+
+      const resIsSensorFinishRead = await axios.get(urlIsSensorFinishRead);
+      if(resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
+        throw new Error(`Pressure doesn't finish reading, status: ${ resIsSensorFinishRead.data.status }`);
+      }
+
+      const resGetData = await axios.get(urlGetData);
+
+      if(resGetData === undefined) {
+        throw new Error('Pressure get data failed.');
+      }
+
+      if(typeof(Storage) !== undefined) {
+        localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
+      }
+      
+      Router.push('/temperature');
+    }
+    catch(ex) {
+
+      Logging.sendLogMessage('BloodPressure', ex);
+      this.retryReadBloodPressure();
     }
   }
 
@@ -117,11 +119,11 @@ export default class BloodPressure extends React.Component {
   }
 
   render() {
-    let isProcess = this.state.isProcess;
+    let isProcessing = this.state.isProcessing;
 
     return (
       <MuiThemeProvider>
-        { isProcess ? (
+        { isProcessing ? (
           <Loading></Loading>
         ) : (
           <div className='content'>

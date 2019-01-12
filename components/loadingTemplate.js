@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 const loadingTemplate = (props) => {
   return(
-    <MuiThemeProvider>
+    <MuiThemeProvider >
       <div>
         <Head>
           <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
