@@ -24,7 +24,7 @@ export default class HeartRate extends React.Component {
     this.startSensor();
     this.readHearRate();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout)
   }
 
@@ -104,7 +104,7 @@ export default class HeartRate extends React.Component {
         //if not support HTML 5 local storage
       }
 
-      Router.push('/measurementResult');
+      Router.replace('/measurementResult');
     }
     catch(ex) {
       Logging.sendLogMessage('HeartRate', ex);

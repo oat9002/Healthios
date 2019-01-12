@@ -90,12 +90,12 @@ export default class Login extends React.PureComponent {
           localStorage.setItem('isLogin', true);
           localStorage.setItem('userId', resLogin.data.data._id);
         }
-        Router.push({ pathname: '/loginComplete', query: { first: 'card' }});
+        Router.replace({ pathname: '/loginComplete', query: { first: 'card' }});
   
       }
       catch(ex) {
         if(ex !== undefined && ex.response.status == 401) {
-          Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
+          Router.replace({ pathname: '/registerWithCard', query: { first: 'card' }});
         }
         else {
           throw ex;
@@ -181,11 +181,11 @@ export default class Login extends React.PureComponent {
             localStorage.setItem('isLogin', true);
           }
 
-          Router.push({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
+          Router.replace({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
         }
         catch(ex) {
           if(ex !== undefined && ex.response.status == 401) {
-            Router.push({ pathname: '/registerWithCard', query: { first: 'card' }});
+            Router.replace({ pathname: '/registerWithCard', query: { first: 'card' }});
           }
           else {
             throw ex;

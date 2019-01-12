@@ -27,7 +27,7 @@ export default class RegisterWithFingerprint extends React.Component {
   componentDidMount() {
     this.process();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout)
   }
 
@@ -112,7 +112,7 @@ export default class RegisterWithFingerprint extends React.Component {
           localStorage.setItem('userId', resRegister.data.user._id);
         }
         
-        Router.push('/registerComplete');
+        Router.replace('/registerComplete');
       }
       catch(ex) {
         Logging.sendLogMessage('RegisterWithFingerprint', ex);

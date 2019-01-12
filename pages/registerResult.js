@@ -32,7 +32,7 @@ export default class RegisterResult extends React.Component {
   componentWillMount() {
     this.getPersonalData();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout);
   }
 
@@ -61,7 +61,7 @@ export default class RegisterResult extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-      Router.push('/weightAndHeight')
+      Router.replace('/weightAndHeight')
     }, 5000);
   }
 

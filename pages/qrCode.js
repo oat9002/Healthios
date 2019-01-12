@@ -14,7 +14,7 @@ export default class QrCode extends React.Component {
   componentDidMount() {
     this.setQrcode();
     setTimeout(() => {
-      Router.push('/final');
+      Router.replace('/final');
     }, 15000);
   }
   

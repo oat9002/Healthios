@@ -39,7 +39,7 @@ export default class registerWithCard extends React.Component {
     this.setIsFromCard();
     this.process();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout)
   }
 
@@ -103,7 +103,7 @@ export default class registerWithCard extends React.Component {
         localStorage.setItem('patientInfo', JSON.stringify(updatedPatientInfo));
       }
 
-      Router.push({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
+      Router.replace({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
     }
     catch(ex) {
       throw ex;

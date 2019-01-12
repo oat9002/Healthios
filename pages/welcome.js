@@ -26,7 +26,7 @@ export default class Welcome extends React.Component {
     });
 
     setTimeout(() => {
-      Router.push('/weightAndHeight')
+      Router.replace('/weightAndHeight')
     }, 5000);
   }
 

@@ -28,7 +28,7 @@ export default class WeightAndHeight extends React.Component {
 
   componentDidMount() {
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout);
     
     this.startSensor();
@@ -113,7 +113,7 @@ export default class WeightAndHeight extends React.Component {
         localStorage.setItem('height', JSON.stringify(height.data.data));
       }
 
-      Router.push('/bloodPressure');
+      Router.replace('/bloodPressure');
     }
     catch(ex) {
       Logging.sendLogMessage('WeightAndHeight', ex);

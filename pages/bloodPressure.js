@@ -24,7 +24,7 @@ export default class BloodPressure extends React.Component {
     this.startSensor();
     this.readBloodPressure();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout)
   }
 
@@ -101,7 +101,7 @@ export default class BloodPressure extends React.Component {
         localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
       }
       
-      Router.push('/temperature');
+      Router.replace('/temperature');
     }
     catch(ex) {
 

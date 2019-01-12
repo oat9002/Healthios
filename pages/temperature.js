@@ -24,7 +24,7 @@ export default class Temperature extends React.Component {
     this.startSensor();
     this.readTemperature();
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout)
   }
 
@@ -98,7 +98,7 @@ export default class Temperature extends React.Component {
         //if not support HTML 5 local storage
       }
 
-      Router.push('/heartRate');
+      Router.replace('/heartRate');
     }
     catch(ex) {
       Logging.sendLogMessage('Temperature', ex);

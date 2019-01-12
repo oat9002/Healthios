@@ -6,7 +6,7 @@ export default class LoginComplete extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
-      Router.push({ pathname: '/welcome'});
+      Router.replace({ pathname: '/welcome'});
     }, 3000);  
   }
 

@@ -45,7 +45,7 @@ export default class MeasurementResult extends React.Component {
 
   componentDidMount() {
     this.pageTimeout = setTimeout(() => {
-      Router.push('/');
+      Router.replace('/');
     }, this.props.config.pageTimeout);
 
     this.prepareStateAndSaveMeasurementData();
@@ -67,10 +67,10 @@ export default class MeasurementResult extends React.Component {
       else {
         this.saveMeasurementTimeout = setTimeout(() => {
           if(localStorage.getItem('isLogin')) {
-            Router.push('/final');
+            Router.replace('/final');
           }
           else {
-            Router.push('/qrCode');
+            Router.replace('/qrCode');
           }
         }, 10000);
       }
