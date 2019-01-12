@@ -30,7 +30,7 @@ export default class Login extends React.PureComponent {
   componentDidMount() {
     this.loginWithCard();
     this.loginWithFingerprint();
-    localStorage.setItem('isLogin', false);
+    this.clearLocalStorage();
   }
 
   loginWithCard = async() => {
@@ -205,6 +205,12 @@ export default class Login extends React.PureComponent {
   componentWillUnmount() {
     clearTimeout(this.loginWithFingerprintTimeout);
     clearTimeout(this.loginWithCardTimeout);
+  }
+
+  clearLocalStorage = () => {
+    localStorage.setItem("userInfo", "");
+    localStorage.setItem("token", "");
+    localStorage.setItem("isLogin", false);
   }
 
   render() {
