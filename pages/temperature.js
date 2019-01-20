@@ -92,7 +92,6 @@ export default class Temperature extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        sessionStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
         sessionStorage.setItem('thermal', JSON.stringify({
           body_temperature: {
             value: resGetData.data.data,

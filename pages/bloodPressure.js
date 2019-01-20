@@ -98,7 +98,6 @@ export default class BloodPressure extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        sessionStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
         sessionStorage.setItem('pressure', JSON.stringify({
           systolic_blood_pressure: {
             value: resGetData.data.data[0],
