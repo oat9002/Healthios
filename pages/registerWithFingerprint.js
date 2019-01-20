@@ -4,6 +4,7 @@ import LoadingTemplate from '../components/loadingTemplate';
 import Router from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
+import cryptoJS from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
@@ -92,7 +93,7 @@ export default class RegisterWithFingerprint extends React.Component {
 
         const resRegister = await axios.post(urlRegister, 
           {
-            ...JSON.parse(localStorage.getItem('patientInfo')),
+            ...JSON.parse(cryptoJS.AES.decrypt(sessionStorage.getItem('patientData'), this.props.config.aesSecret)),
             'fingerPrint': [resIsFinish.data.data]
           },
           { 
@@ -108,8 +109,7 @@ export default class RegisterWithFingerprint extends React.Component {
         }
 
         if(typeof(Storage) !== undefined) {
-          localStorage.setItem('registerResult', JSON.stringify(resRegister.data));
-          localStorage.setItem('userId', resRegister.data.user._id);
+          sessionStorage.setItem('registerResult', JSON.stringify(resRegister.data));
         }
         
         Router.replace('/registerComplete');

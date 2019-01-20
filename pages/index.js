@@ -30,7 +30,7 @@ export default class Login extends React.PureComponent {
   componentDidMount() {
     this.loginWithCard();
     this.loginWithFingerprint();
-    this.clearLocalStorage();
+    this.resetLocalStorage();
   }
 
   loginWithCard = async() => {
@@ -85,10 +85,9 @@ export default class Login extends React.PureComponent {
         }
   
         if(typeof(Storage) !== undefined) {
-          localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
-          localStorage.setItem('token', resLogin.data.token);
-          localStorage.setItem('isLogin', true);
-          localStorage.setItem('userId', resLogin.data.data._id);
+          sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+          sessionStorage.setItem('token', resLogin.data.token);
+          sessionStorage.setItem('isLogin', true);
         }
         Router.replace({ pathname: '/loginComplete', query: { first: 'card' }});
   
@@ -176,9 +175,9 @@ export default class Login extends React.PureComponent {
           }
   
           if(typeof(Storage) !== undefined) {
-            localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
-            localStorage.setItem('token', resLogin.data.token);
-            localStorage.setItem('isLogin', true);
+            sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+            sessionStorage.setItem('token', resLogin.data.token);
+            sessionStorage.setItem('isLogin', true);
           }
 
           Router.replace({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
@@ -208,18 +207,17 @@ export default class Login extends React.PureComponent {
     clearTimeout(this.loginWithCardTimeout);
   }
 
-  clearLocalStorage = () => {
-    localStorage.setItem("userInfo", "");
-    localStorage.setItem("token", "");
-    localStorage.setItem("isLogin", false);
-    localStorage.setItem("patientInfo", "");
-    localStorage.setItem("registerResult", "");
-    localStorage.setItem("userId", "");
-    localStorage.setItem("weight", "");
-    localStorage.setItem("height", "");
-    localStorage.setItem("thermal", "");
-    localStorage.setItem("pressure", "");
-    localStorage.setItem("pulse", "");
+  resetLocalStorage = () => {
+    sessionStorage.setItem("userInfo", "");
+    sessionStorage.setItem("token", "");
+    sessionStorage.setItem("isLogin", false);
+    sessionStorage.setItem("patientData", "");
+    sessionStorage.setItem("registerResult", "");
+    sessionStorage.setItem("weight", "");
+    sessionStorage.setItem("height", "");
+    sessionStorage.setItem("thermal", "");
+    sessionStorage.setItem("pressure", "");
+    sessionStorage.setItem("pulse", "");
   }
 
   render() {

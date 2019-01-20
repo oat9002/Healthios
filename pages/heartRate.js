@@ -98,7 +98,15 @@ export default class HeartRate extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('pulse', JSON.stringify(resGetData.data.data));
+        sessionStorage.setItem('pulse', JSON.stringify({
+          heart_rate: {
+            value: resGetData.data.data.avg,
+            unit: "bpm"
+          },
+          effective_time_frame: {
+            date_time: new Date().toISOString()
+          }
+        }));
       }
       else {
         //if not support HTML 5 local storage

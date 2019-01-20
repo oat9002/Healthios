@@ -92,7 +92,16 @@ export default class Temperature extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
+        sessionStorage.setItem('thermal', JSON.stringify({
+          body_temperature: {
+            value: resGetData.data.data,
+            unit: "C"
+          },
+          effective_time_frame: {
+            date_time: new Date().toISOString()
+          }
+        }));
+
       }
       else {
         //if not support HTML 5 local storage

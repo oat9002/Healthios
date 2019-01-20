@@ -19,7 +19,7 @@ export default class Welcome extends React.Component {
   }
 
   componentDidMount() {
-    const decryptUserInfo = cryptoJs.AES.decrypt(localStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
+    const decryptUserInfo = cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
 
     this.setState({
       data: JSON.parse(decryptUserInfo)
