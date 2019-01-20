@@ -101,7 +101,7 @@ export default class registerWithCard extends React.Component {
 
     try {
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), this.props.config.aesSecret));
+        sessionStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), this.props.config.aesSecret));
       }
 
       Router.replace({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});

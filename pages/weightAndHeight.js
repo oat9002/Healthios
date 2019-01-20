@@ -109,8 +109,8 @@ export default class WeightAndHeight extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('weight', JSON.stringify(weight.data.data));
-        localStorage.setItem('height', JSON.stringify(height.data.data));
+        sessionStorage.setItem('weight', JSON.stringify(weight.data.data));
+        sessionStorage.setItem('height', JSON.stringify(height.data.data));
       }
 
       Router.replace('/bloodPressure');

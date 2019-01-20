@@ -92,7 +92,7 @@ export default class Temperature extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
+        sessionStorage.setItem('thermal', JSON.stringify(resGetData.data.data));
       }
       else {
         //if not support HTML 5 local storage

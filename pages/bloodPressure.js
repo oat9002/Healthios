@@ -98,7 +98,7 @@ export default class BloodPressure extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
+        sessionStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
       }
       
       Router.replace('/temperature');

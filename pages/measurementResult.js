@@ -31,15 +31,15 @@ export default class MeasurementResult extends React.Component {
   }
 
   prepareStateAndSaveMeasurementData = () => {
-    const userId = localStorage.getItem('isLogin') ? JSON.parse(localStorage.getItem('userInfo'))._id : JSON.parse(localStorage.getItem('registerResult')).user._id; //TODO: fix me
+    const userId = sessionStorage.getItem('isLogin') ? JSON.parse(sessionStorage.getItem('userInfo'))._id : JSON.parse(sessionStorage.getItem('registerResult')).user._id; //TODO: fix me
     if(typeof(Storage) != 'undefined') {
       this.setState({
         userId: userId,
-        weight: localStorage.getItem('weight'),
-        height: localStorage.getItem('height'),
-        pressure: JSON.parse(localStorage.getItem('pressure')),
-        thermal: localStorage.getItem('thermal'),
-        pulse: JSON.parse(localStorage.getItem('pulse')).avg
+        weight: sessionStorage.getItem('weight'),
+        height: sessionStorage.getItem('height'),
+        pressure: JSON.parse(sessionStorage.getItem('pressure')),
+        thermal: sessionStorage.getItem('thermal'),
+        pulse: JSON.parse(sessionStorage.getItem('pulse')).avg
       }, this.saveMeasurementData);
     }
   }
@@ -67,7 +67,7 @@ export default class MeasurementResult extends React.Component {
       }
       else {
         this.saveMeasurementTimeout = setTimeout(() => {
-          if(localStorage.getItem('isLogin')) {
+          if(sessionStorage.getItem('isLogin')) {
             Router.replace('/final');
           }
           else {

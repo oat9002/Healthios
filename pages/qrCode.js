@@ -20,7 +20,7 @@ export default class QrCode extends React.Component {
 
   setQrcode = () => {
     if(typeof(Storage) !== 'undefined') {
-      let data = JSON.parse(localStorage.getItem('registerResult'));
+      let data = JSON.parse(sessionStorage.getItem('registerResult'));
       this.setState({
         qrData: data.user.firstTimeKey //Fixme 
       });

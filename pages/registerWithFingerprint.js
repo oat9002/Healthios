@@ -93,7 +93,7 @@ export default class RegisterWithFingerprint extends React.Component {
 
         const resRegister = await axios.post(urlRegister, 
           {
-            ...JSON.parse(cryptoJS.AES.decrypt(localStorage.getItem('patientData'), this.props.config.aesSecret)),
+            ...JSON.parse(cryptoJS.AES.decrypt(sessionStorage.getItem('patientData'), this.props.config.aesSecret)),
             'fingerPrint': [resIsFinish.data.data]
           },
           { 
@@ -109,7 +109,7 @@ export default class RegisterWithFingerprint extends React.Component {
         }
 
         if(typeof(Storage) !== undefined) {
-          localStorage.setItem('registerResult', JSON.stringify(resRegister.data));
+          sessionStorage.setItem('registerResult', JSON.stringify(resRegister.data));
         }
         
         Router.replace('/registerComplete');
