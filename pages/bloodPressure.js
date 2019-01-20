@@ -99,6 +99,24 @@ export default class BloodPressure extends React.Component {
 
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('pressure', JSON.stringify(resGetData.data.data));
+        sessionStorage.setItem('pressure', JSON.stringify({
+          systolic_blood_pressure: {
+            value: resGetData.data.data[0],
+            unit: "mmHg"
+          },
+          average_blood_pressure: {
+            value: resGetData.data.data[1],
+            unit: "mmHg"
+          },
+          diastolic_blood_pressure: {
+            value: resGetData.data.data[2],
+            unit: "mmHg"
+          },
+          effective_time_frame: {
+            date_time: new Date().toISOString()
+          }
+        }));
+
       }
       
       Router.replace('/temperature');

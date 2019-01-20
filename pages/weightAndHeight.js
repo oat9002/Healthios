@@ -109,8 +109,24 @@ export default class WeightAndHeight extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        sessionStorage.setItem('weight', JSON.stringify(weight.data.data));
-        sessionStorage.setItem('height', JSON.stringify(height.data.data));
+        sessionStorage.setItem('height', JSON.stringify({
+          body_height: {
+            value: weight.data.data,
+            unit: 'cm'
+          },
+          effective_time_frame: {
+            date_time: new Date().toISOString()
+          }
+        }));
+        sessionStorage.setItem('weight', JSON.stringify({
+          body_weight: {
+            value: this.state.weight,
+            unit: 'kg'
+          },
+          effective_time_frame: {
+            date_time: new Date().toISOString()
+          }
+        }));
       }
 
       Router.replace('/bloodPressure');

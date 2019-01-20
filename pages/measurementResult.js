@@ -35,11 +35,11 @@ export default class MeasurementResult extends React.Component {
     if(typeof(Storage) != 'undefined') {
       this.setState({
         userId: userId,
-        weight: sessionStorage.getItem('weight'),
-        height: sessionStorage.getItem('height'),
+        weight: JSON.parse(sessionStorage.getItem('weight')),
+        height: JSON.parse(sessionStorage.getItem('height')),
         pressure: JSON.parse(sessionStorage.getItem('pressure')),
-        thermal: sessionStorage.getItem('thermal'),
-        pulse: JSON.parse(sessionStorage.getItem('pulse')).avg
+        thermal: JSON.parse(sessionStorage.getItem('thermal')),
+        pulse: JSON.parse(sessionStorage.getItem('pulse'))
       }, this.saveMeasurementData);
     }
   }
@@ -84,13 +84,7 @@ export default class MeasurementResult extends React.Component {
 
   saveHeight = () => {
     return axios.post(this.saveMeasurementUrl, {
-      "body_height": {
-        "value": this.state.height,
-        "unit": "cm"
-      },
-      "effective_time_frame": {
-        "date_time": new Date().toISOString
-      }
+     ...this.state.height
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -101,13 +95,7 @@ export default class MeasurementResult extends React.Component {
 
   saveWeight = () => {
     return axios.post(this.saveMeasurementUrl, {
-      "body_weight": {
-        "value": this.state.weight,
-        "unit": "kg"
-      },
-      "effective_time_frame": {
-        "date_time": new Date().toISOString
-      }
+     ...this.state.weight
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -118,17 +106,15 @@ export default class MeasurementResult extends React.Component {
 
   savePressure = () => {
     return axios.post(this.saveMeasurementUrl, {
-      'systolic_blood_pressure': {
-        'value': this.state.pressure[0],
-        'unit': "mmHg"
+      systolic_blood_pressure: {
+        ...this.state.pressure.systolic_blood_pressure
       },
-      "diastolic_blood_pressure": {
-        "value": this.state.pressure[2],
-        "unit": "mmHg"
+      diastolic_blood_pressure : {
+        ...this.state.pressure.diastolic_blood_pressure
       },
-      "effective_time_frame": {
-        "date_time": new Date().toISOString
-      }
+      effective_time_frame : {
+        ...this.state.pressure.effective_time_frame
+      }      
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -139,13 +125,7 @@ export default class MeasurementResult extends React.Component {
 
   saveThermal = () => {
     return axios.post(this.saveMeasurementUrl, {
-      "body_temperature": {
-        "value": this.state.thermal,
-        "unit": "C"
-      },
-      "effective_time_frame": {
-        "date_time": new Date().toISOString
-      }
+      ...this.state.thermal
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -156,13 +136,7 @@ export default class MeasurementResult extends React.Component {
 
   savePulse = () => {
     return axios.post(this.saveMeasurementUrl, {
-      "heart_rate": {
-        "value": this.state.pulse,
-        "unit": "bpm"
-      },
-      "effective_time_frame": {
-        "date_time": new Date().toISOString
-      }
+      ...this.state.pulse
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -198,7 +172,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/weight.jpg" className='image' />
             </div>
             <div className="content">
-              น้ำหนัก <span className='emphValue'>{this.state.weight}</span> กก.
+              น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value}</span> กก.
             </div>
           </div>
           <Divider style={divider}/>
@@ -207,7 +181,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/height.jpg" className='image'/>
             </div>
             <div className="content">
-              ส่วนสูง <span className='emphValue'>{this.state.height}</span> ซม.
+              ส่วนสูง <span className='emphValue'>{this.state.height.body_height.value}</span> ซม.
             </div>
           </div>
           <Divider style={divider}/>
@@ -216,7 +190,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/temperature.jpg" className='image'/>
             </div>
             <div className="content">
-              อุณหภูมิ <span className='emphValue'>{this.state.thermal}</span>  ํC
+              อุณหภูมิ <span className='emphValue'>{this.state.thermal.body_temperature.value}</span>  ํC
             </div>
           </div>
           <Divider style={divider}/>
@@ -225,9 +199,9 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/bloodPressure.png" className='image'/>
             </div>
             <div className="content">
-              ความดัน<span className='emph'>เฉลี่ย</span> <span className='emphValue'>{this.state.pressure[1]}</span> mmHg
-              <br />ความดัน<span className='emph'>ต่ำ</span>สุด <span className='emphValue'>{this.state.pressure[0]}</span> mmHg
-              <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure[2]}</span> mmHg
+              ความดัน<span className='emph'>เฉลี่ย</span> <span className='emphValue'>{this.state.pressure.average_blood_pressure.value}</span> mmHg
+              <br />ความดัน<span className='emph'>ต่ำ</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
+              <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
             </div>
           </div>
           <Divider style={divider}/>
@@ -236,7 +210,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/heartRate.jpg" className='image'/>
             </div>
             <div className="content">
-              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse}</span> ครั้ง/นาที
+              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value}</span> ครั้ง/นาที
             </div>
           </div>
           <style jsx>{`
