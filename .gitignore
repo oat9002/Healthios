@@ -19,3 +19,5 @@ test/**/out
 out
 test.js
 pages/test3d.js
+
+static/appConfig\.json
