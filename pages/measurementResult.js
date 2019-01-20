@@ -31,14 +31,15 @@ export default class MeasurementResult extends React.Component {
   }
 
   prepareStateAndSaveMeasurementData = () => {
+    const userId = localStorage.getItem('isLogin') ? JSON.parse(localStorage.getItem('userInfo'))._id : JSON.parse(localStorage.getItem('registerResult')).user._id; //TODO: fix me
     if(typeof(Storage) != 'undefined') {
       this.setState({
-        userId: localStorage.getItem('userId') !== undefined ? localStorage.getItem('userId') : '',
-        weight: localStorage.getItem('weight') !== undefined ? localStorage.getItem('weight') : '',
-        height: localStorage.getItem('height') !== undefined ? localStorage.getItem('height') : '',
-        pressure: JSON.parse(localStorage.getItem('pressure') !== undefined ? localStorage.getItem('pressure') : ['', '', '']),
-        thermal: localStorage.getItem('thermal') !== undefined ? localStorage.getItem('thermal') : '',
-        pulse: localStorage.getItem('pulse') !== undefined ? JSON.parse(localStorage.getItem('pulse')).avg : ''
+        userId: userId,
+        weight: localStorage.getItem('weight'),
+        height: localStorage.getItem('height'),
+        pressure: JSON.parse(localStorage.getItem('pressure')),
+        thermal: localStorage.getItem('thermal'),
+        pulse: JSON.parse(localStorage.getItem('pulse')).avg
       }, this.saveMeasurementData);
     }
   }

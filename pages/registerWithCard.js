@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Router from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
+import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
@@ -100,7 +101,7 @@ export default class registerWithCard extends React.Component {
 
     try {
       if(typeof(Storage) !== undefined) {
-        localStorage.setItem('patientInfo', JSON.stringify(updatedPatientInfo));
+        localStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), this.props.config.aesSecret));
       }
 
       Router.replace({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});

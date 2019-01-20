@@ -17,10 +17,6 @@ export default class QrCode extends React.Component {
       Router.replace('/final');
     }, 15000);
   }
-  
-  componentWillUnmount() {
-    localStorage.clear();
-  }
 
   setQrcode = () => {
     if(typeof(Storage) !== 'undefined') {

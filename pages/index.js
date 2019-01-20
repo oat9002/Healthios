@@ -30,7 +30,7 @@ export default class Login extends React.PureComponent {
   componentDidMount() {
     this.loginWithCard();
     this.loginWithFingerprint();
-    this.clearLocalStorage();
+    this.resetLocalStorage();
   }
 
   loginWithCard = async() => {
@@ -88,7 +88,6 @@ export default class Login extends React.PureComponent {
           localStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
           localStorage.setItem('token', resLogin.data.token);
           localStorage.setItem('isLogin', true);
-          localStorage.setItem('userId', resLogin.data.data._id);
         }
         Router.replace({ pathname: '/loginComplete', query: { first: 'card' }});
   
@@ -208,13 +207,12 @@ export default class Login extends React.PureComponent {
     clearTimeout(this.loginWithCardTimeout);
   }
 
-  clearLocalStorage = () => {
+  resetLocalStorage = () => {
     localStorage.setItem("userInfo", "");
     localStorage.setItem("token", "");
     localStorage.setItem("isLogin", false);
-    localStorage.setItem("patientInfo", "");
+    localStorage.setItem("patientData", "");
     localStorage.setItem("registerResult", "");
-    localStorage.setItem("userId", "");
     localStorage.setItem("weight", "");
     localStorage.setItem("height", "");
     localStorage.setItem("thermal", "");
