@@ -31,7 +31,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   prepareStateAndSaveMeasurementData = () => {
-    const userId = sessionStorage.getItem('isLogin') ? JSON.parse(sessionStorage.getItem('userInfo'))._id : JSON.parse(sessionStorage.getItem('registerResult')).user._id; //TODO: fix me
+    const userId = sessionStorage.getItem('isLogin') ? JSON.parse(sessionStorage.getItem('userInfo'))._id : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
     if(typeof(Storage) != 'undefined') {
       this.setState({
         userId: userId,
