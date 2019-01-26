@@ -1,12 +1,56 @@
 import React from 'react';
 import Router from 'next/router';
 import Head from 'next/head';
+import * as Logging from '../services/logging';
+import axios from 'axios';
+
+const configJson = import('../static/appConfig.json');
 
 export default class Final extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.pageTimeout = null;
+    this.retryCheckDeattachCardTimeout = null;
+  }
+
+  static async getInitialProps({ req, query }) {
+    const config = await configJson
+    return { config }
+  }
+
   componentDidMount() {
-    setTimeout(() => {
+    this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, 5000);
+    }, this.props.config.pageTimeout);
+
+    this.checkDeattachCard();
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
+    clearTimeout(this.retryCheckDeattachCardTimeout);
+  }
+
+  checkDeattachCard = async () => {
+    let urlIsInsertCard = this.props.config.piIp + '/thid/valid';
+
+    try {
+      const resIsInsertCard = await axios.get(urlIsInsertCard);
+      if(resIsInsertCard === undefined || resIsInsertCard.data.status) {
+        throw new Error(`Card is still inserted or validate failed.`);
+      }
+
+      Router.replace('/');
+    }
+    catch(err) {
+      Logging.sendLogMessage("Check deattach card failed", err);
+      this.retryCheckDeattachCard();
+    }
+  }
+
+  retryCheckDeattachCard = () => {
+    this.retryCheckDeattachCardTimeout = setTimeout(this.checkDeattachCard, 1000);
   }
 
   render() {

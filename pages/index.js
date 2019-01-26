@@ -146,7 +146,7 @@ export default class Login extends React.PureComponent {
         }
 
         const resGetData = await axios.get(urlGetData);
-        if(resGetData === undefined || !resGetData.data.status) {
+        if(resGetData === undefined) {
           throw new Error(`Fingerprint get data failed, status: ${ resGetData.data.status }`)
         }
 
@@ -156,13 +156,13 @@ export default class Login extends React.PureComponent {
           });  
         }
 
+        if(!resGetData.data.status) {
+          Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
+        }
+
         try {
           const resLogin = await axios({
             url: urlLogin,
-            auth: {
-              username: 'kmitl-test2',
-              password: 'test1234'
-            },
             headers : {
               'x-user-key': resGetData.data.data,
               'X-Station-Key': this.props.config.stationKey,
@@ -184,7 +184,7 @@ export default class Login extends React.PureComponent {
         }
         catch(ex) {
           if(ex !== undefined && ex.response.status == 401) {
-            Router.replace({ pathname: '/registerWithCard', query: { first: 'card' }});
+            Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
           }
           else {
             throw ex;
