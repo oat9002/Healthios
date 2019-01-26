@@ -1,11 +1,11 @@
 import React from 'react';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
-export default class Welcome extends React.Component {
+class Welcome extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -74,3 +74,5 @@ export default class Welcome extends React.Component {
     );
   }
 }
+
+export default withRouter(Welcome);

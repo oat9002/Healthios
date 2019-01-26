@@ -2,14 +2,14 @@ import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import LoadingTemplate from '../components/loadingTemplate';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
-export default class registerWithCard extends React.Component {
+class RegisterWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -245,3 +245,5 @@ export default class registerWithCard extends React.Component {
     );
   }
 }
+
+export default withRouter(RegisterWithCard);

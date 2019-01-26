@@ -1,9 +1,9 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 
-export default class QrCode extends React.Component {
+class QrCode extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -72,3 +72,5 @@ export default class QrCode extends React.Component {
     );
   }
 }
+
+export default withRouter(QrCode);

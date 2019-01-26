@@ -1,8 +1,8 @@
 import React from 'react';
 import CompleteTemplate from '../components/completeTemplate';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 
-export default class RegisterComplete extends React.Component {
+class RegisterComplete extends React.Component {
   componentDidMount() {
     setTimeout(() => {
       Router.replace('/registerResult');
@@ -15,3 +15,5 @@ export default class RegisterComplete extends React.Component {
     );
   }
 }
+
+export default withRouter(RegisterComplete);

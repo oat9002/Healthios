@@ -1,12 +1,12 @@
 import React from 'react';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import Head from 'next/head';
 import * as Logging from '../services/logging';
 import axios from 'axios';
 
 const configJson = import('../static/appConfig.json');
 
-export default class Final extends React.Component {
+class Final extends React.Component {
   constructor(props) {
     super(props);
 
@@ -92,3 +92,5 @@ export default class Final extends React.Component {
     );
   }
 }
+
+export default withRouter(Final);

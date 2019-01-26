@@ -1,14 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import * as Logging from '../services/logging';
+import { withHandlers } from 'recompose';
 
 const configJson = import('../static/appConfig.json');
 
-export default class Temperature extends React.Component {
+class Temperature extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -184,3 +185,5 @@ export default class Temperature extends React.Component {
     );
   }
 }
+
+export default withRouter(Temperature);

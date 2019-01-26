@@ -3,12 +3,12 @@ import Head from 'next/head';
 import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
-export default class BloodPressure extends React.Component {
+class BloodPressure extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -183,3 +183,5 @@ export default class BloodPressure extends React.Component {
     );
   }
 }
+
+export default withRouter(BloodPressure);

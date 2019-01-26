@@ -1,14 +1,14 @@
 import React from 'react';
 import Head from 'next/head';
 import LoadingTemplate from '../components/loadingTemplate';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJS from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
-export default class RegisterWithFingerprint extends React.Component {
+class RegisterWithFingerprint extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -136,7 +136,7 @@ export default class RegisterWithFingerprint extends React.Component {
           !this.state.isRegister ? (
             !this.state.nextState ? 
               (
-                <div>
+                RegisterWithFingerprint   <div>
                   <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
                   <br/>
                   <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
@@ -187,3 +187,5 @@ export default class RegisterWithFingerprint extends React.Component {
     );
   }
 }
+
+export default withRouter(RegisterWithFingerprint);
