@@ -12,7 +12,6 @@ const configJson = import('../static/appConfig.json');
 export default class MeasurementResult extends React.Component {
   constructor(props) {
     super(props);
-   
 
     this.state = {
       userId: '',
@@ -60,7 +59,9 @@ export default class MeasurementResult extends React.Component {
   }
 
   prepareStateAndSaveMeasurement = () => {
-    const userId = sessionStorage.getItem('isLogin') ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))._id : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
+    const userId =  sessionStorage.getItem('isLogin') === 'true'
+    ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
+    : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
     const weight = JSON.parse(sessionStorage.getItem('weight'));
     const height = JSON.parse(sessionStorage.getItem('height'));
     const pressure = JSON.parse(sessionStorage.getItem('pressure'));
