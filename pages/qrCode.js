@@ -39,7 +39,7 @@ export default class QrCode extends React.Component {
             แสกน QR Code เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
           </div>
           <div className='qr'>
-            <QRCode value={ this.state.qrValue === undefined ? 'www.google.co.th' : this.state.qrData } size={ 128 * 4 }/>
+            <QRCode value={ this.state.qrValue === '' ? 'www.google.co.th' : this.state.qrData } size={ 128 * 4 }/>
           </div>
         </div>
         <style jsx>{`
