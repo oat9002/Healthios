@@ -1,9 +1,9 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 
-export default class QrCode extends React.Component {
+class QrCode extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,7 +39,7 @@ export default class QrCode extends React.Component {
             แสกน QR Code เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
           </div>
           <div className='qr'>
-            <QRCode value={ this.state.qrValue === undefined ? 'www.google.co.th' : this.state.qrData } size={ 128 * 4 }/>
+            <QRCode value={ this.state.qrValue === '' ? 'www.google.co.th' : this.state.qrData } size={ 128 * 4 }/>
           </div>
         </div>
         <style jsx>{`
@@ -72,3 +72,5 @@ export default class QrCode extends React.Component {
     );
   }
 }
+
+export default withRouter(QrCode);

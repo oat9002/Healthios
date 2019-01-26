@@ -3,12 +3,12 @@ import Head from 'next/head';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
-export default class HeartRate extends React.Component {
+class HeartRate extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -100,7 +100,7 @@ export default class HeartRate extends React.Component {
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('pulse', JSON.stringify({
           heart_rate: {
-            value: resGetData.data.data.avg,
+            value: resGetData.data.data,
             unit: "bpm"
           },
           effective_time_frame: {
@@ -186,3 +186,5 @@ export default class HeartRate extends React.Component {
     );
   }
 }
+
+export default withRouter(HeartRate);

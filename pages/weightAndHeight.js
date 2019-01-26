@@ -3,12 +3,12 @@ import Head from 'next/head';
 import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
-export default class WeightAndHeight extends React.Component {
+class WeightAndHeight extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -109,22 +109,26 @@ export default class WeightAndHeight extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
+        let now = new Date();
+
         sessionStorage.setItem('height', JSON.stringify({
           body_height: {
-            value: weight.data.data,
+            value: height.data.data,
             unit: 'cm'
           },
           effective_time_frame: {
-            date_time: new Date().toISOString()
+            date_time: now.toISOString()
           }
         }));
+
+        now.setSeconds(now.getSeconds() + 1);
         sessionStorage.setItem('weight', JSON.stringify({
           body_weight: {
-            value: this.state.weight,
+            value: weight.data.data,
             unit: 'kg'
           },
           effective_time_frame: {
-            date_time: new Date().toISOString()
+            date_time: now.toISOString()
           }
         }));
       }
@@ -191,3 +195,5 @@ export default class WeightAndHeight extends React.Component {
     );
   }
 }
+
+export default withRouter(WeightAndHeight);

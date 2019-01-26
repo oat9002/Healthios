@@ -1,8 +1,8 @@
 import React from 'react';
 import CompleteTemplate from '../components/completeTemplate';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 
-export default class LoginComplete extends React.Component {
+class LoginComplete extends React.Component {
 
   componentDidMount() {
     setTimeout(() => {
@@ -16,3 +16,5 @@ export default class LoginComplete extends React.Component {
     );
   }
 }
+
+export default withRouter(LoginComplete);

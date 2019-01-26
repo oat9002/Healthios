@@ -1,11 +1,11 @@
 import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
 
 const configJson = import('../static/appConfig.json');
 
-export default class RegisterResult extends React.Component {
+class RegisterResult extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -119,3 +119,5 @@ export default class RegisterResult extends React.Component {
     );
   }
 }
+
+export default withRouter(RegisterResult)

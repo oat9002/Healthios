@@ -2,19 +2,20 @@ import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import LoadingTemplate from '../components/loadingTemplate';
 import Head from 'next/head';
-import Router from 'next/router';
+import Router, { withRouter } from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
-export default class registerWithCard extends React.Component {
+class RegisterWithCard extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      isFromCard: false,
-      isProcessing: false
+      isFromCard: props.url.query.first === 'card' ? true : false,
+      isLogin: false,
+      isRegister: false
     };
     this.piIp = this.props.config.piIp;
     this.serverIp = this.props.config.serverIp;
@@ -28,16 +29,7 @@ export default class registerWithCard extends React.Component {
     return { config }
   }
 
-  setIsFromCard() {
-    if(this.props.url.query.first === 'card' && !this.state.isFromCard) {
-      this.setState({
-        isFromCard: true,
-      });
-    }
-  }
-
   componentDidMount() {
-    this.setIsFromCard();
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
@@ -72,11 +64,10 @@ export default class registerWithCard extends React.Component {
         throw new Error(`Card validate failed, status: ${ resInsertCard.data.status }`);
       }
 
-      if(!this.state.isProcessing) {
-        this.setState({
-          isProcessing: true
-        });
-      }
+      this.setState({
+        isLogin: true,
+        isRegister: false
+      });
 
       const resIsCardReadable = await axios.get(urlIsCardReadable);
       if(resIsCardReadable === undefined || ! resIsCardReadable.data.status) {
@@ -88,7 +79,7 @@ export default class registerWithCard extends React.Component {
         throw new Error(`Card get data failed`);
       }
 
-      this.register(resGetData.data.data);
+      this.login(resGetData.data.data);
     }
     catch(ex) {
       Logging.sendLogMessage('RegisterWithCard', ex);
@@ -96,10 +87,52 @@ export default class registerWithCard extends React.Component {
     }
   }
 
+  login = async(data) => {
+    let urlLogin = this.props.config.serverIp + '/api/auth/login';
+
+    try {
+      const resLogin = await axios({
+        url: urlLogin,
+        auth: {
+          username: data.idNumber,
+          password: data.birthOfDate.replace(/\//g, '')
+        },
+        headers : {
+          'X-Station-Key': this.props.config.stationKey,
+          'X-Provider-Key': this.props.config.providerKey
+        }
+      });
+
+      if(resLogin === undefined) {
+        throw new Error(`Login with card failed.`);
+      }
+
+      if(typeof(Storage) !== undefined) {
+        sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+        sessionStorage.setItem('token', resLogin.data.token);
+        sessionStorage.setItem('isLogin', true);
+      }
+      Router.replace({ pathname: '/loginComplete', query: { first: 'card' }});
+    }
+    catch(ex) {
+      if(ex !== undefined && ex.response.status == 401) {
+        this.register(data);
+      }
+      else {
+        throw ex
+      }
+    }
+  }
+
   register = async(patientInfo) => {
     let updatedPatientInfo = this.prepareDataForRegister(patientInfo);
 
     try {
+      this.setState({
+        isLogin: false,
+        isRegister: true
+      });
+
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), this.props.config.aesSecret));
       }
@@ -116,6 +149,55 @@ export default class registerWithCard extends React.Component {
   }
 
   render() {
+    let showElement = (  
+      <div>
+        <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
+        <br/>
+        <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+        <style jsx>{`
+            img {
+              heigh: auto;
+              width: 30%;
+            }
+            span {
+              font-size: 4em;
+            }
+            .emph {
+              font-size: 2em;
+              font-weight: bold;
+            }
+            .emph2 {
+              font-weight: bold;
+              color: blue;
+            }
+            `}</style>
+            <style jsx global>{`
+              .content {
+                text-align: center;
+                margin-top: 13%;
+              }
+              body {
+                font-family: Kanit;
+                font-weight: 200;
+                color: #393939;
+                animation: fadein 1s;
+                background-color: #f7f7f7;
+              }
+              @keyframes fadein {
+                  from { opacity: 0; };
+                  to   { opacity: 1; };
+              }
+        `}</style>
+      </div>
+    );
+
+    if(this.state.isFromCard || this.state.isRegister) {
+      showElement =  <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>;
+    }
+    else if(this.state.isLogin) {
+      showElement =  <LoadingTemplate text='กำลังทำงาน...'></LoadingTemplate>;
+    }
+
     return(
       <MuiThemeProvider>
         <div className='content'>
@@ -123,18 +205,7 @@ export default class registerWithCard extends React.Component {
             <link href="https://fonts.googleapis.com/css?family=Kanit:200,300&amp;subset=thai" rel="stylesheet" />
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
-          {
-            this.state.isFromCard || this.state.isProcessing ? (
-              <LoadingTemplate text='กำลังลงทะเบียนด้วยบัตรประชาชน...'></LoadingTemplate>
-            ) : 
-            (
-              <div>
-                <span>กรุณา<span className='emph'>เสียบ</span>บัตรประชาชน</span>
-                <br/>
-                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
-              </div>
-            )
-          }
+          { showElement }
           <style jsx>{`
             img {
               heigh: auto;
@@ -174,3 +245,5 @@ export default class registerWithCard extends React.Component {
     );
   }
 }
+
+export default withRouter(RegisterWithCard);

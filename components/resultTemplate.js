@@ -192,14 +192,13 @@ const resultTemplate = (props) => {
 };
 
 resultTemplate.propTypes = {
-  // imgSrc: PropTypes.element.isRequired,
-  thaiName: PropTypes.element.isRequired,
-  engName: PropTypes.element.isRequired,
-  age: PropTypes.element.isRequired,
-  dateOfBirth: PropTypes.element.isRequired,
-  address: PropTypes.element.isRequired,
-  idNumber: PropTypes.element.isRequired,
-  gender: PropTypes.element.isRequired
+  thaiName: PropTypes.string.isRequired,
+  engName: PropTypes.string.isRequired,
+  age: PropTypes.string.isRequired,
+  dateOfBirth: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired,
+  idNumber: PropTypes.string.isRequired,
+  gender: PropTypes.string.isRequired
 };
 
 export default resultTemplate;

@@ -1,25 +1,53 @@
 import React from 'react';
 import Router from 'next/router';
 import Head from 'next/head';
-import { Card, CardMedia, CardText, CardTitle } from 'material-ui/Card';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import axios from 'axios';
 import * as Logging from '../services/logging';
+import cryptoJs from 'crypto-js';
 
 const configJson = import('../static/appConfig.json');
 
 export default class MeasurementResult extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       userId: '',
-      weight: '',
-      height: '',
-      pressure: '',
-      thermal: '',
-      pulse: '',
+      weight: {
+        body_weight: {
+          value: 0,
+        }
+      },
+      height: {
+        body_height: {
+          value: 0,
+        }
+      },
+      pressure: {
+        systolic_blood_pressure: {
+          value: 0,
+        },
+        average_blood_pressure: {
+          value: 0,
+        },
+        diastolic_blood_pressure: {
+          value: 0,
+        }
+      },
+      thermal: {
+        body_temperature: {
+          value: 0,
+        }
+      },
+      pulse: {
+        heart_rate: {
+          value: 0,
+        }
+      }
     };
+
     this.pageTimeout = null;
     this.saveMeasurementUrl = this.props.config.serverIp + '/api/data/save';
     this.saveMeasurementTimeout = null;
@@ -30,18 +58,24 @@ export default class MeasurementResult extends React.Component {
     return { config }
   }
 
-  prepareStateAndSaveMeasurementData = () => {
-    const userId = sessionStorage.getItem('isLogin') ? JSON.parse(sessionStorage.getItem('userInfo'))._id : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
-    if(typeof(Storage) != 'undefined') {
-      this.setState({
-        userId: userId,
-        weight: JSON.parse(sessionStorage.getItem('weight')),
-        height: JSON.parse(sessionStorage.getItem('height')),
-        pressure: JSON.parse(sessionStorage.getItem('pressure')),
-        thermal: JSON.parse(sessionStorage.getItem('thermal')),
-        pulse: JSON.parse(sessionStorage.getItem('pulse'))
-      }, this.saveMeasurementData);
-    }
+  prepareStateAndSaveMeasurement = () => {
+    const userId =  sessionStorage.getItem('isLogin') === 'true'
+    ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
+    : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
+    const weight = JSON.parse(sessionStorage.getItem('weight'));
+    const height = JSON.parse(sessionStorage.getItem('height'));
+    const pressure = JSON.parse(sessionStorage.getItem('pressure'));
+    const thermal = JSON.parse(sessionStorage.getItem('thermal'));
+    const pulse = JSON.parse(sessionStorage.getItem('pulse'));
+
+    this.setState({
+      userId,
+      weight,
+      height,
+      pressure,
+      thermal,
+      pulse
+    }, this.saveMeasurementData);
   }
 
   componentDidMount() {
@@ -49,7 +83,7 @@ export default class MeasurementResult extends React.Component {
       Router.replace('/');
     }, this.props.config.pageTimeout);
 
-    this.prepareStateAndSaveMeasurementData();
+    this.prepareStateAndSaveMeasurement();
   }
 
   componentWillUnmount() {
@@ -58,12 +92,13 @@ export default class MeasurementResult extends React.Component {
   }
 
   saveMeasurementData = async() => {
-    console.log(this.state.userId)
     try {
       const [resWeight, resHeight, resPressure, resPulse, resThermal] = await Promise.all([this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal()]);
+
+      console.log("save", [resWeight, resHeight, resPressure, resPulse, resThermal]);
      
       if(resWeight.data.error || resHeight.data.error || resPressure.data.error || resPulse.data.error || resThermal.data.error) {
-        this.saveMeasurementData();
+        this.retrySaveMeasurementData();
       }
       else {
         this.saveMeasurementTimeout = setTimeout(() => {
@@ -160,6 +195,7 @@ export default class MeasurementResult extends React.Component {
       'marginLeft': '15%'
     }
 
+
     return (
       <MuiThemeProvider >
         <div>
@@ -169,16 +205,16 @@ export default class MeasurementResult extends React.Component {
           </Head>
           <div className='template'>
             <div>
-              <img src="/static/pics/weight.jpg" className='image' />
+              <img src="/static/pics/measurement_result/weight.jpg" className='image' />
             </div>
             <div className="content">
-              น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value}</span> กก.
+              น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value !== undefined ? this.state.weight.body_weight.value : ""}</span> กก.
             </div>
           </div>
           <Divider style={divider}/>
           <div className='template'>
             <div>
-              <img src="/static/pics/height.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/height.jpg" className='image'/>
             </div>
             <div className="content">
               ส่วนสูง <span className='emphValue'>{this.state.height.body_height.value}</span> ซม.
@@ -187,7 +223,7 @@ export default class MeasurementResult extends React.Component {
           <Divider style={divider}/>
           <div className='template'>
             <div>
-              <img src="/static/pics/temperature.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/temperature.jpg" className='image'/>
             </div>
             <div className="content">
               อุณหภูมิ <span className='emphValue'>{this.state.thermal.body_temperature.value}</span>  ํC
@@ -196,7 +232,7 @@ export default class MeasurementResult extends React.Component {
           <Divider style={divider}/>
           <div className='template'>
             <div>
-              <img src="/static/pics/bloodPressure.png" className='image'/>
+              <img src="/static/pics/measurement_result/bloodPressure.png" className='image'/>
             </div>
             <div className="content">
               ความดัน<span className='emph'>เฉลี่ย</span> <span className='emphValue'>{this.state.pressure.average_blood_pressure.value}</span> mmHg
@@ -207,10 +243,10 @@ export default class MeasurementResult extends React.Component {
           <Divider style={divider}/>
           <div className='template'>
             <div>
-              <img src="/static/pics/heartRate.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/heartRate.jpg" className='image'/>
             </div>
             <div className="content">
-              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value}</span> ครั้ง/นาที
+              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value.avg}</span> ครั้ง/นาที
             </div>
           </div>
           <style jsx>{`
