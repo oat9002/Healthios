@@ -130,7 +130,7 @@ class RegisterWithFingerprint extends React.Component {
           !this.state.isRegister ? (
             !this.state.nextState ? 
               (
-                RegisterWithFingerprint   <div>
+                <div>
                   <span>กรุณา<span className='emph'>แตะ</span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
                   <br/>
                   <img className='pulse animated infinite' src="/static/pics/fingerprints.svg"/>
