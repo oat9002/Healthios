@@ -6,8 +6,7 @@ import Divider from 'material-ui/Divider';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJs from 'crypto-js';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 export default class MeasurementResult extends React.Component {
   constructor(props) {
@@ -49,18 +48,20 @@ export default class MeasurementResult extends React.Component {
     };
 
     this.pageTimeout = null;
-    this.saveMeasurementUrl = this.props.config.serverIp + '/api/data/save';
+    this.saveMeasurementUrl = Config.serverIp + '/api/data/save';
     this.saveMeasurementTimeout = null;
-  }
-
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
+    this.isSave = {
+      weight: false,
+      height: false,
+      pressure: false,
+      thermal: false,
+      pulse: false
+    };
   }
 
   prepareStateAndSaveMeasurement = () => {
     const userId =  sessionStorage.getItem('isLogin') === 'true'
-    ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
+    ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
     : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
     const weight = JSON.parse(sessionStorage.getItem('weight'));
     const height = JSON.parse(sessionStorage.getItem('height'));
@@ -81,7 +82,7 @@ export default class MeasurementResult extends React.Component {
   componentDidMount() {
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout);
+    }, Config.pageTimeout);
 
     this.prepareStateAndSaveMeasurement();
   }
@@ -93,11 +94,43 @@ export default class MeasurementResult extends React.Component {
 
   saveMeasurementData = async() => {
     try {
-      const [resWeight, resHeight, resPressure, resPulse, resThermal] = await Promise.all([this.saveWeight(), this.saveHeight(), this.savePressure(), this.savePulse(), this.saveThermal()]);
+      if(!this.isSave.weight) {
+        const resWeight = await this.saveWeight();
+        if(!resWeight.data.error) {
+          this.isSave.weight = true;
+        }
+      }
 
-      console.log("save", [resWeight, resHeight, resPressure, resPulse, resThermal]);
-     
-      if(resWeight.data.error || resHeight.data.error || resPressure.data.error || resPulse.data.error || resThermal.data.error) {
+      if(!this.isSave.height) {
+        const resHeight = await this.saveHeight();
+        if(!resHeight.data.error) {
+          this.isSave.height = true;
+        }
+      }
+
+      if(!this.isSave.pressure) {
+        const resPressure = await this.savePressure();
+        if(!resPressure.data.error) {
+          this.isSave.pressure = true;
+        }
+      }
+
+      if(!this.isSave.pulse) {
+        const resPulse = await this.savePulse();
+        if(!resPulse.data.error) {
+          this.isSave.pulse = true;
+        }
+      }
+
+      if(!this.isSave.thermal) {
+        const resThermal = await this.saveThermal();
+        if(!resThermal.data.error) {
+          this.isSave.thermal = true;
+        }
+      }
+
+      const isRetry = Object.keys(isSave).map(key => isSave[key]).some((isSave) => isSave === false);
+      if(isRetry) {
         this.retrySaveMeasurementData();
       }
       else {
@@ -181,7 +214,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   retrySaveMeasurementData = () => {
-    this.retryTimeout = setTimeout(this.saveMeasurementData, this.props.config.retryTimeout);
+    this.retryTimeout = setTimeout(this.saveMeasurementData, Config.retryTimeout);
   }
 
   render() {

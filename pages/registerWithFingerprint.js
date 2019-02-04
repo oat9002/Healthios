@@ -5,8 +5,7 @@ import Router, { withRouter } from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJS from 'crypto-js';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class RegisterWithFingerprint extends React.Component {
   constructor(props) {
@@ -20,16 +19,11 @@ class RegisterWithFingerprint extends React.Component {
     this.isStart = false;
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
   componentDidMount() {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout)
+    }, Config.pageTimeout)
   }
 
   componentWillUnmount() {
@@ -38,11 +32,11 @@ class RegisterWithFingerprint extends React.Component {
   }
 
   process = async() => {
-    let urlStartReadFingerprint = this.props.config.piIp + '/finger/start/template';
-    let urlReadFingerprint = this.props.config.piIp + '/finger/valid/template1';
-    let urlReadFingerprint2 = this.props.config.piIp + '/finger/valid/template2';
-    let urlIsFinish = this.props.config.piIp + '/finger/template';
-    let urlRegister = this.props.config.serverIp + '/api/auth/register';
+    let urlStartReadFingerprint = Config.piIp + '/finger/start/template';
+    let urlReadFingerprint = Config.piIp + '/finger/valid/template1';
+    let urlReadFingerprint2 = Config.piIp + '/finger/valid/template2';
+    let urlIsFinish = Config.piIp + '/finger/template';
+    let urlRegister = Config.serverIp + '/api/auth/register';
 
     if(!this.isStart) {
       try {
@@ -93,13 +87,13 @@ class RegisterWithFingerprint extends React.Component {
 
         const resRegister = await axios.post(urlRegister, 
           {
-            ...JSON.parse(cryptoJS.AES.decrypt(sessionStorage.getItem('patientData'), this.props.config.aesSecret).toString(cryptoJS.enc.Utf8)),
+            ...JSON.parse(cryptoJS.AES.decrypt(sessionStorage.getItem('patientData'), Config.aesSecret).toString(cryptoJS.enc.Utf8)),
             'fingerPrint': [resIsFinish.data.data]
           },
           { 
             headers : {
-              'X-Station-Key': this.props.config.stationKey,
-              'X-Provider-Key': this.props.config.providerKey
+              'X-Station-Key': Config.stationKey,
+              'X-Provider-Key': Config.providerKey
             }
           }
         );
@@ -122,7 +116,7 @@ class RegisterWithFingerprint extends React.Component {
   }
 
   retryProcess = () => {
-    this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
+    this.retryTimeout = setTimeout(this.process, Config.retryTimeout);
   }
 
   render() {

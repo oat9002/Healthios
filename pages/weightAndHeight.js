@@ -5,8 +5,7 @@ import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class WeightAndHeight extends React.Component {
   constructor(props) {
@@ -14,22 +13,17 @@ class WeightAndHeight extends React.Component {
     this.state = {
       isProcessing: false
     };
-    this.piIp = this.props.config.piIp;
+    this.piIp = Config.piIp;
     this.pageTimeout = null;
     this.readWeightAndHeightTimeout = null;
     this.startSensorTimeout = null;
     this.isSensorStart = false;
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
   componentDidMount() {
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout);
+    }, Config.pageTimeout);
     
     this.startSensor();
     this.readWeightAndHeight();
@@ -62,7 +56,7 @@ class WeightAndHeight extends React.Component {
   }
 
   retryStartSensor = () => {
-    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
+    this.startSensorTimeout = setTimeout(this.startSensor, Config.retryTimeout);
   }
 
   readWeightAndHeight = async() => {
@@ -142,7 +136,7 @@ class WeightAndHeight extends React.Component {
   }
 
   retryReadWeightAndHeight = () => {
-    this.readWeightAndHeightTimeout = setTimeout(this.readWeightAndHeight, this.props.config.retryTimeout);
+    this.readWeightAndHeightTimeout = setTimeout(this.readWeightAndHeight, Config.retryTimeout);
   }
 
   componentWillUnmount() {

@@ -5,8 +5,7 @@ import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
 import * as Logging from '../services/logging';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class Login extends React.PureComponent {
   constructor(props) {
@@ -15,16 +14,11 @@ class Login extends React.PureComponent {
       data: null,
       isLoading: false
     };
-    this.piIp = this.props.config.piIp;
-    this.serverIp = this.props.config.serverIp;
+    this.piIp = Config.piIp;
+    this.serverIp = Config.serverIp;
     this.isStart = false;
     this.loginWithFingerprintTimeout = null;
     this.loginWithCardTimeout = null;
-  }
-
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
   }
 
   componentDidMount() {
@@ -75,8 +69,8 @@ class Login extends React.PureComponent {
             password: resGetData.data.data.birthOfDate.replace(/\//g, '')
           },
           headers : {
-            'X-Station-Key': this.props.config.stationKey,
-            'X-Provider-Key': this.props.config.providerKey
+            'X-Station-Key': Config.stationKey,
+            'X-Provider-Key': Config.providerKey
           }
         });
   
@@ -85,7 +79,7 @@ class Login extends React.PureComponent {
         }
   
         if(typeof(Storage) !== undefined) {
-          sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+          sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
           sessionStorage.setItem('token', resLogin.data.token);
           sessionStorage.setItem('isLogin', true);
         }
@@ -108,7 +102,7 @@ class Login extends React.PureComponent {
   }
 
   retryLoginWithCard = () => {
-    this.loginWithCardTimeout = setTimeout(this.loginWithCard, this.props.config.retryTimeout);
+    this.loginWithCardTimeout = setTimeout(this.loginWithCard, Config.retryTimeout);
   }
 
   loginWithFingerprint = async() => {
@@ -165,8 +159,8 @@ class Login extends React.PureComponent {
             url: urlLogin,
             headers : {
               'x-user-key': resGetData.data.data,
-              'X-Station-Key': this.props.config.stationKey,
-              'X-Provider-Key': this.props.config.providerKey
+              'X-Station-Key': Config.stationKey,
+              'X-Provider-Key': Config.providerKey
             }
           });
   
@@ -175,7 +169,7 @@ class Login extends React.PureComponent {
           }
   
           if(typeof(Storage) !== undefined) {
-            sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+            sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
             sessionStorage.setItem('token', resLogin.data.token);
             sessionStorage.setItem('isLogin', true);
           }
@@ -199,7 +193,7 @@ class Login extends React.PureComponent {
   }
 
   retryLoginWithFingerprint = () => {
-    this.loginWithFingerprintTimeout = setTimeout(this.loginWithFingerprint, this.props.config.retryTimeout);
+    this.loginWithFingerprintTimeout = setTimeout(this.loginWithFingerprint, Config.retryTimeout);
   }
 
   componentWillUnmount() {

@@ -2,9 +2,8 @@ import React from 'react';
 import Router, { withRouter } from 'next/router';
 import Head from 'next/head';
 import * as Logging from '../services/logging';
+import * as Config from '../static/appConfig.json';
 import axios from 'axios';
-
-const configJson = import('../static/appConfig.json');
 
 class Final extends React.Component {
   constructor(props) {
@@ -14,15 +13,10 @@ class Final extends React.Component {
     this.retryCheckDeattachCardTimeout = null;
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
   componentDidMount() {
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout);
+    }, Config.pageTimeout);
 
     this.checkDeattachCard();
   }
@@ -33,7 +27,7 @@ class Final extends React.Component {
   }
 
   checkDeattachCard = async () => {
-    let urlIsInsertCard = this.props.config.piIp + '/thid/valid';
+    let urlIsInsertCard = Config.piIp + '/thid/valid';
 
     try {
       const resIsInsertCard = await axios.get(urlIsInsertCard);

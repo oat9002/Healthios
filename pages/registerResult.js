@@ -2,8 +2,7 @@ import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
 import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class RegisterResult extends React.Component {
   constructor(props) {
@@ -18,22 +17,17 @@ class RegisterResult extends React.Component {
       gender: '',
       idNumber: ''
     };
-    this.piIp = this.props.config.piIp;
+    this.piIp = Config.piIp;
     this.generateAge = this.generateAge.bind(this);
     this.getDaysInMonth = this.getDaysInMonth.bind(this);
     this.pageTimeout = null;
-  }
-
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
   }
 
   componentWillMount() {
     this.getPersonalData();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout);
+    }, Config.pageTimeout);
   }
 
   getPersonalData = () => {

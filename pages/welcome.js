@@ -2,8 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Router, { withRouter } from 'next/router';
 import cryptoJs from 'crypto-js';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class Welcome extends React.Component {
   constructor(props) {
@@ -13,13 +12,8 @@ class Welcome extends React.Component {
     };
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
   componentDidMount() {
-    const decryptUserInfo = cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), this.props.config.aesSecret).toString(cryptoJs.enc.Utf8);
+    const decryptUserInfo = cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8);
 
     this.setState({
       data: JSON.parse(decryptUserInfo)

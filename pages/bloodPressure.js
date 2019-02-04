@@ -5,8 +5,7 @@ import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class BloodPressure extends React.Component {
   constructor(props) {
@@ -25,7 +24,7 @@ class BloodPressure extends React.Component {
     this.readBloodPressure();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout)
+    }, Config.pageTimeout)
   }
 
   componentWillUnmount() {
@@ -34,19 +33,14 @@ class BloodPressure extends React.Component {
     clearTimeout(this.startSensorTimeout);
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
-  startSensor = async() => {
+  startSensor = async () => {
     if(this.isSensorStart) {
       return;
     }
 
-    let urlStartSensor = this.props.config.piIp + '/pressure/start';
+    let urlStartSensor = Config.piIp + '/pressure/start';
    
-    try{
+    try {
       const res = await axios.get(urlStartSensor);
       if(res === undefined || !res.data.status) {
         throw new Error(`Pressure start failed, status: ${ res.data.status }`);
@@ -61,7 +55,7 @@ class BloodPressure extends React.Component {
   }
 
   retryStartSensor = () => {
-    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
+    this.startSensorTimeout = setTimeout(this.startSensor, Config.retryTimeout);
   }
 
   readBloodPressure = async() => {
@@ -70,9 +64,9 @@ class BloodPressure extends React.Component {
       return;
     }
 
-    let urlIsSensorReady = this.props.config.piIp + '/pressure/valid';
-    let urlIsSensorFinishRead = this.props.config.piIp + '/pressure/finish';
-    let urlGetData = this.props.config.piIp + '/pressure';
+    let urlIsSensorReady = Config.piIp + '/pressure/valid';
+    let urlIsSensorFinishRead = Config.piIp + '/pressure/finish';
+    let urlGetData = Config.piIp + '/pressure';
 
     try {
       const res = await axios.get(urlIsSensorReady);
@@ -128,7 +122,7 @@ class BloodPressure extends React.Component {
   }
 
   retryReadBloodPressure = () => {
-    this.readBloodPressureTimeout = setTimeout(this.readBloodPressure, this.props.config.retryTimeout);
+    this.readBloodPressureTimeout = setTimeout(this.readBloodPressure, Config.retryTimeout);
   }
 
   componentWillUnmount() {

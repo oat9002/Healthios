@@ -5,9 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import * as Logging from '../services/logging';
-import { withHandlers } from 'recompose';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class Temperature extends React.Component {
   constructor(props) {
@@ -26,16 +24,11 @@ class Temperature extends React.Component {
     this.readTemperature();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout)
+    }, Config.pageTimeout)
   }
 
   componentWillUnmount() {
      clearTimeout(this.pageTimeout);
-  }
-
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
   }
 
   startSensor = async() => {
@@ -43,7 +36,7 @@ class Temperature extends React.Component {
       return;
     }
     
-    let urlStartSensor = this.props.config.piIp + '/thermal/start';
+    let urlStartSensor = Config.piIp + '/thermal/start';
 
     try {
       const res = await axios.get(urlStartSensor);
@@ -66,9 +59,9 @@ class Temperature extends React.Component {
       return;
     }
 
-    let urlIsSensorReady = this.props.config.piIp + '/thermal/valid';
-    let urlIsSensorFinishRead = this.props.config.piIp + '/thermal/finish';
-    let urlGetData = this.props.config.piIp + '/thermal';
+    let urlIsSensorReady = Config.piIp + '/thermal/valid';
+    let urlIsSensorFinishRead = Config.piIp + '/thermal/finish';
+    let urlGetData = Config.piIp + '/thermal';
 
     try {
       const res = await axios.get(urlIsSensorReady);
@@ -117,11 +110,11 @@ class Temperature extends React.Component {
   }
 
   retryReadTemperature = () => {
-    this.readTemperatureTimeout = setTimeout(this.readTemperature, this.props.config.retryTimeout);
+    this.readTemperatureTimeout = setTimeout(this.readTemperature, Config.retryTimeout);
   }
 
   retryStartSensor = () => {
-    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
+    this.startSensorTimeout = setTimeout(this.startSensor, Config.retryTimeout);
   }
 
   render() {

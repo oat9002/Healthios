@@ -6,8 +6,7 @@ import Router, { withRouter } from 'next/router';
 import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJs from 'crypto-js';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class RegisterWithCard extends React.Component {
   constructor(props) {
@@ -17,23 +16,18 @@ class RegisterWithCard extends React.Component {
       isLogin: false,
       isRegister: false
     };
-    this.piIp = this.props.config.piIp;
-    this.serverIp = this.props.config.serverIp;
+    this.piIp = Config.piIp;
+    this.serverIp = Config.serverIp;
     this.fingerprintInterval = null;
     this.pageTimeout = null;
     this.retryTimeout = null;
-  }
-
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
   }
 
   componentDidMount() {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout)
+    }, Config.pageTimeout)
   }
 
   componentWillUnmount() {
@@ -88,7 +82,7 @@ class RegisterWithCard extends React.Component {
   }
 
   login = async(data) => {
-    let urlLogin = this.props.config.serverIp + '/api/auth/login';
+    let urlLogin = Config.serverIp + '/api/auth/login';
 
     try {
       const resLogin = await axios({
@@ -98,8 +92,8 @@ class RegisterWithCard extends React.Component {
           password: data.birthOfDate.replace(/\//g, '')
         },
         headers : {
-          'X-Station-Key': this.props.config.stationKey,
-          'X-Provider-Key': this.props.config.providerKey
+          'X-Station-Key': Config.stationKey,
+          'X-Provider-Key': Config.providerKey
         }
       });
 
@@ -108,7 +102,7 @@ class RegisterWithCard extends React.Component {
       }
 
       if(typeof(Storage) !== undefined) {
-        sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), this.props.config.aesSecret).toString());
+        sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
         sessionStorage.setItem('token', resLogin.data.token);
         sessionStorage.setItem('isLogin', true);
       }
@@ -134,7 +128,7 @@ class RegisterWithCard extends React.Component {
       });
 
       if(typeof(Storage) !== undefined) {
-        sessionStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), this.props.config.aesSecret));
+        sessionStorage.setItem('patientData',  cryptoJs.AES.encrypt(JSON.stringify(updatedPatientInfo), Config.aesSecret));
       }
 
       Router.replace({ pathname: '/registerWithFingerprint', query: { first: this.props.url.query.first }});
@@ -145,7 +139,7 @@ class RegisterWithCard extends React.Component {
   }
 
   retryProcess = () => {
-    this.retryTimeout = setTimeout(this.process, this.props.config.retryTimeout);
+    this.retryTimeout = setTimeout(this.process, Config.retryTimeout);
   }
 
   render() {

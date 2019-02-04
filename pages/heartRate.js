@@ -5,8 +5,7 @@ import axios from 'axios';
 import Loading from './loading';
 import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
-
-const configJson = import('../static/appConfig.json');
+import * as Config from '../static/appConfig.json';
 
 class HeartRate extends React.Component {
   constructor(props) {
@@ -25,7 +24,7 @@ class HeartRate extends React.Component {
     this.readHearRate();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, this.props.config.pageTimeout)
+    }, Config.pageTimeout)
   }
 
   componentWillUnmount() {
@@ -34,17 +33,12 @@ class HeartRate extends React.Component {
      clearTimeout(this.startSensorTimeout);
   }
 
-  static async getInitialProps({ req, query }) {
-    const config = await configJson
-    return { config }
-  }
-
   startSensor = async() => {
     if(this.isSensorStart) {
       return;
     }
 
-    let urlStartSensor = this.props.config.piIp + '/pulse/start';
+    let urlStartSensor = Config.piIp + '/pulse/start';
 
     try {
       const res = await axios.get(urlStartSensor);
@@ -62,7 +56,7 @@ class HeartRate extends React.Component {
   }
 
   retryStartSensor = () => {
-    this.startSensorTimeout = setTimeout(this.startSensor, this.props.config.retryTimeout);
+    this.startSensorTimeout = setTimeout(this.startSensor, Config.retryTimeout);
   }
 
   readHearRate = async() => {
@@ -71,9 +65,9 @@ class HeartRate extends React.Component {
       return;
     }
 
-    let urlIsSensorReady = this.props.config.piIp + '/pulse/valid';
-    let urlIsSensorFinishRead = this.props.config.piIp + '/pulse/finish';
-    let urlGetData = this.props.config.piIp + '/pulse';
+    let urlIsSensorReady = Config.piIp + '/pulse/valid';
+    let urlIsSensorFinishRead = Config.piIp + '/pulse/finish';
+    let urlGetData = Config.piIp + '/pulse';
 
     try {
       const res = await axios.get(urlIsSensorReady);
@@ -121,7 +115,7 @@ class HeartRate extends React.Component {
   }
 
   retryReadHeartRate = () => {
-    this.readHearRateTimeout = setTimeout(this.readHearRate, this.props.config.retryTimeout);
+    this.readHearRateTimeout = setTimeout(this.readHearRate, Config.retryTimeout);
   }
 
   render() {
