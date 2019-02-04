@@ -24,11 +24,11 @@ class Temperature extends React.Component {
     this.readTemperature();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, Config.pageTimeout)
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
-     clearTimeout(this.pageTimeout);
+    clearTimeout(this.pageTimeout);
   }
 
   startSensor = async() => {
@@ -82,14 +82,14 @@ class Temperature extends React.Component {
   
       const resGetData = await axios.get(urlGetData);
       if(resGetData === undefined) {
-        throw new Error(`Thermal get data failed`);
+        throw new Error('Thermal get data failed');
       }
 
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('thermal', JSON.stringify({
           body_temperature: {
             value: resGetData.data.data,
-            unit: "C"
+            unit: 'C'
           },
           effective_time_frame: {
             date_time: new Date().toISOString()
@@ -158,7 +158,7 @@ class Temperature extends React.Component {
                 }
               `}</style>
               <style jsx global
-                >{`
+              >{`
                 body {
                   font-family: Kanit;
                   color: #393939;

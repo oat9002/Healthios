@@ -1,3 +1,4 @@
+import React from 'react';
 import ResultTemplate from '../components/resultTemplate';
 import axios from 'axios';
 import Router, { withRouter } from 'next/router';
@@ -20,21 +21,15 @@ class RegisterResult extends React.Component {
     this.piIp = Config.piIp;
     this.generateAge = this.generateAge.bind(this);
     this.getDaysInMonth = this.getDaysInMonth.bind(this);
+    this.nextPageTimeout = null;
     this.pageTimeout = null;
-  }
-
-  componentWillMount() {
-    this.getPersonalData();
-    this.pageTimeout = setTimeout(() => {
-      Router.replace('/');
-    }, Config.pageTimeout);
   }
 
   getPersonalData = () => {
     let url = this.piIp + '/thid';
     axios.get(url).then(res => {
       if(res.data.status) {
-        let data = res.data.data
+        let data = res.data.data;
         this.setState({
           thaiName: data.thaiFullName,
           engName: data.engFullName,
@@ -47,20 +42,27 @@ class RegisterResult extends React.Component {
         });
       }
     })
-    .catch(err => {
-      Logging.sendLogMessage('Register result', err);
-      this.getPersonalData();
-    });
+      .catch(err => {
+        Logging.sendLogMessage('Register result', err);
+        this.getPersonalData();
+      });
   }
 
   componentDidMount() {
-    setTimeout(() => {
-      Router.replace('/weightAndHeight')
+    this.getPersonalData();
+
+    this.nextPageTimeout = setTimeout(() => {
+      Router.replace('/weightAndHeight');
     }, 5000);
+
+    this.pageTimeout = setTimeout(() => {
+      Router.replace('/');
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
+    clearTimeout(this.nextPageTimeout);
   }
 
   getDaysInMonth(month,year) {
@@ -68,8 +70,8 @@ class RegisterResult extends React.Component {
   }
 
   generateAge(birthDate) {
-    let dateOfBirth = parseInt(birthDate.substring(0,2))
-    let monthOfBirth = parseInt(birthDate.substring(3,5))
+    let dateOfBirth = parseInt(birthDate.substring(0,2));
+    let monthOfBirth = parseInt(birthDate.substring(3,5));
     let yearOfBirth = parseInt(birthDate.substring(6, birthDate.length));
     let currentDate = new Date();
     let ageYear = currentDate.getFullYear() - (yearOfBirth - 543);
@@ -114,4 +116,4 @@ class RegisterResult extends React.Component {
   }
 }
 
-export default withRouter(RegisterResult)
+export default withRouter(RegisterResult);

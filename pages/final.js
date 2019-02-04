@@ -32,13 +32,13 @@ class Final extends React.Component {
     try {
       const resIsInsertCard = await axios.get(urlIsInsertCard);
       if(resIsInsertCard === undefined || resIsInsertCard.data.status) {
-        throw new Error(`Card is still inserted or validate failed.`);
+        throw new Error('Card is still inserted or validate failed.');
       }
 
       Router.replace('/');
     }
     catch(err) {
-      Logging.sendLogMessage("Check deattach card failed", err);
+      Logging.sendLogMessage('Check deattach card failed', err);
       this.retryCheckDeattachCard();
     }
   }

@@ -24,13 +24,14 @@ class BloodPressure extends React.Component {
     this.readBloodPressure();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, Config.pageTimeout)
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
     clearTimeout(this.readBloodPressurloginWithCardeTimeout);
     clearTimeout(this.startSensorTimeout);
+    clearInterval(this.pageTimeout);
   }
 
   startSensor = async () => {
@@ -95,15 +96,15 @@ class BloodPressure extends React.Component {
         sessionStorage.setItem('pressure', JSON.stringify({
           systolic_blood_pressure: {
             value: resGetData.data.data[0],
-            unit: "mmHg"
+            unit: 'mmHg'
           },
           average_blood_pressure: {
             value: resGetData.data.data[1],
-            unit: "mmHg"
+            unit: 'mmHg'
           },
           diastolic_blood_pressure: {
             value: resGetData.data.data[2],
-            unit: "mmHg"
+            unit: 'mmHg'
           },
           effective_time_frame: {
             date_time: new Date().toISOString()
@@ -123,10 +124,6 @@ class BloodPressure extends React.Component {
 
   retryReadBloodPressure = () => {
     this.readBloodPressureTimeout = setTimeout(this.readBloodPressure, Config.retryTimeout);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.pageTimeout);
   }
 
   render() {

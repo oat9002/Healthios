@@ -61,8 +61,8 @@ export default class MeasurementResult extends React.Component {
 
   prepareStateAndSaveMeasurement = () => {
     const userId =  sessionStorage.getItem('isLogin') === 'true'
-    ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
-    : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
+      ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
+      : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
     const weight = JSON.parse(sessionStorage.getItem('weight'));
     const height = JSON.parse(sessionStorage.getItem('height'));
     const pressure = JSON.parse(sessionStorage.getItem('pressure'));
@@ -129,7 +129,7 @@ export default class MeasurementResult extends React.Component {
         }
       }
 
-      const isRetry = Object.keys(isSave).map(key => isSave[key]).some((isSave) => isSave === false);
+      const isRetry = Object.keys(this.isSave).map(key => this.isSave[key]).some((isSave) => isSave === false);
       if(isRetry) {
         this.retrySaveMeasurementData();
       }
@@ -152,7 +152,7 @@ export default class MeasurementResult extends React.Component {
 
   saveHeight = () => {
     return axios.post(this.saveMeasurementUrl, {
-     ...this.state.height
+      ...this.state.height
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ export default class MeasurementResult extends React.Component {
 
   saveWeight = () => {
     return axios.post(this.saveMeasurementUrl, {
-     ...this.state.weight
+      ...this.state.weight
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -218,16 +218,10 @@ export default class MeasurementResult extends React.Component {
   }
 
   render() {
-    const textStyle = {
-      fontFamily: 'Kanit',
-      fontWeight: 300,
-      fontSize: '28px'
-    }
     const divider = {
       'width': '70%',
       'marginLeft': '15%'
-    }
-
+    };
 
     return (
       <MuiThemeProvider >
@@ -241,7 +235,7 @@ export default class MeasurementResult extends React.Component {
               <img src="/static/pics/measurement_result/weight.jpg" className='image' />
             </div>
             <div className="content">
-              น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value !== undefined ? this.state.weight.body_weight.value : ""}</span> กก.
+              น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value !== undefined ? this.state.weight.body_weight.value : ''}</span> กก.
             </div>
           </div>
           <Divider style={divider}/>

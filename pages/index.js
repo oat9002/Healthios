@@ -28,7 +28,7 @@ class Login extends React.PureComponent {
   }
 
   loginWithCard = async() => {
-    let urlIsStart = this.piIp + '/thid/start'
+    let urlIsStart = this.piIp + '/thid/start';
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
     let urlLogin = this.serverIp + '/api/auth/login';
@@ -75,7 +75,7 @@ class Login extends React.PureComponent {
         });
   
         if(resLogin === undefined) {
-          throw new Error(`Login with card failed.`);
+          throw new Error('Login with card failed.');
         }
   
         if(typeof(Storage) !== undefined) {
@@ -141,7 +141,7 @@ class Login extends React.PureComponent {
 
         const resGetData = await axios.get(urlGetData);
         if(resGetData === undefined) {
-          throw new Error(`Fingerprint get data failed, status: ${ resGetData.data.status }`)
+          throw new Error(`Fingerprint get data failed, status: ${ resGetData.data.status }`);
         }
 
         if(!this.state.isLoading) {
@@ -202,16 +202,16 @@ class Login extends React.PureComponent {
   }
 
   resetLocalStorage = () => {
-    sessionStorage.setItem("userInfo", "");
-    sessionStorage.setItem("token", "");
-    sessionStorage.setItem("isLogin", false);
-    sessionStorage.setItem("patientData", "");
-    sessionStorage.setItem("registerResult", "");
-    sessionStorage.setItem("weight", "");
-    sessionStorage.setItem("height", "");
-    sessionStorage.setItem("thermal", "");
-    sessionStorage.setItem("pressure", "");
-    sessionStorage.setItem("pulse", "");
+    sessionStorage.setItem('userInfo', '');
+    sessionStorage.setItem('token', '');
+    sessionStorage.setItem('isLogin', false);
+    sessionStorage.setItem('patientData', '');
+    sessionStorage.setItem('registerResult', '');
+    sessionStorage.setItem('weight', '');
+    sessionStorage.setItem('height', '');
+    sessionStorage.setItem('thermal', '');
+    sessionStorage.setItem('pressure', '');
+    sessionStorage.setItem('pulse', '');
   }
 
   render() {
@@ -271,7 +271,7 @@ class Login extends React.PureComponent {
                 font-weight: 300;
               }
             `}</style>
-          <style jsx global>{`
+            <style jsx global>{`
             .content {
               display: inline-block;
             }
@@ -294,8 +294,8 @@ class Login extends React.PureComponent {
                 to   { opacity: 1; };
             }
           `}</style>
-        </div>
-      )}
+          </div>
+        )}
       </div>
     );
   }

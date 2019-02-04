@@ -24,13 +24,13 @@ class HeartRate extends React.Component {
     this.readHearRate();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, Config.pageTimeout)
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
-     clearTimeout(this.pageTimeout);
-     clearTimeout(this.readHearRateTimeout);
-     clearTimeout(this.startSensorTimeout);
+    clearTimeout(this.pageTimeout);
+    clearTimeout(this.readHearRateTimeout);
+    clearTimeout(this.startSensorTimeout);
   }
 
   startSensor = async() => {
@@ -83,19 +83,19 @@ class HeartRate extends React.Component {
 
       const resIsSensorFinishRead = await axios.get(urlIsSensorFinishRead);
       if(resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
-        throw new Error(`Pulse doesn't finish reading, status: ${ resIsSensorFinishRead.data.status }`)
+        throw new Error(`Pulse doesn't finish reading, status: ${ resIsSensorFinishRead.data.status }`);
       }
 
       const resGetData = await axios.get(urlGetData);
       if(resGetData === undefined) {
-        throw new Error(`Pulse get data failed`);
+        throw new Error('Pulse get data failed');
       }
 
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('pulse', JSON.stringify({
           heart_rate: {
             value: resGetData.data.data,
-            unit: "bpm"
+            unit: 'bpm'
           },
           effective_time_frame: {
             date_time: new Date().toISOString()
@@ -159,7 +159,7 @@ class HeartRate extends React.Component {
                 }
               `}</style>
               <style jsx global
-                >{`
+              >{`
                 body {
                   font-family: Kanit;
                   color: #393939;

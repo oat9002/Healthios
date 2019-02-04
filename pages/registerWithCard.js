@@ -7,6 +7,7 @@ import axios from 'axios';
 import * as Logging from '../services/logging';
 import cryptoJs from 'crypto-js';
 import * as Config from '../static/appConfig.json';
+import PropTypes from 'prop-types';
 
 class RegisterWithCard extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class RegisterWithCard extends React.Component {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, Config.pageTimeout)
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
@@ -70,7 +71,7 @@ class RegisterWithCard extends React.Component {
 
       const resGetData = await  axios.get(urlGetData);
       if(resGetData === undefined) {
-        throw new Error(`Card get data failed`);
+        throw new Error('Card get data failed');
       }
 
       this.login(resGetData.data.data);
@@ -98,7 +99,7 @@ class RegisterWithCard extends React.Component {
       });
 
       if(resLogin === undefined) {
-        throw new Error(`Login with card failed.`);
+        throw new Error('Login with card failed.');
       }
 
       if(typeof(Storage) !== undefined) {
@@ -113,7 +114,7 @@ class RegisterWithCard extends React.Component {
         this.register(data);
       }
       else {
-        throw ex
+        throw ex;
       }
     }
   }
@@ -165,7 +166,7 @@ class RegisterWithCard extends React.Component {
               color: blue;
             }
             `}</style>
-            <style jsx global>{`
+        <style jsx global>{`
               .content {
                 text-align: center;
                 margin-top: 13%;
@@ -217,7 +218,7 @@ class RegisterWithCard extends React.Component {
               color: blue;
             }
             `}</style>
-            <style jsx global>{`
+          <style jsx global>{`
               .content {
                 text-align: center;
                 margin-top: 13%;
@@ -239,5 +240,9 @@ class RegisterWithCard extends React.Component {
     );
   }
 }
+
+RegisterWithCard.propTypes = {
+  url: PropTypes.object.isRequired,
+};
 
 export default withRouter(RegisterWithCard);

@@ -61,7 +61,7 @@ class WeightAndHeight extends React.Component {
 
   readWeightAndHeight = async() => {
     const urlValidWeightSensor = this.piIp + '/weight/valid';
-    const urlValidHeightSensor = this.piIp + '/height/valid'
+    const urlValidHeightSensor = this.piIp + '/height/valid';
 
     if(!this.isSensorStart) {
       this.retryReadWeightAndHeight();
@@ -96,10 +96,10 @@ class WeightAndHeight extends React.Component {
       const [weight, height] = await Promise.all([axios.get(this.piIp + '/weight/'), axios.get(this.piIp + '/height/')]);
 
       if(resWeightFinish === undefined) {
-        throw new Error(`Weight get data failed`);
+        throw new Error('Weight get data failed');
       }
       if(resHeightFinish === undefined) {
-        throw new Error(`Height get data failed`);
+        throw new Error('Height get data failed');
       }
 
       if(typeof(Storage) !== undefined) {

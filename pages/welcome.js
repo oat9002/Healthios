@@ -20,7 +20,7 @@ class Welcome extends React.Component {
     });
 
     setTimeout(() => {
-      Router.replace('/weightAndHeight')
+      Router.replace('/weightAndHeight');
     }, 5000);
   }
 
