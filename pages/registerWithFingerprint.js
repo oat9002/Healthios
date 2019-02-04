@@ -23,7 +23,7 @@ class RegisterWithFingerprint extends React.Component {
     this.process();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
-    }, Config.pageTimeout)
+    }, Config.pageTimeout);
   }
 
   componentWillUnmount() {
@@ -99,7 +99,7 @@ class RegisterWithFingerprint extends React.Component {
         );
 
         if(resRegister === undefined || resRegister.data.error) {
-          throw new Error(`Fingerprint register failed.`);
+          throw new Error('Fingerprint register failed.');
         }
 
         if(typeof(Storage) !== undefined) {
@@ -160,7 +160,7 @@ class RegisterWithFingerprint extends React.Component {
             font-weight: bold;
           }
           `}</style>
-          <style jsx global>{`
+        <style jsx global>{`
             .content {
               text-align: center;
               margin-top: 13%;
