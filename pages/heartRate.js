@@ -94,7 +94,7 @@ class HeartRate extends React.Component {
       if(typeof(Storage) !== undefined) {
         sessionStorage.setItem('pulse', JSON.stringify({
           heart_rate: {
-            value: resGetData.data.data,
+            value: resGetData.data.data.avg,
             unit: 'bpm'
           },
           effective_time_frame: {

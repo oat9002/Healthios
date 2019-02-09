@@ -60,8 +60,8 @@ export default class MeasurementResult extends React.Component {
   }
 
   prepareStateAndSaveMeasurement = () => {
-    const userId =  sessionStorage.getItem('isLogin') === 'true'
-      ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id 
+    const userId = sessionStorage.getItem('isLogin') === 'true'
+      ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id
       : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
     const weight = JSON.parse(sessionStorage.getItem('weight'));
     const height = JSON.parse(sessionStorage.getItem('height'));
@@ -92,50 +92,51 @@ export default class MeasurementResult extends React.Component {
     clearTimeout(this.saveMeasurementTimeout);
   }
 
-  saveMeasurementData = async() => {
+  saveMeasurementData = async () => {
+
     try {
-      if(!this.isSave.weight) {
+      if (!this.isSave.weight) {
         const resWeight = await this.saveWeight();
-        if(!resWeight.data.error) {
+        if (!resWeight.data.error) {
           this.isSave.weight = true;
         }
       }
 
-      if(!this.isSave.height) {
+      if (!this.isSave.height) {
         const resHeight = await this.saveHeight();
-        if(!resHeight.data.error) {
+        if (!resHeight.data.error) {
           this.isSave.height = true;
         }
       }
 
-      if(!this.isSave.pressure) {
+      if (!this.isSave.pressure) {
         const resPressure = await this.savePressure();
-        if(!resPressure.data.error) {
+        if (!resPressure.data.error) {
           this.isSave.pressure = true;
         }
       }
 
-      if(!this.isSave.pulse) {
+      if (!this.isSave.pulse) {
         const resPulse = await this.savePulse();
-        if(!resPulse.data.error) {
+        if (!resPulse.data.error) {
           this.isSave.pulse = true;
         }
       }
 
-      if(!this.isSave.thermal) {
+      if (!this.isSave.thermal) {
         const resThermal = await this.saveThermal();
-        if(!resThermal.data.error) {
+        if (!resThermal.data.error) {
           this.isSave.thermal = true;
         }
       }
 
       const isRetry = Object.keys(this.isSave).map(key => this.isSave[key]).some((isSave) => isSave === false);
-      if(isRetry) {
+      if (isRetry) {
         this.retrySaveMeasurementData();
       }
       else {
         this.saveMeasurementTimeout = setTimeout(() => {
-          if(sessionStorage.getItem('isLogin')) {
+          if (sessionStorage.getItem('isLogin')) {
             Router.replace('/final');
           }
           else {
@@ -144,7 +145,7 @@ export default class MeasurementResult extends React.Component {
         }, 10000);
       }
     }
-    catch(error) {
+    catch (error) {
       Logging.sendLogMessage('Measurement result', error);
       this.retrySaveMeasurementData();
     }
@@ -177,12 +178,12 @@ export default class MeasurementResult extends React.Component {
       systolic_blood_pressure: {
         ...this.state.pressure.systolic_blood_pressure
       },
-      diastolic_blood_pressure : {
+      diastolic_blood_pressure: {
         ...this.state.pressure.diastolic_blood_pressure
       },
-      effective_time_frame : {
+      effective_time_frame: {
         ...this.state.pressure.effective_time_frame
-      }      
+      }
     }, {
       headers: {
         'Content-Type': 'application/json',
@@ -227,7 +228,7 @@ export default class MeasurementResult extends React.Component {
       <MuiThemeProvider >
         <div>
           <Head>
-            <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
+            <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet" />
             <link href="/static/css/animate.css" rel="stylesheet" />
           </Head>
           <div className='template'>
@@ -238,28 +239,28 @@ export default class MeasurementResult extends React.Component {
               น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value !== undefined ? this.state.weight.body_weight.value : ''}</span> กก.
             </div>
           </div>
-          <Divider style={divider}/>
+          <Divider style={divider} />
           <div className='template'>
             <div>
-              <img src="/static/pics/measurement_result/height.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/height.jpg" className='image' />
             </div>
             <div className="content">
               ส่วนสูง <span className='emphValue'>{this.state.height.body_height.value}</span> ซม.
             </div>
           </div>
-          <Divider style={divider}/>
+          <Divider style={divider} />
           <div className='template'>
             <div>
-              <img src="/static/pics/measurement_result/temperature.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/temperature.jpg" className='image' />
             </div>
             <div className="content">
               อุณหภูมิ <span className='emphValue'>{this.state.thermal.body_temperature.value}</span>  ํC
             </div>
           </div>
-          <Divider style={divider}/>
+          <Divider style={divider} />
           <div className='template'>
             <div>
-              <img src="/static/pics/measurement_result/bloodPressure.png" className='image'/>
+              <img src="/static/pics/measurement_result/bloodPressure.png" className='image' />
             </div>
             <div className="content">
               ความดัน<span className='emph'>เฉลี่ย</span> <span className='emphValue'>{this.state.pressure.average_blood_pressure.value}</span> mmHg
@@ -267,13 +268,13 @@ export default class MeasurementResult extends React.Component {
               <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
             </div>
           </div>
-          <Divider style={divider}/>
+          <Divider style={divider} />
           <div className='template'>
             <div>
-              <img src="/static/pics/measurement_result/heartRate.jpg" className='image'/>
+              <img src="/static/pics/measurement_result/heartRate.jpg" className='image' />
             </div>
             <div className="content">
-              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value.avg}</span> ครั้ง/นาที
+              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value}</span> ครั้ง/นาที
             </div>
           </div>
           <style jsx>{`

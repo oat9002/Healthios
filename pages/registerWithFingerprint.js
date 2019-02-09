@@ -84,7 +84,6 @@ class RegisterWithFingerprint extends React.Component {
           });
         }
 
-
         const resRegister = await axios.post(urlRegister, 
           {
             ...JSON.parse(cryptoJS.AES.decrypt(sessionStorage.getItem('patientData'), Config.aesSecret).toString(cryptoJS.enc.Utf8)),
@@ -108,8 +107,8 @@ class RegisterWithFingerprint extends React.Component {
         
         Router.replace('/registerComplete');
       }
-      catch(ex) {
-        Logging.sendLogMessage('RegisterWithFingerprint', ex);
+      catch(err) {
+        Logging.sendLogMessage('RegisterWithFingerprint', err);
         this.retryProcess();
       }
     }

@@ -1,5 +1,6 @@
 import React from 'react';
 import ResultTemplate from '../components/resultTemplate';
+import LoadingTemplate from '../components/loadingTemplate';
 import axios from 'axios';
 import Router, { withRouter } from 'next/router';
 import * as Logging from '../services/logging';
@@ -16,19 +17,22 @@ class RegisterResult extends React.Component {
       address: '',
       imgSrc: '',
       gender: '',
-      idNumber: ''
+      idNumber: '',
+      isLoading: true
     };
     this.piIp = Config.piIp;
-    this.generateAge = this.generateAge.bind(this);
-    this.getDaysInMonth = this.getDaysInMonth.bind(this);
     this.nextPageTimeout = null;
     this.pageTimeout = null;
+    this.retryGetPersonalDataTimeOut = null;
+    this.retryCount = 0;
   }
 
-  getPersonalData = () => {
+  getPersonalData = async() => {
     let url = this.piIp + '/thid';
-    axios.get(url).then(res => {
-      if(res.data.status) {
+    try {
+      let res = await axios.get(url);
+
+      if(res.data.status || this.retryCount === 10) {
         let data = res.data.data;
         this.setState({
           thaiName: data.thaiFullName,
@@ -36,24 +40,28 @@ class RegisterResult extends React.Component {
           age: this.generateAge(data.birthOfDate),
           dateOfBirth: data.birthOfDate,
           address: data.address,
-          imgSrc: '/static/pics/1.jpg',
           gender: data.gender,
-          idNumber: data.idNumber
+          idNumber: data.idNumber,
+          isLoading: false
         });
+
+        this.nextPageTimeout = setTimeout(() => {
+          Router.replace('/weightAndHeight');
+        }, 5000);
       }
-    })
-      .catch(err => {
-        Logging.sendLogMessage('Register result', err);
-        this.getPersonalData();
-      });
+      else {
+        this.retryCount++;
+        this.retryGetPersonalData();
+      }
+    }
+    catch(err) {
+      Logging.sendLogMessage('Register result', err);
+      this.retryGetPersonalData();
+    }
   }
 
   componentDidMount() {
     this.getPersonalData();
-
-    this.nextPageTimeout = setTimeout(() => {
-      Router.replace('/weightAndHeight');
-    }, 5000);
 
     this.pageTimeout = setTimeout(() => {
       Router.replace('/');
@@ -63,13 +71,14 @@ class RegisterResult extends React.Component {
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
     clearTimeout(this.nextPageTimeout);
+    clearTimeout(this.retryGetPersonalDataTimeOut);
   }
 
-  getDaysInMonth(month,year) {
+  getDaysInMonth = (month, year) => {
     return new Date(year, month, 0).getDate();
   }
 
-  generateAge(birthDate) {
+  generateAge = (birthDate) => {
     let dateOfBirth = parseInt(birthDate.substring(0,2));
     let monthOfBirth = parseInt(birthDate.substring(3,5));
     let yearOfBirth = parseInt(birthDate.substring(6, birthDate.length));
@@ -109,9 +118,19 @@ class RegisterResult extends React.Component {
     return ageYear + ' ปี ' + ageMonth + ' เดือน ' + ageDate + ' วัน';
   }
 
+  retryGetPersonalData = async() => {
+    this.retryGetPersonalDataTimeOut = setTimeout(this.getPersonalData, Config.retryTimeout);
+  }
+
   render() {
     return (
-      <ResultTemplate thaiName={this.state.thaiName} engName={this.state.engName} age={this.state.age} dateOfBirth={this.state.dateOfBirth} address={this.state.address} imgSrc={this.state.imgSrc} gender={this.state.gender} idNumber={this.state.idNumber}></ResultTemplate>
+      <React.Fragment>
+        {
+          this.state.isLoading 
+            ? <LoadingTemplate text='กำลังโหลดข้อมูล'></LoadingTemplate>
+            : <ResultTemplate thaiName={this.state.thaiName} engName={this.state.engName} age={this.state.age} dateOfBirth={this.state.dateOfBirth} address={this.state.address} imgSrc={this.state.imgSrc} gender={this.state.gender} idNumber={this.state.idNumber}></ResultTemplate>
+        }
+      </React.Fragment>
     );
   }
 }
