@@ -35,21 +35,21 @@ class BloodPressure extends React.Component {
   }
 
   startSensor = async () => {
-    if(this.isSensorStart) {
+    if (this.isSensorStart) {
       return;
     }
 
     let urlStartSensor = Config.piIp + '/pressure/start';
-   
+
     try {
       const res = await axios.get(urlStartSensor);
-      if(res === undefined || !res.data.status) {
-        throw new Error(`Pressure start failed, status: ${ res.data.status }`);
+      if (res === undefined || !res.data.status) {
+        throw new Error(`Pressure start failed, status: ${res.data.status}`);
       }
 
       this.isSensorStart = true;
     }
-    catch(ex) {
+    catch (ex) {
       Logging.sendLogMessage('BloodPressure', ex);
       this.retryStartSensor();
     }
@@ -59,8 +59,8 @@ class BloodPressure extends React.Component {
     this.startSensorTimeout = setTimeout(this.startSensor, Config.retryTimeout);
   }
 
-  readBloodPressure = async() => {
-    if(!this.isSensorStart) {
+  readBloodPressure = async () => {
+    if (!this.isSensorStart) {
       this.retryReadBloodPressure();
       return;
     }
@@ -71,28 +71,28 @@ class BloodPressure extends React.Component {
 
     try {
       const res = await axios.get(urlIsSensorReady);
-      if(res === undefined || !res.data.status) {
-        throw new Error(`Pressure validate failed, status: ${ res.data.status }`);
+      if (res === undefined || !res.data.status) {
+        throw new Error(`Pressure validate failed, status: ${res.data.status}`);
       }
 
-      if(!this.state.isProcessing) {
+      if (!this.state.isProcessing) {
         this.setState({
           isLoading: true
         });
       }
 
       const resIsSensorFinishRead = await axios.get(urlIsSensorFinishRead);
-      if(resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
-        throw new Error(`Pressure doesn't finish reading, status: ${ resIsSensorFinishRead.data.status }`);
+      if (resIsSensorFinishRead === undefined || !resIsSensorFinishRead.data.status) {
+        throw new Error(`Pressure doesn't finish reading, status: ${resIsSensorFinishRead.data.status}`);
       }
 
       const resGetData = await axios.get(urlGetData);
 
-      if(resGetData === undefined) {
+      if (resGetData === undefined) {
         throw new Error('Pressure get data failed.');
       }
 
-      if(typeof(Storage) !== undefined) {
+      if (typeof (Storage) !== undefined) {
         sessionStorage.setItem('pressure', JSON.stringify({
           systolic_blood_pressure: {
             value: resGetData.data.data[0],
@@ -112,10 +112,10 @@ class BloodPressure extends React.Component {
         }));
 
       }
-      
+
       Router.replace('/temperature');
     }
-    catch(ex) {
+    catch (ex) {
 
       Logging.sendLogMessage('BloodPressure', ex);
       this.retryReadBloodPressure();
@@ -131,16 +131,16 @@ class BloodPressure extends React.Component {
 
     return (
       <MuiThemeProvider>
-        { isProcessing ? (
+        {isProcessing ? (
           <Loading></Loading>
         ) : (
           <div className='content'>
             <Head>
-              <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet"/>
-              <link rel="stylesheet" href="/static/css/animate.css"/>
+              <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet" />
+              <link rel="stylesheet" href="/static/css/animate.css" />
             </Head>
-            <span>กรุณาใส่ปลอกเเขนที่เตรียมให้</span><br/>
-            <img src="/static/pics/pressure.gif" alt=""/>
+            <span>กรุณาใส่ปลอกเเขนที่เตรียมให้</span><br />
+            <img src="/static/pics/pressure.gif" alt="" />
             <style jsx>{`
               img {
                 width: 50%;
@@ -153,7 +153,7 @@ class BloodPressure extends React.Component {
             <style jsx global>{`
               .content {
                 position: absolute;
-                top: 30%;
+                top: 10%;
                 width: 100%;
                 text-align: center;
               }
