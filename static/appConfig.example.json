@@ -2,10 +2,9 @@
   "serverIp": "localhost:8080",
   "logServerIp": "localhost:10000",
   "piIp": "localhost:54322",
-  "maxRetry": 5,
   "aesSecret": "secret",
   "pageTimeout": 10000,
   "retryTimeout": 1000,
   "stationKey": "stationKey",
-  "providerKey" : "providerKey"
+  "providerKey": "providerKey"
 }
