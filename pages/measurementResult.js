@@ -84,7 +84,7 @@ export default class MeasurementResult extends React.Component {
       Router.replace('/');
     }, Config.pageTimeout);
 
-    this.prepareStateAndSaveMeasurement();
+    //this.prepareStateAndSaveMeasurement();
   }
 
   componentWillUnmount() {
@@ -156,22 +156,22 @@ export default class MeasurementResult extends React.Component {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.height
     }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'user_id': this.state.userId
-        }
-      });
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': this.state.userId
+      }
+    });
   }
 
   saveWeight = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.weight
     }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'user_id': this.state.userId
-        }
-      });
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': this.state.userId
+      }
+    });
   }
 
   savePressure = () => {
@@ -186,33 +186,33 @@ export default class MeasurementResult extends React.Component {
         ...this.state.pressure.effective_time_frame
       }
     }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'user_id': this.state.userId
-        }
-      });
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': this.state.userId
+      }
+    });
   }
 
   saveThermal = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.thermal
     }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'user_id': this.state.userId
-        }
-      });
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': this.state.userId
+      }
+    });
   }
 
   savePulse = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.pulse
     }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'user_id': this.state.userId
-        }
-      });
+      headers: {
+        'Content-Type': 'application/json',
+        'user_id': this.state.userId
+      }
+    });
   }
 
   retrySaveMeasurementData = () => {
@@ -239,9 +239,6 @@ export default class MeasurementResult extends React.Component {
             <div className="content">
               น้ำหนัก <span className='emphValue'>{this.state.weight.body_weight.value !== undefined ? this.state.weight.body_weight.value : ''}</span> กก.
             </div>
-          </div>
-          <Divider style={divider} />
-          <div className='template'>
             <div>
               <img src="/static/pics/measurement_result/height.jpg" className='image' />
             </div>
@@ -257,6 +254,12 @@ export default class MeasurementResult extends React.Component {
             <div className="content">
               อุณหภูมิ <span className='emphValue'>{this.state.thermal.body_temperature.value}</span>  ํC
             </div>
+            <div>
+              <img src="/static/pics/measurement_result/heartRate.jpg" className='image' />
+            </div>
+            <div className="content">
+              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value}</span> ครั้ง/นาที
+            </div>
           </div>
           <Divider style={divider} />
           <div className='template'>
@@ -269,22 +272,13 @@ export default class MeasurementResult extends React.Component {
               <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
             </div>
           </div>
-          <Divider style={divider} />
-          <div className='template'>
-            <div>
-              <img src="/static/pics/measurement_result/heartRate.jpg" className='image' />
-            </div>
-            <div className="content">
-              อัตราการเต้นหัวใจ <span className='emphValue'>{this.state.pulse.heart_rate.value}</span> ครั้ง/นาที
-            </div>
-          </div>
           <style jsx>{`
             .template {
               display: flex;
               justify-content: center;
               align-items: center;
-              margin-top: 1%;
-              margin-bottom: 1%;
+              margin-top: 2%;
+              margin-bottom: 2%;
             }
             .image {
               width: 200px;
@@ -298,8 +292,9 @@ export default class MeasurementResult extends React.Component {
               font-size: 2em;
             }
             .content{
-              font-size: 2.5em;
-              margin-left: 10%;
+              text-align: center;
+              font-size: 1.5em;
+              width: 350px;
             }
           `}</style>
           <style jsx global>{`
