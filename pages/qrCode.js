@@ -14,7 +14,7 @@ class QrCode extends React.Component {
   }
 
   componentDidMount() {
-    //this.setQrcode();
+    this.setQrcode();
     this.pageTimeout = setTimeout(() => {
       Router.replace('/final');
     }, 15000);
@@ -26,9 +26,9 @@ class QrCode extends React.Component {
 
   setQrcode = () => {
     if (typeof (Storage) !== 'undefined') {
-      let data = JSON.parse(sessionStorage.getItem('registerResult'));
+      let data = JSON.parse(sessionStorage.getItem('firstTime'));
       this.setState({
-        qrData: data.user.firstTimeKey
+        qrData: data.firstTimeKey
       });
     }
   }
@@ -45,7 +45,7 @@ class QrCode extends React.Component {
             แสกน QR Code เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
           </div>
           <div className='qr'>
-            <QRCode value={this.state.qrValue === '' ? 'www.google.co.th' : this.state.qrData} size={128 * 4} />
+            <QRCode value={this.state.qrValue === '' ? 'www.google.co.th' : this.state.qrData} size={128 * 2} />
           </div>
         </div>
         <style jsx>{`

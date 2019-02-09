@@ -62,7 +62,7 @@ export default class MeasurementResult extends React.Component {
   prepareStateAndSaveMeasurement = () => {
     const userId = sessionStorage.getItem('isLogin') === 'true'
       ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id
-      : JSON.parse(sessionStorage.getItem('registerResult')).user._id;
+      : JSON.parse(sessionStorage.getItem('registerResult')).data._id;
     const weight = JSON.parse(sessionStorage.getItem('weight'));
     const height = JSON.parse(sessionStorage.getItem('height'));
     const pressure = JSON.parse(sessionStorage.getItem('pressure'));
@@ -135,8 +135,9 @@ export default class MeasurementResult extends React.Component {
         this.retrySaveMeasurementData();
       }
       else {
+        const firstTime = JSON.parse(sessionStorage.getItem('firstTime'));
         this.saveMeasurementTimeout = setTimeout(() => {
-          if (sessionStorage.getItem('isLogin') === true) {
+          if (!firstTime.isFirstTime) {
             Router.replace('/final');
           }
           else {
@@ -155,22 +156,22 @@ export default class MeasurementResult extends React.Component {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.height
     }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': this.state.userId
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          'user_id': this.state.userId
+        }
+      });
   }
 
   saveWeight = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.weight
     }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': this.state.userId
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          'user_id': this.state.userId
+        }
+      });
   }
 
   savePressure = () => {
@@ -185,33 +186,33 @@ export default class MeasurementResult extends React.Component {
         ...this.state.pressure.effective_time_frame
       }
     }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': this.state.userId
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          'user_id': this.state.userId
+        }
+      });
   }
 
   saveThermal = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.thermal
     }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': this.state.userId
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          'user_id': this.state.userId
+        }
+      });
   }
 
   savePulse = () => {
     return axios.post(this.saveMeasurementUrl, {
       ...this.state.pulse
     }, {
-      headers: {
-        'Content-Type': 'application/json',
-        'user_id': this.state.userId
-      }
-    });
+        headers: {
+          'Content-Type': 'application/json',
+          'user_id': this.state.userId
+        }
+      });
   }
 
   retrySaveMeasurementData = () => {

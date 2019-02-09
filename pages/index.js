@@ -27,7 +27,7 @@ class Login extends React.PureComponent {
     this.resetLocalStorage();
   }
 
-  loginWithCard = async() => {
+  loginWithCard = async () => {
     let urlIsStart = this.piIp + '/thid/start';
     let urlIsInsertCard = this.piIp + '/thid/valid';
     let urlIsCardReadable = this.piIp + '/thid/readable';
@@ -36,31 +36,31 @@ class Login extends React.PureComponent {
 
     try {
       const resStart = await axios.get(urlIsStart);
-      if(resStart === undefined || !resStart.data.status) {
-        throw new Error(`Card start failed, status: ${ resStart.data.status }`);
+      if (resStart === undefined || !resStart.data.status) {
+        throw new Error(`Card start failed, status: ${resStart.data.status}`);
       }
 
       const resIsInsertCard = await axios.get(urlIsInsertCard);
-      if(resIsInsertCard === undefined || !resIsInsertCard.data.status) {
-        throw new Error(`Card validate failed, status: ${ resIsInsertCard.data.status }`);
+      if (resIsInsertCard === undefined || !resIsInsertCard.data.status) {
+        throw new Error(`Card validate failed, status: ${resIsInsertCard.data.status}`);
       }
 
       const resIsCardReadable = await axios.get(urlIsCardReadable);
-      if(resIsCardReadable === undefined || !resIsCardReadable.data.status) {
-        throw new Error(`Card read failed, status: ${ resIsCardReadable.data.status }`);
+      if (resIsCardReadable === undefined || !resIsCardReadable.data.status) {
+        throw new Error(`Card read failed, status: ${resIsCardReadable.data.status}`);
       }
 
-      if(!this.state.isLoading) {
+      if (!this.state.isLoading) {
         this.setState({
           isLoading: true
         });
-      }  
+      }
 
       const resGetData = await axios.get(urlGetData);
-      if(resGetData === undefined || !resGetData.data.status) {
-        throw new Error(`Card get data failed, status: ${ resGetData.data.status }`);
+      if (resGetData === undefined || !resGetData.data.status) {
+        throw new Error(`Card get data failed, status: ${resGetData.data.status}`);
       }
-      
+
       try {
         const resLogin = await axios({
           url: urlLogin,
@@ -68,32 +68,36 @@ class Login extends React.PureComponent {
             username: resGetData.data.data.idNumber,
             password: resGetData.data.data.birthOfDate.replace(/\//g, '')
           },
-          headers : {
+          headers: {
             'X-Station-Key': Config.stationKey,
             'X-Provider-Key': Config.providerKey
           }
         });
-  
-        if(resLogin === undefined) {
+
+        if (resLogin === undefined) {
           throw new Error('Login with card failed.');
         }
-  
-        if(typeof(Storage) !== undefined) {
+
+        if (typeof (Storage) !== undefined) {
           sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
           sessionStorage.setItem('token', resLogin.data.token);
           sessionStorage.setItem('isLogin', true);
+          sessionStorage.setItem('firstTime', JSON.stringify({
+            isFirstTime: resLogin.data.data.firsttime,
+            firstTimeKey: resLogin.data.data.firstTimeKey
+          }));
         }
-        Router.replace({ pathname: '/loginComplete', query: { first: 'card' }});
-  
+        Router.replace({ pathname: '/loginComplete', query: { first: 'card' } });
+
       }
-      catch(ex) {
-        if(ex !== undefined && ex.response.status == 401) {
-          Router.replace({ pathname: '/registerWithCard', query: { first: 'card' }});
+      catch (ex) {
+        if (ex !== undefined && ex.response.status == 401) {
+          Router.replace({ pathname: '/registerWithCard', query: { first: 'card' } });
         }
         else {
           throw ex;
         }
-      }   
+      }
     }
     catch (ex) {
       Logging.sendLogMessage('loginWithCard', ex);
@@ -105,23 +109,23 @@ class Login extends React.PureComponent {
     this.loginWithCardTimeout = setTimeout(this.loginWithCard, Config.retryTimeout);
   }
 
-  loginWithFingerprint = async() => {
+  loginWithFingerprint = async () => {
     let urlStartReadFingerprint = this.piIp + '/finger/start/scan';
     let urlIsUseFingerprint = this.piIp + '/finger/valid/scan';
     let urlCompareFingerprint = this.piIp + '/finger/valid/compare';
     let urlGetData = this.piIp + '/finger';
     let urlLogin = this.serverIp + '/api/auth/login/fingerprint';
 
-    if(!this.isStart) {
+    if (!this.isStart) {
       try {
         const res = await axios.get(urlStartReadFingerprint);
-        if(res === undefined || !res.data.status) {
-          throw new Error(`Fingerprint start scan failed, status: ${ res.data.status }`);
+        if (res === undefined || !res.data.status) {
+          throw new Error(`Fingerprint start scan failed, status: ${res.data.status}`);
         }
 
         this.isStart = true;
       }
-      catch(ex) {
+      catch (ex) {
         Logging.sendLogMessage('loginWithFingerprint', ex);
       }
 
@@ -130,62 +134,66 @@ class Login extends React.PureComponent {
     else {
       try {
         const res = await axios.get(urlIsUseFingerprint);
-        if(res === undefined || !res.data.status) {
-          throw new Error(`Fingerprint valid scan failed, status: ${ res.data.status }`);
+        if (res === undefined || !res.data.status) {
+          throw new Error(`Fingerprint valid scan failed, status: ${res.data.status}`);
         }
 
         const resIsCompareFinish = await axios.get(urlCompareFingerprint);
-        if(resIsCompareFinish === undefined || !resIsCompareFinish.data.status) {
-          throw new Error(`Fingerprint compare failed, status: ${ resIsCompareFinish.data.status }`);
+        if (resIsCompareFinish === undefined || !resIsCompareFinish.data.status) {
+          throw new Error(`Fingerprint compare failed, status: ${resIsCompareFinish.data.status}`);
         }
 
         const resGetData = await axios.get(urlGetData);
-        if(resGetData === undefined) {
-          throw new Error(`Fingerprint get data failed, status: ${ resGetData.data.status }`);
+        if (resGetData === undefined) {
+          throw new Error(`Fingerprint get data failed, status: ${resGetData.data.status}`);
         }
 
-        if(!this.state.isLoading) {
+        if (!this.state.isLoading) {
           this.setState({
             isLoading: true
-          });  
+          });
         }
 
-        if(!resGetData.data.status) {
-          Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
+        if (!resGetData.data.status) {
+          Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' } });
         }
 
         try {
           const resLogin = await axios({
             url: urlLogin,
-            headers : {
+            headers: {
               'x-user-key': resGetData.data.data,
               'X-Station-Key': Config.stationKey,
               'X-Provider-Key': Config.providerKey
             }
           });
-  
-          if(resLogin === undefined) {
+
+          if (resLogin === undefined) {
             throw new Error('Login with fingerprint failed.');
           }
-  
-          if(typeof(Storage) !== undefined) {
+
+          if (typeof (Storage) !== undefined) {
             sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
             sessionStorage.setItem('token', resLogin.data.token);
             sessionStorage.setItem('isLogin', true);
+            sessionStorage.setItem('firstTime', JSON.stringify({
+              isFirstTime: resLogin.data.data.firsttime,
+              firstTimeKey: resLogin.data.data.first_time_key
+            }));
           }
 
-          Router.replace({ pathname: '/loginComplete', query: { first: 'fingerprint' }});
+          Router.replace({ pathname: '/loginComplete', query: { first: 'fingerprint' } });
         }
-        catch(ex) {
-          if(ex !== undefined && ex.response.status == 401) {
-            Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' }});
+        catch (ex) {
+          if (ex !== undefined && ex.response.status == 401) {
+            Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' } });
           }
           else {
             throw ex;
           }
         }
       }
-      catch(ex) {
+      catch (ex) {
         Logging.sendLogMessage('loginWithFingerprint', ex);
         this.retryLoginWithFingerprint();
       }
@@ -205,6 +213,10 @@ class Login extends React.PureComponent {
     sessionStorage.setItem('userInfo', '');
     sessionStorage.setItem('token', '');
     sessionStorage.setItem('isLogin', false);
+    sessionStorage.setItem('firstTime', JSON.stringify({
+      isFirstTime: false,
+      firstTimeKey: ''
+    }));
     sessionStorage.setItem('patientData', '');
     sessionStorage.setItem('registerResult', '');
     sessionStorage.setItem('weight', '');
@@ -233,16 +245,16 @@ class Login extends React.PureComponent {
             <div>
               <div className='content' id='fingerprint'>
                 <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
-                <br/>
-                <img className='pulse animated infinite' src='/static/pics/fingerprints.svg'/>
+                <br />
+                <img className='pulse animated infinite' src='/static/pics/fingerprints.svg' />
               </div>
               <div className='content' id='center'>
                 <span>หรือ</span>
               </div>
               <div className='content' id='idCard'>
                 <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
-                <br/>
-                <img className='slideInUp animated infinite' src="/static/pics/id.png"/>
+                <br />
+                <img className='slideInUp animated infinite' src="/static/pics/id.png" />
               </div>
             </div>
             <style jsx>{`
