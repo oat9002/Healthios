@@ -93,41 +93,41 @@ export default class MeasurementResult extends React.Component {
   }
 
   saveMeasurementData = async () => {
+    const execute = async (saveMeasurementPromise) => {
+      try {
+        const res = await saveMeasurementPromise();
+        if (!res.data.error) {
+          return true;
+        }
+      }
+      catch (err) {
+        if (err.status === 406) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
 
     try {
       if (!this.isSave.weight) {
-        const resWeight = await this.saveWeight();
-        if (!resWeight.data.error) {
-          this.isSave.weight = true;
-        }
+        this.isSave.weight = await execute(this.saveWeight);
       }
 
       if (!this.isSave.height) {
-        const resHeight = await this.saveHeight();
-        if (!resHeight.data.error) {
-          this.isSave.height = true;
-        }
+        this.isSave.height = await execute(this.saveHeight);
       }
 
       if (!this.isSave.pressure) {
-        const resPressure = await this.savePressure();
-        if (!resPressure.data.error) {
-          this.isSave.pressure = true;
-        }
+        this.isSave.pressure = await execute(this.savePressure);
       }
 
       if (!this.isSave.pulse) {
-        const resPulse = await this.savePulse();
-        if (!resPulse.data.error) {
-          this.isSave.pulse = true;
-        }
+        this.isSave.pulse = await execute(this.savePulse);
       }
 
       if (!this.isSave.thermal) {
-        const resThermal = await this.saveThermal();
-        if (!resThermal.data.error) {
-          this.isSave.thermal = true;
-        }
+        this.isSave.thermal = await execute(this.saveThermal);
       }
 
       const isRetry = Object.keys(this.isSave).map(key => this.isSave[key]).some((isSave) => isSave === false);
@@ -136,7 +136,7 @@ export default class MeasurementResult extends React.Component {
       }
       else {
         this.saveMeasurementTimeout = setTimeout(() => {
-          if (sessionStorage.getItem('isLogin')) {
+          if (sessionStorage.getItem('isLogin') === true) {
             Router.replace('/final');
           }
           else {
