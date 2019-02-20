@@ -19,6 +19,7 @@ class Login extends React.PureComponent {
     this.isStart = false;
     this.loginWithFingerprintTimeout = null;
     this.loginWithCardTimeout = null;
+    this.isScanFingerPrintAgain = false;
   }
 
   componentDidMount() {
@@ -184,13 +185,9 @@ class Login extends React.PureComponent {
 
           Router.replace({ pathname: '/loginComplete', query: { first: 'fingerprint' } });
         }
-        catch (ex) {
-          if (ex !== undefined && ex.response.status == 401) {
-            Router.replace({ pathname: '/registerWithCard', query: { first: 'fingerprint' } });
-          }
-          else {
-            throw ex;
-          }
+        catch (ex) {    
+          this.isScanFingerPrintAgain = true;
+          throw ex;
         }
       }
       catch (ex) {
@@ -244,7 +241,7 @@ class Login extends React.PureComponent {
             </div>
             <div>
               <div className='content' id='fingerprint'>
-                <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ</span>
+                <span className='emph'>แตะ</span><span>นิ้วบนเครื่องแสกนลายนิ้วมือ{this.isScanFingerPrintAgain ? 'ใหม่อีกครั้ง' : null}</span>
                 <br />
                 <img className='pulse animated infinite' src='/static/pics/fingerprints.svg' />
               </div>
@@ -252,7 +249,7 @@ class Login extends React.PureComponent {
                 <span>หรือ</span>
               </div>
               <div className='content' id='idCard'>
-                <span className='emph'>เสียบ</span><span>บัตรประชาชน</span>
+                <span className='emph'>เสียบ</span><span>บัตรประชาชนให้สุด</span>
                 <br />
                 <img className='slideInUp animated infinite' src="/static/pics/id.png" />
               </div>
