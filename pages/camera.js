@@ -1,9 +1,43 @@
 import React from 'react';
 import Webcam from 'react-webcam';
+import Head from 'next/head';
+import Router from 'next/router';
+import * as Config from '../static/appConfig.json';
 
 class Camera extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      counter: 10,
+    };
+
+    this.countDown = null;
+    this.pageTimeout = null;
+  }
+
+  componentDidMount() {
+    this.countDown = setInterval(this.countDownToTakePicture, 1000);
+    this.pageTimeout = setTimeout(() => {
+      Router.replace('/');
+    }, Config.pageTimeout);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.pageTimeout);
+  }
+
+  countDownToTakePicture = () => {
+    let currentCounter = this.state.counter;
+
+    if(currentCounter === 0) {
+      clearInterval(this.countDown);
+      this.capture();
+      return;
+    }
+
+    this.setState({
+      counter: --currentCounter,
+    });
   }
 
   setRef = webcam => {
@@ -23,20 +57,55 @@ class Camera extends React.Component {
     };
 
     return (
-      <div>
-        <Webcam
-          audio={false}
-          height={800}
-          ref={this.setRef}
-          screenshotFormat="image/jpeg"
-          width={800}
-          videoConstraints={videoConstraints}
-        />
-        <button onClick={this.capture}>Capture photo</button>
-      </div>
+      <React.Fragment>
+        <Head>
+          <link href="https://fonts.googleapis.com/css?family=Kanit:200,400" rel="stylesheet" />
+          <link href="/static/css/animate.css" rel="stylesheet" />
+        </Head>
+        <div className='content'>
+          <div>กรุณามองกล้องด้านบน</div>
+          <Webcam
+            style={{textAlign: 'center'}}
+            audio={false}
+            ref={this.setRef}
+            screenshotFormat="image/jpeg"
+            width={1000}
+            videoConstraints={videoConstraints}
+          />
+          <div className='counter'>{this.state.counter === 0 ? 'เรียบร้อย!' : this.state.counter}</div>
+        </div>
+        <style jsx>{`
+          .counter {
+            font-size: 2em;
+            margin-top: 10px;
+          }
+          .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 900px;
+          }
+        `}
+        </style>
+        <style jsx global>{`
+          body {
+            font-family: Kanit;
+            color: #393939;
+            animation: fadein 1s;
+            font-weight: bold;
+            font-size: 3em;
+            background-color: #f7f7f7;
+          }
+          @keyframes fadein {
+              from { opacity: 0; };
+              to   { opacity: 1; };
+          }
+        `}</style>
+      </React.Fragment>
+     
     );
   }
-  
 }
 
 export default Camera;
