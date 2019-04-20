@@ -32,12 +32,14 @@ class Camera extends React.Component {
     if(currentCounter === 0) {
       clearInterval(this.countDown);
       this.capture();
-      return;
+      
+      Router.replace('/weightAndHeight');
     }
-
-    this.setState({
-      counter: --currentCounter,
-    });
+    else {
+      this.setState({
+        counter: --currentCounter,
+      });
+    }
   }
 
   setRef = webcam => {
@@ -46,7 +48,6 @@ class Camera extends React.Component {
 
   capture = () => {
     const imageSrc = this.webcam.getScreenshot();
-    console.log(imageSrc);
   };
 
   render() {

@@ -46,7 +46,7 @@ class RegisterResult extends React.Component {
         });
 
         this.nextPageTimeout = setTimeout(() => {
-          Router.replace('/weightAndHeight');
+          Router.replace('/camera');
         }, 5000);
       }
       else {
