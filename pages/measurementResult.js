@@ -330,9 +330,7 @@ export default class MeasurementResult extends React.Component {
           </div>
           <div className="template">
             <div className="content final">
-              <span>เสร็จสิ้นการทำงาน</span>
-              <br />
-              <span>กรุณาดึงบัตรประชาชนออก(ถ้ามี)</span>
+              <span>เสร็จสิ้นการทำงาน กรุณาดึงบัตรประชาชนออก(ถ้ามี)</span>
             </div>
           </div>
           <style jsx>{`
