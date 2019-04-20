@@ -83,6 +83,7 @@ class Login extends React.PureComponent {
           sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
           sessionStorage.setItem('token', resLogin.data.token);
           sessionStorage.setItem('isLogin', true);
+          sessionStorage.setItem('isLoginWithCard', true);
           sessionStorage.setItem('firstTime', JSON.stringify({
             isFirstTime: resLogin.data.data.firsttime,
             firstTimeKey: resLogin.data.data.firstTimeKey
@@ -177,6 +178,7 @@ class Login extends React.PureComponent {
             sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
             sessionStorage.setItem('token', resLogin.data.token);
             sessionStorage.setItem('isLogin', true);
+            sessionStorage.setItem('isLoginWithCard', false);
             sessionStorage.setItem('firstTime', JSON.stringify({
               isFirstTime: resLogin.data.data.firsttime,
               firstTimeKey: resLogin.data.data.first_time_key
@@ -210,6 +212,7 @@ class Login extends React.PureComponent {
     sessionStorage.setItem('userInfo', '');
     sessionStorage.setItem('token', '');
     sessionStorage.setItem('isLogin', false);
+    sessionStorage.setItem('isLoginWithCard', false);
     sessionStorage.setItem('firstTime', JSON.stringify({
       isFirstTime: false,
       firstTimeKey: ''
