@@ -88,7 +88,7 @@ export default class MeasurementResult extends React.Component {
       Router.replace('/');
     }, Config.pageTimeout);
 
-    //this.prepareStateAndSaveMeasurement();
+    this.prepareStateAndSaveMeasurement();
   }
 
   componentWillUnmount() {
@@ -151,7 +151,7 @@ export default class MeasurementResult extends React.Component {
   }
 
   finalRender = () => {
-    const timeToStayThisPage = 20000;
+    const timeToStayThisPage = 60000;
     const firstTime = JSON.parse(sessionStorage.getItem('firstTime'));
     const isLogin = sessionStorage.getItem('isLogin');
     const isLoginWithCard = sessionStorage.getItem('isLoginWithCard');
