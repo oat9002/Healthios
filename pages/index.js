@@ -4,7 +4,7 @@ import Head from 'next/head';
 import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class Login extends React.PureComponent {
@@ -102,7 +102,7 @@ class Login extends React.PureComponent {
       }
     }
     catch (ex) {
-      Logging.sendLogMessage('loginWithCard', ex);
+      Utils.sendLogMessage('loginWithCard', ex);
       this.retryLoginWithCard();
     }
   }
@@ -128,7 +128,7 @@ class Login extends React.PureComponent {
         this.isStart = true;
       }
       catch (ex) {
-        Logging.sendLogMessage('loginWithFingerprint', ex);
+        Utils.sendLogMessage('loginWithFingerprint', ex);
       }
 
       this.retryLoginWithFingerprint();
@@ -193,7 +193,7 @@ class Login extends React.PureComponent {
         }
       }
       catch (ex) {
-        Logging.sendLogMessage('loginWithFingerprint', ex);
+        Utils.sendLogMessage('loginWithFingerprint', ex);
         this.retryLoginWithFingerprint();
       }
     }

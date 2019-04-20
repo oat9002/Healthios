@@ -3,7 +3,7 @@ import ResultTemplate from '../components/resultTemplate';
 import LoadingTemplate from '../components/loadingTemplate';
 import axios from 'axios';
 import Router, { withRouter } from 'next/router';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class RegisterResult extends React.Component {
@@ -55,7 +55,7 @@ class RegisterResult extends React.Component {
       }
     }
     catch(err) {
-      Logging.sendLogMessage('Register result', err);
+      Utils.sendLogMessage('Register result', err);
       this.retryGetPersonalData();
     }
   }

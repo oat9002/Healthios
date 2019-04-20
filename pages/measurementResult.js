@@ -4,7 +4,7 @@ import Head from 'next/head';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import axios from 'axios';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import cryptoJs from 'crypto-js';
 import * as Config from '../static/appConfig.json';
 import QRCode from 'qrcode.react';
@@ -46,7 +46,7 @@ export default class MeasurementResult extends React.Component {
           value: 0,
         }
       },
-      qrCode: ''
+      qrCode: 'j'
     };
 
     this.pageTimeout = null;
@@ -145,7 +145,7 @@ export default class MeasurementResult extends React.Component {
       }
     }
     catch (error) {
-      Logging.sendLogMessage('Measurement result', error);
+      Utils.sendLogMessage('Measurement result', error);
       this.retrySaveMeasurementData();
     }
   }
@@ -187,7 +187,7 @@ export default class MeasurementResult extends React.Component {
       Router.replace('/');
     }
     catch (err) {
-      Logging.sendLogMessage('Check deattach card failed', err);
+      Utils.sendLogMessage('Check deattach card failed', err);
       this.retryCheckDeattachCard();
     }
   }

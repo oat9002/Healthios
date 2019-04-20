@@ -1,7 +1,7 @@
 import React from 'react';
 import Router, { withRouter } from 'next/router';
 import Head from 'next/head';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 import axios from 'axios';
 
@@ -45,7 +45,7 @@ class Final extends React.Component {
       Router.replace('/');
     }
     catch (err) {
-      Logging.sendLogMessage('Check deattach card failed', err);
+      Utils.sendLogMessage('Check deattach card failed', err);
       this.retryCheckDeattachCard();
     }
   }

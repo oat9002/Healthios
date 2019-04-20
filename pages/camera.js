@@ -3,6 +3,9 @@ import Webcam from 'react-webcam';
 import Head from 'next/head';
 import Router from 'next/router';
 import * as Config from '../static/appConfig.json';
+import * as Utils from '../services/Utils';
+import axios from 'axios';
+import cryptoJs from 'crypto-js';
 
 class Camera extends React.Component {
   constructor(props) {
@@ -32,7 +35,7 @@ class Camera extends React.Component {
     if(currentCounter === 0) {
       clearInterval(this.countDown);
       this.capture();
-      
+
       Router.replace('/weightAndHeight');
     }
     else {
@@ -46,9 +49,33 @@ class Camera extends React.Component {
     this.webcam = webcam;
   };
 
-  capture = () => {
+  capture =  () => {
     const imageSrc = this.webcam.getScreenshot();
+    const imgData = imageSrc.replace(/^data:image\/[a-z]+;base64,/, '');
+    this.saveImgData(imgData);
   };
+
+  saveImgData = async (imgData, retryCount = 0) => {
+    const url = Config.serverIp + '/api/data/image';
+    const blob = Utils.b64toBlob(imgData);
+    const userId = sessionStorage.getItem('isLogin') === 'true'
+      ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id
+      : JSON.parse(sessionStorage.getItem('registerResult')).data._id;
+
+    const response = await axios.post(url, blob, {
+      headers: {
+        'x-user-key': userId
+      }
+    });
+
+    if(response.status !== 200) {
+      Utils.sendLogMessage('camera', new Error(`Save image failed, Status: ${response.status}`));
+
+      if(retryCount !== 3) {
+        this.saveImgData(imgData, retryCount++);
+      }
+    }
+  }
 
   render() {
     const videoConstraints = {
