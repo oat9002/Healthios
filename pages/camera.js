@@ -36,8 +36,7 @@ class Camera extends React.Component {
       clearInterval(this.countDown);
       this.capture();
 
-      // Router.replace('/weightAndHeight');
-      console.log('finish');
+      Router.replace('/weightAndHeight');
     }
     else {
       this.setState({
