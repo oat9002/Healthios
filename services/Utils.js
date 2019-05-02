@@ -9,30 +9,29 @@ export function sendLogMessage(name, error) {
   axios.post(config.logServerIp + '/logs/healthiosWeb', {
     createdTime: new Date().toLocaleTimeString(),
     services_name: name,
-    message: `${ error.message } \n ${ error.stack }`
+    message: `${error.message} \n ${error.stack}`
   })
     .catch(() => {
 
     });
 }
 
-export function b64toBlob(b64Data, contentType = '', sliceSize = 512) {
-  let byteCharacters = atob(b64Data);
-  let byteArrays = [];
+export function dataURItoBlob(dataURI) {
+  // convert base64/URLEncoded data component to raw binary data held in a string
+  let byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+    byteString = atob(dataURI.split(',')[1]);
+  else
+    byteString = unescape(dataURI.split(',')[1]);
 
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    let slice = byteCharacters.slice(offset, offset + sliceSize);
+  // separate out the mime component
+  let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
 
-    let byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    let byteArray = new Uint8Array(byteNumbers);
-
-    byteArrays.push(byteArray);
+  // write the bytes of the string to a typed array
+  let ia = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
   }
 
-  let blob = new Blob(byteArrays, {type: contentType});
-  return blob;
+  return new Blob([ia], { type: mimeString });
 }

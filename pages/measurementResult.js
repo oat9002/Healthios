@@ -156,14 +156,14 @@ export default class MeasurementResult extends React.Component {
     const isLogin = sessionStorage.getItem('isLogin');
     const isLoginWithCard = sessionStorage.getItem('isLoginWithCard');
 
-    if(firstTime.isFirstTime) {
+    if (firstTime.isFirstTime) {
       this.setState({
         qrCode: firstTime.firstTimeKey
       });
     }
 
-    if(isLogin) {
-      if(isLoginWithCard) {
+    if (isLogin) {
+      if (isLoginWithCard) {
         this.checkDeattachCard();
       }
       else {
@@ -322,7 +322,7 @@ export default class MeasurementResult extends React.Component {
                     <QRCode value={this.state.qrCode} size={128 * 1.5} />
                   </div>
                   <div className='content'>
-                    แสกน QR Code <br/>เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
+                    แสกน QR Code <br />เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
                   </div>
                 </React.Fragment>)
               : null
