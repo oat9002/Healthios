@@ -4,7 +4,7 @@ import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router, { withRouter } from 'next/router';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class WeightAndHeight extends React.Component {
@@ -50,7 +50,7 @@ class WeightAndHeight extends React.Component {
       this.isSensorStart = true;
     }
     catch(ex) {
-      Logging.sendLogMessage('WeightAndHeight', ex);
+      Utils.sendLogMessage('WeightAndHeight', ex);
       this.retryStartSensor();
     }
   }
@@ -130,7 +130,7 @@ class WeightAndHeight extends React.Component {
       Router.replace('/bloodPressure');
     }
     catch(ex) {
-      Logging.sendLogMessage('WeightAndHeight', ex);
+      Utils.sendLogMessage('WeightAndHeight', ex);
       this.retryReadWeightAndHeight();
     }
   }

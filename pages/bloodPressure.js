@@ -4,7 +4,7 @@ import Loading from './loading';
 import axios from 'axios';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Router, { withRouter } from 'next/router';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class BloodPressure extends React.Component {
@@ -50,7 +50,7 @@ class BloodPressure extends React.Component {
       this.isSensorStart = true;
     }
     catch (ex) {
-      Logging.sendLogMessage('BloodPressure', ex);
+      Utils.sendLogMessage('BloodPressure', ex);
       this.retryStartSensor();
     }
   }
@@ -117,7 +117,7 @@ class BloodPressure extends React.Component {
     }
     catch (ex) {
 
-      Logging.sendLogMessage('BloodPressure', ex);
+      Utils.sendLogMessage('BloodPressure', ex);
       this.retryReadBloodPressure();
     }
   }

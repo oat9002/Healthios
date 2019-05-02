@@ -4,7 +4,7 @@ import Head from 'next/head';
 import axios from 'axios';
 import Loading from './loading';
 import cryptoJs from 'crypto-js';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class Login extends React.PureComponent {
@@ -83,6 +83,7 @@ class Login extends React.PureComponent {
           sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
           sessionStorage.setItem('token', resLogin.data.token);
           sessionStorage.setItem('isLogin', true);
+          sessionStorage.setItem('isLoginWithCard', true);
           sessionStorage.setItem('firstTime', JSON.stringify({
             isFirstTime: resLogin.data.data.firsttime,
             firstTimeKey: resLogin.data.data.firstTimeKey
@@ -101,7 +102,7 @@ class Login extends React.PureComponent {
       }
     }
     catch (ex) {
-      Logging.sendLogMessage('loginWithCard', ex);
+      Utils.sendLogMessage('loginWithCard', ex);
       this.retryLoginWithCard();
     }
   }
@@ -127,7 +128,7 @@ class Login extends React.PureComponent {
         this.isStart = true;
       }
       catch (ex) {
-        Logging.sendLogMessage('loginWithFingerprint', ex);
+        Utils.sendLogMessage('loginWithFingerprint', ex);
       }
 
       this.retryLoginWithFingerprint();
@@ -177,6 +178,7 @@ class Login extends React.PureComponent {
             sessionStorage.setItem('userInfo', cryptoJs.AES.encrypt(JSON.stringify(resLogin.data.data), Config.aesSecret).toString());
             sessionStorage.setItem('token', resLogin.data.token);
             sessionStorage.setItem('isLogin', true);
+            sessionStorage.setItem('isLoginWithCard', false);
             sessionStorage.setItem('firstTime', JSON.stringify({
               isFirstTime: resLogin.data.data.firsttime,
               firstTimeKey: resLogin.data.data.first_time_key
@@ -191,7 +193,7 @@ class Login extends React.PureComponent {
         }
       }
       catch (ex) {
-        Logging.sendLogMessage('loginWithFingerprint', ex);
+        Utils.sendLogMessage('loginWithFingerprint', ex);
         this.retryLoginWithFingerprint();
       }
     }
@@ -210,6 +212,7 @@ class Login extends React.PureComponent {
     sessionStorage.setItem('userInfo', '');
     sessionStorage.setItem('token', '');
     sessionStorage.setItem('isLogin', false);
+    sessionStorage.setItem('isLoginWithCard', false);
     sessionStorage.setItem('firstTime', JSON.stringify({
       isFirstTime: false,
       firstTimeKey: ''

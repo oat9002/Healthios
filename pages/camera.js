@@ -3,6 +3,9 @@ import Webcam from 'react-webcam';
 import Head from 'next/head';
 import Router from 'next/router';
 import * as Config from '../static/appConfig.json';
+import * as Utils from '../services/Utils';
+import axios from 'axios';
+import cryptoJs from 'crypto-js';
 
 class Camera extends React.Component {
   constructor(props) {
@@ -29,11 +32,12 @@ class Camera extends React.Component {
   countDownToTakePicture = () => {
     let currentCounter = this.state.counter;
 
-    if(currentCounter === 0) {
+    if (currentCounter === 0) {
       clearInterval(this.countDown);
       this.capture();
-      
-      Router.replace('/weightAndHeight');
+
+      // Router.replace('/weightAndHeight');
+      console.log('finish');
     }
     else {
       this.setState({
@@ -47,8 +51,40 @@ class Camera extends React.Component {
   };
 
   capture = () => {
-    const imageSrc = this.webcam.getScreenshot();
+    const imgData = this.webcam.getScreenshot();
+    this.saveImgData(imgData);
   };
+
+  saveImgData = async (imgData, retryCount = 0) => {
+    const url = Config.serverIp + '/api/data/image';
+    const blob = Utils.dataURItoBlob(imgData);
+    const request = new FormData();
+    request.append('profileImage', blob);
+
+    const userId = sessionStorage.getItem('isLogin') === 'true'
+      ? JSON.parse(cryptoJs.AES.decrypt(sessionStorage.getItem('userInfo'), Config.aesSecret).toString(cryptoJs.enc.Utf8))._id
+      : JSON.parse(sessionStorage.getItem('registerResult')).data._id;
+
+    try {
+      const response = await axios.post(url, request, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x-user-key': userId
+        }
+      });
+
+      if (response.status !== 200 || response.status !== 201) {
+        throw new Error(`Save image failed, Status: ${response.status}`);
+      }
+    }
+    catch (err) {
+      Utils.sendLogMessage('camera', err);
+
+      if (retryCount !== 3) {
+        this.saveImgData(imgData, ++retryCount);
+      }
+    }
+  }
 
   render() {
     const videoConstraints = {
@@ -66,7 +102,7 @@ class Camera extends React.Component {
         <div className='content'>
           <div>กรุณามองกล้องด้านบน</div>
           <Webcam
-            style={{textAlign: 'center'}}
+            style={{ textAlign: 'center' }}
             audio={false}
             ref={this.setRef}
             screenshotFormat="image/jpeg"
@@ -104,7 +140,7 @@ class Camera extends React.Component {
           }
         `}</style>
       </React.Fragment>
-     
+
     );
   }
 }

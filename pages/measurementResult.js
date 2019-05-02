@@ -4,9 +4,10 @@ import Head from 'next/head';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import axios from 'axios';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import cryptoJs from 'crypto-js';
 import * as Config from '../static/appConfig.json';
+import QRCode from 'qrcode.react';
 
 export default class MeasurementResult extends React.Component {
   constructor(props) {
@@ -44,12 +45,15 @@ export default class MeasurementResult extends React.Component {
         heart_rate: {
           value: 0,
         }
-      }
+      },
+      qrCode: 'j'
     };
 
     this.pageTimeout = null;
     this.saveMeasurementUrl = Config.serverIp + '/api/data/save';
     this.saveMeasurementTimeout = null;
+    this.retryCheckDeattachCardTimeout = null;
+    this.stayInThisPageTimeout = null;
     this.isSave = {
       weight: false,
       height: false,
@@ -90,10 +94,11 @@ export default class MeasurementResult extends React.Component {
   componentWillUnmount() {
     clearTimeout(this.pageTimeout);
     clearTimeout(this.saveMeasurementTimeout);
+    clearTimeout(this.retryCheckDeattachCardTimeout);
+    clearTimeout(this.stayInThisPageTimeout);
   }
 
   saveMeasurementData = async () => {
-    const timeToStayThisPage = 20000;
     const execute = async (saveMeasurementPromise) => {
       try {
         const res = await saveMeasurementPromise();
@@ -136,21 +141,59 @@ export default class MeasurementResult extends React.Component {
         this.retrySaveMeasurementData();
       }
       else {
-        const firstTime = JSON.parse(sessionStorage.getItem('firstTime'));
-        this.saveMeasurementTimeout = setTimeout(() => {
-          if (!firstTime.isFirstTime) {
-            Router.replace('/final');
-          }
-          else {
-            Router.replace('/qrCode');
-          }
-        }, timeToStayThisPage);
+        this.finalRender();
       }
     }
     catch (error) {
-      Logging.sendLogMessage('Measurement result', error);
+      Utils.sendLogMessage('Measurement result', error);
       this.retrySaveMeasurementData();
     }
+  }
+
+  finalRender = () => {
+    const timeToStayThisPage = 60000;
+    const firstTime = JSON.parse(sessionStorage.getItem('firstTime'));
+    const isLogin = sessionStorage.getItem('isLogin');
+    const isLoginWithCard = sessionStorage.getItem('isLoginWithCard');
+
+    if (firstTime.isFirstTime) {
+      this.setState({
+        qrCode: firstTime.firstTimeKey
+      });
+    }
+
+    if (isLogin) {
+      if (isLoginWithCard) {
+        this.checkDeattachCard();
+      }
+      else {
+        this.stayInThisPageTimeout = setTimeout(() => Router.replace('/'), timeToStayThisPage);
+      }
+    }
+    else {
+      this.checkDeattachCard();
+    }
+  }
+
+  checkDeattachCard = async () => {
+    let urlIsInsertCard = Config.piIp + '/thid/valid';
+
+    try {
+      const resIsInsertCard = await axios.get(urlIsInsertCard);
+      if (resIsInsertCard === undefined || resIsInsertCard.data.status) {
+        throw new Error('Card is still inserted or validate failed.');
+      }
+
+      Router.replace('/');
+    }
+    catch (err) {
+      Utils.sendLogMessage('Check deattach card failed', err);
+      this.retryCheckDeattachCard();
+    }
+  }
+
+  retryCheckDeattachCard = () => {
+    this.retryCheckDeattachCardTimeout = setTimeout(this.checkDeattachCard, 1000);
   }
 
   saveHeight = () => {
@@ -272,6 +315,23 @@ export default class MeasurementResult extends React.Component {
               <br />ความดัน<span className='emph'>ต่ำ</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
               <br />ความดัน<span className='emph'>สูง</span>สุด <span className='emphValue'>{this.state.pressure.diastolic_blood_pressure.value}</span> mmHg
             </div>
+            {this.state.qrCode !== ''
+              ? (
+                <React.Fragment>
+                  <div>
+                    <QRCode value={this.state.qrCode} size={128 * 1.5} />
+                  </div>
+                  <div className='content'>
+                    แสกน QR Code <br />เพื่อเปลี่ยนรหัสผ่านแอปพลิเคชัน
+                  </div>
+                </React.Fragment>)
+              : null
+            }
+          </div>
+          <div className="template">
+            <div className="content final">
+              <span>เสร็จสิ้นการทำงาน กรุณาดึงบัตรประชาชนออก(ถ้ามี)</span>
+            </div>
           </div>
           <style jsx>{`
             .template {
@@ -295,7 +355,12 @@ export default class MeasurementResult extends React.Component {
             .content{
               text-align: center;
               font-size: 1.5em;
-              width: 350px;
+              width: 400px;
+            }
+            .final{
+              font-size: 3em;
+              font-weight: bold;
+              width: auto;
             }
           `}</style>
           <style jsx global>{`

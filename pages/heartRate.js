@@ -4,7 +4,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
 import Router, { withRouter } from 'next/router';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class HeartRate extends React.Component {
@@ -50,7 +50,7 @@ class HeartRate extends React.Component {
       this.isSensorStart = true;
     }
     catch(ex) {
-      Logging.sendLogMessage('HeartRate', ex);
+      Utils.sendLogMessage('HeartRate', ex);
       this.retryStartSensor();
     }
   }
@@ -109,7 +109,7 @@ class HeartRate extends React.Component {
       Router.replace('/measurementResult');
     }
     catch(ex) {
-      Logging.sendLogMessage('HeartRate', ex);
+      Utils.sendLogMessage('HeartRate', ex);
       this.retryReadHeartRate();
     }
   }

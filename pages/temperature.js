@@ -4,7 +4,7 @@ import Router, { withRouter } from 'next/router';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import axios from 'axios';
 import Loading from './loading';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import * as Config from '../static/appConfig.json';
 
 class Temperature extends React.Component {
@@ -48,7 +48,7 @@ class Temperature extends React.Component {
       this.isSensorStart = true;
     }
     catch(ex) {
-      Logging.sendLogMessage('Temperature', ex);
+      Utils.sendLogMessage('Temperature', ex);
       this.retryStartSensor();
     }
   }
@@ -104,7 +104,7 @@ class Temperature extends React.Component {
       Router.replace('/heartRate');
     }
     catch(ex) {
-      Logging.sendLogMessage('Temperature', ex);
+      Utils.sendLogMessage('Temperature', ex);
       this.retryReadTemperature();
     }  
   }

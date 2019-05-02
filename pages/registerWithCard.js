@@ -4,7 +4,7 @@ import LoadingTemplate from '../components/loadingTemplate';
 import Head from 'next/head';
 import Router, { withRouter } from 'next/router';
 import axios from 'axios';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import cryptoJs from 'crypto-js';
 import * as Config from '../static/appConfig.json';
 import PropTypes from 'prop-types';
@@ -77,7 +77,7 @@ class RegisterWithCard extends React.Component {
       this.login(resGetData.data.data);
     }
     catch(ex) {
-      Logging.sendLogMessage('RegisterWithCard', ex);
+      Utils.sendLogMessage('RegisterWithCard', ex);
       this.retryProcess();
     }
   }

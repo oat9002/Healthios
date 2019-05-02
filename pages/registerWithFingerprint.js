@@ -3,7 +3,7 @@ import Head from 'next/head';
 import LoadingTemplate from '../components/loadingTemplate';
 import Router, { withRouter } from 'next/router';
 import axios from 'axios';
-import * as Logging from '../services/logging';
+import * as Utils from '../services/Utils';
 import cryptoJS from 'crypto-js';
 import * as Config from '../static/appConfig.json';
 
@@ -49,7 +49,7 @@ class RegisterWithFingerprint extends React.Component {
         this.isStart = true;
       }
       catch (ex) {
-        Logging.sendLogMessage('RegisterWithFingerprint', ex);
+        Utils.sendLogMessage('RegisterWithFingerprint', ex);
       }
 
       this.retryProcess();
@@ -112,7 +112,7 @@ class RegisterWithFingerprint extends React.Component {
         Router.replace('/registerComplete');
       }
       catch (err) {
-        Logging.sendLogMessage('RegisterWithFingerprint', err);
+        Utils.sendLogMessage('RegisterWithFingerprint', err);
         this.retryProcess();
       }
     }
